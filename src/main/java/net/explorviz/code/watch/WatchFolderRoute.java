@@ -1,6 +1,7 @@
 package net.explorviz.code.watch;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import org.apache.camel.builder.RouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -8,15 +9,18 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class WatchFolderRoute extends RouteBuilder {
 
   @ConfigProperty(name = "explorviz.watchservice.folder")
-  String folderPath;
+  /* default */ String folderPath; // NOCS
 
   @ConfigProperty(name = "explorviz.watchservice.events")
-  String events;
+  /* default */ String events; // NOCS
+
+  @Inject
+  private WatchFolderProcessor processor;
 
   @Override
   public void configure() throws Exception {
     this.fromF("file-watch://%s?events=%s&antInclude=**/*.java", this.folderPath, this.events)
-        .process(new WatchFolderProcessor());
+        .process(this.processor);
   }
 
 }

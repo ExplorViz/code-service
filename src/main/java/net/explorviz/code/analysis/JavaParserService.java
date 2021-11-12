@@ -2,6 +2,7 @@ package net.explorviz.code.analysis;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitor;
@@ -12,6 +13,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 import com.github.javaparser.utils.SourceRoot;
 import com.github.javaparser.utils.SourceRoot.Callback;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,27 +35,40 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@ApplicationScoped
-public class JavaParserConfiguration {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(JavaParserConfiguration.class);
+/**
+ * Service which handles the parsing of source code via JavaParser. Processes source code directory
+ * once ${explorviz.watchservice.folder} upon application startup. Afterwards, listens to Vert.x
+ * events with name "filechange" to only analyze a passed absolute filepath.
+ */
+@ApplicationScoped
+public class JavaParserService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(JavaParserService.class);
 
   private final ParserConfiguration config;
 
   private final String folderPath;
 
-  final VoidVisitor<List<String>> classNameVisitor = new ClassNameVisitor();
-  final GenericVisitorAdapter<Integer, Integer> locCollector = new LocVisitor();
-  final VoidVisitor<List<String>> inheritanceCollector = new InheritanceVisitor();
-  final VoidVisitor<List<String>> implementedInterfacesCollector =
+  private final VoidVisitor<List<String>> classNameVisitor = new ClassNameVisitor();
+  private final GenericVisitorAdapter<Integer, Integer> locCollector = new LocVisitor();
+  private final VoidVisitor<List<String>> inheritanceCollector = new InheritanceVisitor();
+  private final VoidVisitor<List<String>> implementedInterfacesCollector =
       new ImplementedInterfaceVisitor();
-  final VoidVisitor<List<String>> methodCollector = new MethodVisitor();
-  final VoidVisitor<List<String>> methodCallCollector = new MethocCallVisitor();
-  final VoidVisitor<List<String>> importVisitor = new ImportVisitor();
-  final GenericVisitorAdapter<String, String> packageCollector = new PackageNameVisitor();
+  private final VoidVisitor<List<String>> methodCollector = new MethodVisitor();
+  private final VoidVisitor<List<String>> methodCallCollector = new MethocCallVisitor();
+  private final VoidVisitor<List<String>> importVisitor = new ImportVisitor();
+  private final GenericVisitorAdapter<String, String> packageCollector = new PackageNameVisitor();
 
+  /**
+   * Constructor for this class. Injects {@link ConfigProperty} ${explorviz.watchservice.folder} for
+   * the initial analysis of the top level folder path to the source code.
+   *
+   * @param folderPath Absolute folder path used to setup the type solver and configure the initial
+   *        analysis of the source code.
+   */
   @Inject
-  public JavaParserConfiguration(
+  public JavaParserService(
       @ConfigProperty(name = "explorviz.watchservice.folder") final String folderPath) {
 
     this.folderPath = folderPath;
@@ -61,12 +76,42 @@ public class JavaParserConfiguration {
     final CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver(new ReflectionTypeSolver(),
         new JavaParserTypeSolver(this.folderPath));
 
-    this.config = new ParserConfiguration().setStoreTokens(true)
-        .setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
+    final JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
+
+    this.config = new ParserConfiguration().setStoreTokens(true).setSymbolResolver(symbolSolver);
+
+    StaticJavaParser.getConfiguration().setSymbolResolver(symbolSolver);
   }
 
-  public void processFolder(final String folderOrFilePath) throws IOException {
-    final Path pathToSource = Paths.get(folderOrFilePath);
+  /**
+   * This method listens to the Vert.x event "filechange" and will analyze a given absolute file
+   * path with the JavaParser.
+   *
+   * @param absoluteFilePath Absolute file path that will be analyzed by the JavaParser.
+   * @throws IOException Throwed if the parsing of the absoluteFilePath fails.
+   */
+  @ConsumeEvent("filechange")
+  public void processFile(final String absoluteFilePath) throws IOException {
+    final CompilationUnit cu = StaticJavaParser.parse(Paths.get(absoluteFilePath));
+
+    final List<String> className = new ArrayList<>();
+    System.out.println("Class names:");
+
+    // print fqn
+    this.classNameVisitor.visit(cu, className);
+    className.forEach(n -> System.out.println(n));
+    className.clear();
+
+  }
+
+  /**
+   * Recursive source code analysis with JavaParser of a given folder.
+   *
+   * @param absoluteFolderPath Absolute folder path that will be analyzed by the JavaParser.
+   * @throws IOException Throwed if the parsing of the absoluteFolderPath fails.
+   */
+  public void processFolder(final String absoluteFolderPath) throws IOException {
+    final Path pathToSource = Paths.get(absoluteFolderPath);
     final SourceRoot sourceRoot = new SourceRoot(pathToSource);
 
     final List<String> className = new ArrayList<>();
@@ -88,41 +133,41 @@ public class JavaParserConfiguration {
           System.out.println("Class names:");
 
           // print fqn
-          JavaParserConfiguration.this.classNameVisitor.visit(cu, className);
+          JavaParserService.this.classNameVisitor.visit(cu, className);
           className.forEach(n -> System.out.println(n));
           className.clear();
 
           System.out.println("Package:");
-          System.out.println(JavaParserConfiguration.this.packageCollector.visit(cu, ""));
+          System.out.println(JavaParserService.this.packageCollector.visit(cu, ""));
 
-          System.out.println(JavaParserConfiguration.this.locCollector.visit(cu, 0));
+          System.out.println(JavaParserService.this.locCollector.visit(cu, 0));
 
           System.out.println("Imports:");
 
-          JavaParserConfiguration.this.importVisitor.visit(cu, importNames);
+          JavaParserService.this.importVisitor.visit(cu, importNames);
           importNames.forEach(n -> System.out.println(n));
 
           System.out.println("Super classes:");
 
-          JavaParserConfiguration.this.inheritanceCollector.visit(cu, superClassNames);
+          JavaParserService.this.inheritanceCollector.visit(cu, superClassNames);
           superClassNames.forEach(
               n -> System.out.println(FqnCalculator.calculateFqnBasedOnImport(importNames, n)));
 
           System.out.println("Implemented interfaces:");
 
-          JavaParserConfiguration.this.implementedInterfacesCollector.visit(cu,
+          JavaParserService.this.implementedInterfacesCollector.visit(cu,
               implementedInterfacesClassNames);
           implementedInterfacesClassNames.forEach(
               n -> System.out.println(FqnCalculator.calculateFqnBasedOnImport(importNames, n)));
 
           System.out.println("Contained Methods:");
 
-          JavaParserConfiguration.this.methodCollector.visit(cu, methodsOfClass);
+          JavaParserService.this.methodCollector.visit(cu, methodsOfClass);
           methodsOfClass.forEach(n -> System.out.println(n));
 
           System.out.println("Called methods:");
 
-          JavaParserConfiguration.this.methodCallCollector.visit(cu, calledMethodsInClass);
+          JavaParserService.this.methodCallCollector.visit(cu, calledMethodsInClass);
           calledMethodsInClass.forEach(n -> System.out.println(n));
 
           importNames.clear();

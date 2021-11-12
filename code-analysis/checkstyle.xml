@@ -346,5 +346,62 @@
     <module name="CommentsIndentation">
       <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
     </module>
+    
+     <!-- SE Adjustments -->
+
+    <!-- code formatting -->
+    <module name="StaticVariableName" /> <!-- non-static static fields -->
+    <module name="ConstantName" /> <!-- constants (static final fields) -->
+    <module name="UnusedImports">
+      <property name="processJavadoc" value="true" />
+    </module>
+    
+     <!-- code order -->
+    <module name="DeclarationOrder" />
+
+    <!-- annotations/java doc -->
+    <module name="MissingDeprecated" />
+    <module name="JavadocType">
+      <property name="scope" value="public" />
+    </module>
+
+    <!-- code analysis -->
+    <module name="CyclomaticComplexity">
+      <property name="max" value="10" />
+      <property name="switchBlockAsSingleDecisionPoint"
+        value="true" />
+    </module>
+    <module name="ModifiedControlVariable" />
+    <module name="MultipleStringLiterals">
+      <property name="ignoreStringsRegexp" value='^.{0,5}$' />
+    </module>
+    <module name="SimplifyBooleanExpression" />
+    <module name="SimplifyBooleanReturn" />
+    <module name="SuperClone" />
+    <module name="VisibilityModifier">
+      <property name="protectedAllowed" value="true" />
+    </module>
+    <module name="EmptyStatement" />
+    <module name="EqualsHashCode" />
+
+    <!-- others -->
+    <module name="NoFinalizer" />
+    <module name="NoClone" />
+    <module name="MagicNumber" />
+
+    <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="NOCS" />
+    </module>
+    
   </module>
+  
+  <module name="RegexpSingleline">
+    <property name="format" value="^\s*\*\s*@author" />
+    <property name="minimum" value="0" />
+    <property name="maximum" value="0" />
+    <property name="message"
+      value="Javadoc has illegal ''author'' tag." />
+    <property name="fileExtensions" value="java" />
+  </module>
+  
 </module>
