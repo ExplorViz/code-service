@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'com.adarshr.test-logger' version '3.1.0'
+}
+
+apply from: 'buildscripts/code-analysis.gradle'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-container-image-jib'
+    //implementation 'io.quarkus:quarkus-resteasy-reactive'
+    //implementation 'io.quarkus:quarkus-grpc'
+    
+	implementation 'org.apache.camel.quarkus:camel-quarkus-file-watch:2.4.0' 
+	
+	implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.23.1'
+      
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+}
+
+group 'net.explorviz'
+version '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
