@@ -16,13 +16,13 @@ public class MethocCallVisitor extends VoidVisitorAdapter<List<String>> {
     /*
      * if (isPrimitiveType(n.getScope().get())) { type = n.asTypeExpr().getTypeAsString(); } else {
      * try { type = n.resolve().getQualifiedName(); } catch (UnsolvedSymbolException e) {
-     * 
+     *
      * } }
      */
 
     /*
      * if (n.getScope().isPresent()) { Expression expr = n.getScope().get();
-     * 
+     *
      * if (expr.isFieldAccessExpr()) { type =
      * expr.asFieldAccessExpr().resolve().getType().toString(); } else if (expr.isNameExpr()) { type
      * = expr.asNameExpr().resolve().getType().toString(); } }

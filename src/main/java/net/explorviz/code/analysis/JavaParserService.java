@@ -35,7 +35,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Service which handles the parsing of source code via JavaParser. Processes source code directory
  * once ${explorviz.watchservice.folder} upon application startup. Afterwards, listens to Vert.x
@@ -140,10 +139,10 @@ public class JavaParserService {
           System.out.println("Package:");
           System.out.println(JavaParserService.this.packageCollector.visit(cu, ""));
 
+          System.out.println("LoC:");
           System.out.println(JavaParserService.this.locCollector.visit(cu, 0));
 
           System.out.println("Imports:");
-
           JavaParserService.this.importVisitor.visit(cu, importNames);
           importNames.forEach(n -> System.out.println(n));
 
@@ -189,6 +188,5 @@ public class JavaParserService {
         this.folderPath);
     this.processFolder(this.folderPath);
   }
-
 
 }
