@@ -1,0 +1,21 @@
+@namespace("net.explorviz.avro")
+protocol SpanStructureEventProtocol {
+	record Timestamp {
+		long seconds;
+		int nanoAdjust;
+	}
+
+	record SpanStructure {
+		string spanId;
+		string landscapeToken;
+		Timestamp timestamp;
+		string hashCode;
+		string fullyQualifiedOperationName;
+		string hostname;
+		string hostIpAddress;
+		string appName;
+		string appInstanceId;
+		string appLanguage;
+	}
+
+}
