@@ -19,19 +19,19 @@ public class StructureEventServiceImpl implements StructureEventService {
 
   @Override
   public Uni<Empty> sendCreateEvent(final StructureCreateEvent request) {
-    System.out.println("Client says: " + request.getClassName());
+    System.out.println("Client says: " + request.getFullyQualifiedOperationName());
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 
   @Override
   public Uni<Empty> sendDeleteEvent(final StructureDeleteEvent request) {
-    System.out.println("Client says: " + request.getClassName());
+    System.out.println("Client says: " + request.getFullyQualifiedOperationName());
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 
   @Override
   public Uni<Empty> sendModifyEvent(final StructureModifyEvent request) {
-    System.out.println("Client says: " + request.getClassName());
+    System.out.println("Client says: " + request.getFullyQualifiedOperationName());
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 

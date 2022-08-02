@@ -22,6 +22,8 @@ dependencies {
     
     implementation group: 'io.quarkus', name: 'quarkus-smallrye-reactive-messaging-kafka'
   	implementation group: 'io.quarkus', name: 'quarkus-smallrye-reactive-messaging'
+  	
+  	implementation 'io.opencensus:opencensus-proto:0.2.0'
     	      
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
