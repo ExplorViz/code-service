@@ -8,6 +8,9 @@ import net.explorviz.code.proto.StructureDeleteEvent;
 import net.explorviz.code.proto.StructureEventService;
 import net.explorviz.code.proto.StructureModifyEvent;
 
+/**
+ * GrpcService that listens to StructureEvents. Entrypoint for this service.
+ */
 @GrpcService
 public class StructureEventServiceImpl implements StructureEventService {
 
@@ -19,19 +22,16 @@ public class StructureEventServiceImpl implements StructureEventService {
 
   @Override
   public Uni<Empty> sendCreateEvent(final StructureCreateEvent request) {
-    System.out.println("Client says: " + request.getFullyQualifiedOperationName());
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 
   @Override
   public Uni<Empty> sendDeleteEvent(final StructureDeleteEvent request) {
-    System.out.println("Client says: " + request.getFullyQualifiedOperationName());
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 
   @Override
   public Uni<Empty> sendModifyEvent(final StructureModifyEvent request) {
-    System.out.println("Client says: " + request.getFullyQualifiedOperationName());
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 

@@ -25,8 +25,7 @@ public final class HashHelper {
   }
 
   private static String createHash(final String landscapeToken, final String hostIp, // NOPMD
-      final String appInstanceId,
-      final String methodFqn) {
+      final String appInstanceId, final String methodFqn) {
 
     final StringJoiner joiner = new StringJoiner(";");
 
@@ -57,12 +56,16 @@ public final class HashHelper {
 
   }
 
+  /**
+   * Takes a {@link AttributesReader} and generates a ExplorViz hash code based on the attributes.
+   *
+   * @param attribute {@link AttributesReader} that must contain all attributes for the related
+   *        Span.
+   * @return hash
+   */
   public static String fromSpanAttributes(final AttributesReader attribute) {
-    return createHash(
-        attribute.getLandscapeToken(),
-        attribute.getHostIpAddress(),
-        attribute.getApplicationInstanceId(),
-        attribute.getMethodFqn());
+    return createHash(attribute.getLandscapeToken(), attribute.getHostIpAddress(),
+        attribute.getApplicationInstanceId(), attribute.getMethodFqn());
   }
 
 

@@ -8,7 +8,7 @@ import static net.explorviz.code.kafka.conversion.DefaultAttributeValues.DEFAULT
 import static net.explorviz.code.kafka.conversion.DefaultAttributeValues.DEFAULT_HOST_NAME;
 import static net.explorviz.code.kafka.conversion.DefaultAttributeValues.DEFAULT_LANDSCAPE_SECRET;
 import static net.explorviz.code.kafka.conversion.DefaultAttributeValues.DEFAULT_LANDSCAPE_TOKEN;
-import io.opencensus.proto.trace.v1.AttributeValue;
+import io.opencensus.proto.trace.v1.AttributeValue; // NOCS
 import io.opencensus.proto.trace.v1.Span;
 import java.util.HashMap;
 import java.util.Map;
