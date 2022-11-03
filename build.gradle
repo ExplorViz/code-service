@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'io.quarkus'
-    id 'com.adarshr.test-logger' version '3.1.0'
+    id 'com.adarshr.test-logger' version '3.2.0'
 }
 
 apply from: 'buildscripts/code-analysis.gradle'
@@ -9,6 +9,9 @@ apply from: 'buildscripts/code-analysis.gradle'
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        url "https://packages.confluent.io/maven/"
+    }
 }
 
 dependencies {
@@ -19,10 +22,13 @@ dependencies {
     implementation 'io.quarkus:quarkus-grpc'
     
     implementation 'io.quarkus:quarkus-avro'
-    
+
+    // Kafka
+    implementation 'io.quarkus:quarkus-confluent-registry-avro'
+    implementation group: 'io.confluent', name: 'kafka-avro-serializer', version: '7.2.1'
+    implementation 'io.quarkus:quarkus-avro'
     implementation group: 'io.quarkus', name: 'quarkus-smallrye-reactive-messaging-kafka'
-  	implementation group: 'io.quarkus', name: 'quarkus-smallrye-reactive-messaging'
-  	
+
   	implementation 'io.opencensus:opencensus-proto:0.2.0'
     	      
     testImplementation 'io.quarkus:quarkus-junit5'
