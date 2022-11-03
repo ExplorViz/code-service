@@ -23,7 +23,7 @@ public class StructureEventServiceImpl implements StructureEventService {
   // net.explorviz.code.proto.StructureEventService.sendCreateEvent
 
   @Override
-  public Uni<Empty> sendStructureFileEvent(StructureFileEvent request) {
+  public Uni<Empty> sendStructureFileEvent(final StructureFileEvent request) {
     LOGGER.trace("Received message: {}", request);
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
