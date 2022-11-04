@@ -68,6 +68,8 @@ test:
   
 coverage:
   stage: visualize
+  rules:
+   - when: never
   tags:
     - exec-docker
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
