@@ -50,6 +50,8 @@ checkstyle:
 
 test:
   stage: test
+  rules:
+   - when: never
   tags:
     - exec-docker
   script: 
