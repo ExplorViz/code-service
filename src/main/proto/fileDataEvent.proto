@@ -12,36 +12,55 @@ service FileDataService {
 
 message  MethodData {
   string returnType = 1;
-  repeated string modifiers = 2;
-  repeated string parameterList = 3;
+  repeated string modifier = 2;
+  repeated ParameterData parameter = 3;
   repeated string outgoingMethodCalls = 4;
+  bool isConstructor = 5;
+  map<string, string> metric = 6;
 }
 
 enum ClassType {
   INTERFACE = 0;
   ABSTRACT_CLASS = 1;
   CLASS = 2;
+  ENUM = 3;
+  ANONYMOUS_CLASS = 4;
+}
+
+message ParameterData {
+  string name = 1;
+  string type = 2;
+  repeated string modifier = 3;
+}
+
+message FieldData {
+  string name = 1;
+  string type = 2;
+  repeated string modifier = 3;
 }
 
 message ClassData {
   ClassType type = 1;
-  repeated string modifiers = 2;
-  repeated string interfaces = 3;
-  repeated string fields = 4;
-  repeated string innerClasses = 5;
-  repeated string constructorList = 6;
+  repeated string modifier = 2;
+  repeated string interface = 3;
+  repeated FieldData field = 4;
+  repeated string innerClass = 5;
+  repeated MethodData constructor = 6;
   map<string, MethodData>  methodData = 7;
-  repeated string variableList = 8;
+  repeated string variable = 8;
   string superClass = 9;
 
-  int32 loc = 10;
+  map<string, string> metric = 10;
+  repeated string enumConstant = 11;
+  repeated string tightCoupled = 12;
+  repeated string looseCoupled = 13;
 }
 
 message FileData {
   string commitID = 1;
   string fileName = 2;
   string packageName = 3;
-  repeated string importNames = 4;
+  repeated string importName = 4;
   map<string, ClassData> classData = 5;
-  int32 loc = 6;
+  map<string, string> metric = 6;
 }

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "net.explorviz.code.proto";
+option java_outer_classname = "CommitReport";
+
+import "google/protobuf/empty.proto";
+
+service CommitReportService {
+  rpc sendCommitReport (CommitReportData) returns (google.protobuf.Empty) {}
+}
+
+message  CommitReportData {
+  string commitID = 1;
+  string parentCommitID = 2;
+  string branchName = 3;
+  repeated string files = 4;
+}
