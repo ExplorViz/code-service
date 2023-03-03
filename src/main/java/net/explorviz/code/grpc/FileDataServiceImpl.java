@@ -8,6 +8,9 @@ import net.explorviz.code.kafka.KafkaGateway;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.proto.FileDataService;
 
+/**
+ * The basic implementation of the FileDataService, handling FileData packages.
+ */
 @GrpcService
 public class FileDataServiceImpl implements FileDataService {
 
@@ -15,7 +18,7 @@ public class FileDataServiceImpl implements FileDataService {
   /* package */ KafkaGateway kafkaGateway; // NOCS
 
   @Override
-  public Uni<Empty> sendFileData(FileData request) {
+  public Uni<Empty> sendFileData(final FileData request) {
     kafkaGateway.processFileData(request);
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
