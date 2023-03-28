@@ -48,8 +48,11 @@ public class KafkaGateway {
    */
   public String processStateData(final StateDataRequest stateDataRequest) {
     if (LOGGER.isTraceEnabled()) {
-      LOGGER.trace("Received request to send state of branch: {}",
-          stateDataRequest.getBranchName());
+      LOGGER.trace("Request for state - upstream: {}, branch: {}, token: {}, secret: {}",
+          stateDataRequest.getUpstreamName(),
+          stateDataRequest.getBranchName(),
+          stateDataRequest.getLandscapeToken(),
+          stateDataRequest.getLandscapeSecret());
     }
     // Send the empty string if the state of the branch is unknown, otherwise the SHA1 of
     // the branch's last branch
