@@ -15,19 +15,21 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.quarkus:quarkus-mongodb-panache'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-container-image-jib'
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
     implementation 'io.quarkus:quarkus-grpc'
     
-    implementation 'io.quarkus:quarkus-avro'
+    
+    //implementation 'io.quarkus:quarkus-avro'
 
     // Kafka
-    implementation 'io.quarkus:quarkus-confluent-registry-avro'
-    implementation group: 'io.confluent', name: 'kafka-avro-serializer', version: '7.2.1'
-    implementation 'io.quarkus:quarkus-avro'
-    implementation group: 'io.quarkus', name: 'quarkus-smallrye-reactive-messaging-kafka'
+    // implementation 'io.quarkus:quarkus-confluent-registry-avro'
+    // implementation group: 'io.confluent', name: 'kafka-avro-serializer', version: '7.2.1'
+    // implementation 'io.quarkus:quarkus-avro'
+    // implementation group: 'io.quarkus', name: 'quarkus-smallrye-reactive-messaging-kafka'
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'

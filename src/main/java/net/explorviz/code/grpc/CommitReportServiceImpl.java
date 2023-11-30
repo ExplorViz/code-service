@@ -4,7 +4,7 @@ import com.google.protobuf.Empty;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
 import javax.inject.Inject;
-import net.explorviz.code.kafka.KafkaGateway;
+import net.explorviz.code.kafka.GrpcGateway;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.CommitReportService;
 
@@ -15,7 +15,7 @@ import net.explorviz.code.proto.CommitReportService;
 public class CommitReportServiceImpl implements CommitReportService {
 
   @Inject
-  /* package */ KafkaGateway kafkaGateway; // NOCS
+  /* package */ GrpcGateway kafkaGateway; // NOCS
 
   @Override
   public Uni<Empty> sendCommitReport(final CommitReportData request) {
