@@ -2,6 +2,7 @@ package net.explorviz.code.helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import net.explorviz.code.beans.CommitTree.Branch;
@@ -21,7 +22,7 @@ public class CommitComparisonHelper {
    ** @return returns the empty string ("") if no latest common commit existent, otherwise its id
    * 
    */
-  public static String latestCommonCommitId(final String firstSelectedId, 
+  private static String getLatestCommonCommitId(final String firstSelectedId, 
       final String secondSelectedId, final String landscapeToken) {
 
     final CommitReport firstSelected = CommitReport.findByCommitId(firstSelectedId);
@@ -87,6 +88,9 @@ public class CommitComparisonHelper {
       // the common commit id is the one that comes before the other
       LatestCommit latestCommit = 
           LatestCommit.findByBranchNameAndLandscapeToken(latestCommonBranchName, landscapeToken);
+      if (latestCommit == null) {
+        return "";
+      }
       String currentCommit = latestCommit.commitId;
       
       CommitReport cr;
@@ -111,6 +115,191 @@ public class CommitComparisonHelper {
     } else {
       return "";
     }                                                   
+  }
+
+  /**
+   * ...
+   ** @param firstSelectedCommitId ...
+   ** @param secondSelectedCommitId ...
+   ** @param landscapeToken ...
+   ** @return ...
+   */
+  public static List<String> getComparisonAddedFiles(String firstSelectedCommitId, 
+        String secondSelectedCommitId, String landscapeToken) {
+    String latestCommonCommit = getLatestCommonCommitId(firstSelectedCommitId, 
+        secondSelectedCommitId, landscapeToken);
+
+    if (latestCommonCommit.equals("")) {
+      return null;
+    }
+    
+    //CommitReport commitReportFirstSelectedCommit = CommitReport.findByCommitId(firstSelectedCommitId);
+    // if (commitReportFirstSelectedCommit == null) {
+    //   return null;
+    // }
+    // List<String> filesFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
+
+    // TODO: ? collect all modified files from latest common commit to second selected commit
+    // Each one of them that do not exist in first selected commit need to be marked as added
+
+    // mark all files that do not exist in first selected commit but that do exist in second 
+    // the selected commit as added
+
+
+    CommitReport commitReportSecondSelectedCommit = CommitReport
+        .findByCommitId(secondSelectedCommitId);
+
+    if (commitReportSecondSelectedCommit == null) {
+      return null;
+    }
+
+    Stack<String> commitIds = new Stack<String>();
+    CommitReport currentCommitReport = commitReportSecondSelectedCommit;
+    commitIds.push(currentCommitReport.commitId);
+    while ((currentCommitReport = CommitReport.findByCommitId(
+          currentCommitReport.getParentCommitId())) != null 
+          && !currentCommitReport.commitId.equals(latestCommonCommit)) {
+      commitIds.push(currentCommitReport.commitId);
+    }
+
+    if (!currentCommitReport.commitId.equals(latestCommonCommit)) {
+      // should never appear if we have a non-empty latestCommonCommit string
+      return null;
+    }
+
+    List<String> addedFiles = new ArrayList<>();
+    String commitId;
+    while (!commitIds.isEmpty()) {
+      commitId = commitIds.pop();
+      currentCommitReport = CommitReport.findByCommitId(commitId);
+
+      currentCommitReport.deleted.forEach(fqnFileName -> {
+        addedFiles.remove(fqnFileName); 
+      });
+
+      currentCommitReport.added.forEach(fqnFileName -> {
+        if (!addedFiles.contains(fqnFileName)) {
+          addedFiles.add(fqnFileName);
+        }
+      });
+    }
+
+    return addedFiles;
+  }
+
+  /**
+   * ...
+   ** @param firstSelectedCommitId ...
+   ** @param secondSelectedCommitId ...
+   ** @param landscapeToken ...
+   ** @return ...
+   */
+  public static List<String> getComparisonDeletedFiles(String firstSelectedCommitId, 
+        String secondSelectedCommitId, String landscapeToken) {
+    String latestCommonCommit = getLatestCommonCommitId(firstSelectedCommitId, 
+        secondSelectedCommitId, landscapeToken);
+
+    if (latestCommonCommit.equals("")) {
+      return null;
+    }
+    
+    CommitReport commitReportSecondSelectedCommit = CommitReport
+        .findByCommitId(secondSelectedCommitId);
+
+    if (commitReportSecondSelectedCommit == null) {
+      return null;
+    }
+
+    Stack<String> commitIds = new Stack<String>();
+    CommitReport currentCommitReport = commitReportSecondSelectedCommit;
+    commitIds.push(currentCommitReport.commitId);
+    while ((currentCommitReport = CommitReport.findByCommitId(
+          currentCommitReport.getParentCommitId())) != null 
+          && !currentCommitReport.commitId.equals(latestCommonCommit)) {
+      commitIds.push(currentCommitReport.commitId);
+    }
+
+    if (!currentCommitReport.commitId.equals(latestCommonCommit)) {
+      // should never appear if we have a non-empty latestCommonCommit string
+      return null;
+    }
+
+    List<String> deletedFiles = new ArrayList<>();
+    String commitId;
+    while (!commitIds.isEmpty()) {
+      commitId = commitIds.pop();
+      currentCommitReport = CommitReport.findByCommitId(commitId);
+
+      currentCommitReport.added.forEach(fqnFileName -> {
+        deletedFiles.remove(fqnFileName);
+      });
+
+      currentCommitReport.deleted.forEach(fqnFileName -> {
+        if (!deletedFiles.contains(fqnFileName)) { // make sure only one fqn exists at a time
+          deletedFiles.add(fqnFileName);
+        }
+      });
+    }
+
+    return deletedFiles;
+  }
+
+
+    /**
+   * ...
+   ** @param firstSelectedCommitId ...
+   ** @param secondSelectedCommitId ...
+   ** @param landscapeToken ...
+   ** @return ...
+   */
+  public static List<String> getComparisonModifiedFiles(String firstSelectedCommitId, 
+        String secondSelectedCommitId, String landscapeToken) {
+    String latestCommonCommit = getLatestCommonCommitId(firstSelectedCommitId, 
+        secondSelectedCommitId, landscapeToken);
+
+    if (latestCommonCommit.equals("")) {
+      return null;
+    }
+    
+    CommitReport commitReportSecondSelectedCommit = CommitReport
+        .findByCommitId(secondSelectedCommitId);
+
+    if (commitReportSecondSelectedCommit == null) {
+      return null;
+    }
+
+    Stack<String> commitIds = new Stack<String>();
+    CommitReport currentCommitReport = commitReportSecondSelectedCommit;
+    commitIds.push(currentCommitReport.commitId);
+    while ((currentCommitReport = CommitReport.findByCommitId(
+          currentCommitReport.getParentCommitId())) != null 
+          && !currentCommitReport.commitId.equals(latestCommonCommit)) {
+      commitIds.push(currentCommitReport.commitId);
+    }
+
+    if (!currentCommitReport.commitId.equals(latestCommonCommit)) {
+      // should never appear if we have a non-empty latestCommonCommit string
+      return null;
+    }
+
+    List<String> modifiedFiles = new ArrayList<>();
+    String commitId;
+    while (!commitIds.isEmpty()) {
+      commitId = commitIds.pop();
+      currentCommitReport = CommitReport.findByCommitId(commitId);
+
+      currentCommitReport.deleted.forEach(fqnFileName -> {
+        modifiedFiles.remove(fqnFileName);
+      });
+
+      currentCommitReport.modified.forEach(fqnFileName -> {
+        if (!modifiedFiles.contains(fqnFileName)) { // make sure only one fqn exists at a time
+          modifiedFiles.add(fqnFileName);
+        }
+      });
+    }
+
+    return modifiedFiles;
   }
 
 

@@ -53,4 +53,8 @@ public class CommitReport extends PanacheMongoEntity  {
     this.parentCommitId = parentCommitId;
   }
 
+  public List<String> getFiles() {
+    return this.files;
+  }
+
 }

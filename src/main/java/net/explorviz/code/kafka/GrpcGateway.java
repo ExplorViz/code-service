@@ -3,7 +3,10 @@ package net.explorviz.code.kafka;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import net.explorviz.code.proto.FileMetricData;
+import net.explorviz.code.proto.ClassData;
 import javax.enterprise.context.ApplicationScoped;
 // import javax.inject.Inject;
 import net.explorviz.code.grpc.FileDataServiceImpl;
@@ -35,8 +38,7 @@ public class GrpcGateway {
   public void processCommitReport(final CommitReportData commitReportData) {
 
 
-    //LatestCommit.deleteAll();
-    //CommitReport.deleteAll();
+    // TODO: app name also needs to be received
     
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("Received Commit report: {}", commitReportData);
@@ -72,6 +74,7 @@ public class GrpcGateway {
     commitReport.commitId = receivedCommitReportCommitId;
     commitReport.parentCommitId = receivedCommitReportAncestorId;
     commitReport.branchName = receivedCommitReportBranchName;
+    commitReport.files = receivedCommitReportFiles;
     commitReport.modified = receivedCommitReportModified;
     commitReport.deleted = receivedCommitReportDeleted;
     commitReport.added = receivedCommitReportAdded;
@@ -126,52 +129,6 @@ public class GrpcGateway {
       branchPoint.emergedFromCommitId = "";
       branchPoint.persist();
     }
-
-    //commitReport.persist();
-
-    //CommitReport.deleteAll();
-    
-
-
-
-
-
-      // PROBLEM: https://stackoverflow.com/questions/58416014/how-can-i-find-the-first-commit-of-a-branch-with-jgit
-      // HOW TO SOLVE IT? MAYBE SET A TAG FOR EACH COMMIT IN CODE-AGENT WHICH MARKS THE CORRESPONDING BRANCH
-      // TODO: Try to find the latest ancestor commit in our database. If it is the direct ancestor
-      // of the received commit (if existent, otherwise first commit ever), we set the received 
-      // commit as new latest received commit for the corresponding 
-      // branch (also for the first commit ever). Otherwise we are missing CommitReports.
-      // We fetch and persist all the missing CommitReports before we finally store the 
-      // received CommitReport. Then we set the received commit as new latest received commit.
-      // If one of the missing commit reports can't be fetched we abort and nothing will be stored.
-
-      // if (receivedCommitReportAncestorId.equals("NONE")) {
-      //   // first commit 
-      //   System.out.println("First commit");
-      // } else {
-      //   List<CommitReport> commitReportList = new ArrayList<>();
-      //   final CommitReport newCommitReport = new CommitReport();
-      //   // build it from received data
-      //   newCommitReport.setCommitId(receivedCommitReportCommitId);
-      //   commitReportList.add(newCommitReport);
-      //   CommitReport commitReport = CommitReport.findByCommitId(receivedCommitReportAncestorId);
-      //   while (commitReport == null){
-      //     // request commitreport with commitid receivedCommitReportAncestorId from code-agent
-      //     // if(!fetchedCommitReportAncestorId.equals("NONE")) 
-      //     //  commitReport = CommitReport.findByCommitId(fetchedCommitReportAncestorId);
-      //     // else
-      //     //    commitReport = fetchedCommitReport // add this one only if not already stored
-      //   }
-      // }
-      
-      //final CommitReport commitReport = new CommitReport();
-      
-      //commitReport.persist();
-      //List<CommitReport> allReports = CommitReport.listAll();
-      //for (final CommitReport report : allReports){
-      // System.out.println("commitreport id:" + report.commitId);
-      //}
   }
 
   /**
@@ -181,7 +138,19 @@ public class GrpcGateway {
    */
   public void processFileData(final FileData fileData) {
     if (LOGGER.isTraceEnabled()) {
-      // LOGGER.trace("Received file data: {}", fileData);
+      LOGGER.trace("Received file data: {}", fileData);
+
+      final String receivedFileDataCommitId = fileData.getCommitID();
+      final String receivedFileDataFileName = fileData.getFileName();
+      final String receivedFileDataPackageName = fileData.getPackageName();
+      final List<String> receivedFileDataImportName = fileData.getImportNameList();
+      final Map<String, ClassData> receivedFileDataClassData = fileData.getClassDataMap();
+      final Map<String, String> receivedFileDataMetric = fileData.getMetricMap();
+      final String receivedFileDataAuthor = fileData.getAuthor();
+      final int receivedFileDataModifiedLines = fileData.getModifiedLines();
+      final int receivedFileDataAddedLines = fileData.getAddedLines();
+      final int receivedFileDataDeletedLines = fileData.getDeletedLines();
+
       return; // NOPMD
     }
   }
