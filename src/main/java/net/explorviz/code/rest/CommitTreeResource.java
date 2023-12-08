@@ -20,12 +20,6 @@ public class CommitTreeResource {
    */
   @GET
   public CommitTree list() { // TODO: based on landscapetoken and appname
-
-    List<CommitReport> commitReports = CommitReport.listAll();
-    for (final CommitReport report : commitReports) {
-      System.out.println("CREATED COMMIT REPORT ID: " + report.commitId);
-      report.fileMetric.forEach((f -> System.out.println(f.fileName)));
-    }
-    return CommitTreeHelper.createCommitTree("testapp");
+    return CommitTreeHelper.createCommitTree("testapp"); // TODO: app name
   }
 }

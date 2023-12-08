@@ -22,6 +22,7 @@ message  CommitReportData {
   string commitTag = 9;
   string landscapeToken = 10;
   string applicationName = 11;
+  repeated string fileHash = 12;
 }
 
 message FileMetricData {

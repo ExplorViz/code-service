@@ -18,6 +18,7 @@ public class CommitReport extends PanacheMongoEntity  {
   public List<String> added;
   public List<FileMetric> fileMetric;
   public String landscapeToken;
+  public List<String> fileHash;
 
   /**
    * ...

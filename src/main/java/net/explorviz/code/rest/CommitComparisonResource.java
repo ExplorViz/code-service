@@ -23,7 +23,7 @@ public class CommitComparisonResource {
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public CommitComparison list(@RestPath String token, String firstCommit, String secondCommit) {
+  public  CommitComparison list(@RestPath String token, String firstCommit, String secondCommit) {
     final String firstSelectedCommitId = firstCommit;
     //"874a7d244da169c5effecf3ff918291f99c2c3ae";
     final String secondSelectedCommitId = secondCommit;
@@ -42,7 +42,7 @@ public class CommitComparisonResource {
         firstSelectedCommitId, 
         secondSelectedCommitId, landscapeToken);
 
-    return new CommitComparison(added, modified, deleted, null);
+    return new CommitComparison(added, modified, deleted);
   }
     
 }
