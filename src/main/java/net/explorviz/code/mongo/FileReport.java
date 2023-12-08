@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
  */
 public class FileReport extends PanacheMongoEntity {
 
-  public String landscapeToken; // TODO: code-agent sends landscapetoken
-  public String appName;    // TODO: code-agent sends appName
+  public String landscapeToken;
+  public String appName;
   public String commitId;
   public String fileName;
   public String packageName;
@@ -124,8 +124,8 @@ public class FileReport extends PanacheMongoEntity {
   public static List<FileReport> findByTokenAndAppNameAndFileName(
       final String landscapeToken, 
       final String appName, final String fileName) {
-    return list("landscapeToken = ?1 and appName = ?2 and fileName =?3", 
-        landscapeToken, appName, fileName);
+    return find("landscapeToken = ?1 and appName = ?2 and fileName =?3", 
+        landscapeToken, appName, fileName).list();
   }
 }
 

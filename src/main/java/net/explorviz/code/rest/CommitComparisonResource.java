@@ -14,7 +14,7 @@ import net.explorviz.code.helper.CommitComparisonHelper;
  * ...
  */
 
-@Path("/commit-comparison/{token}")
+@Path("/commit-comparison/{token}/{appName}")
 public class CommitComparisonResource {
 
   /**
@@ -23,24 +23,23 @@ public class CommitComparisonResource {
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public  CommitComparison list(@RestPath String token, String firstCommit, String secondCommit) {
+  public  CommitComparison list(@RestPath String token, @RestPath String appName, 
+      String firstCommit, String secondCommit) {
     final String firstSelectedCommitId = firstCommit;
-    //"874a7d244da169c5effecf3ff918291f99c2c3ae";
     final String secondSelectedCommitId = secondCommit;
-    //"ec999dc8f9958d281886c3e0a655d101db211b8e";
-    final String landscapeToken = token; //"default-token";
+    final String landscapeToken = token;
 
     List<String> added = CommitComparisonHelper.getComparisonAddedFiles(
         firstSelectedCommitId, 
-        secondSelectedCommitId, landscapeToken);
+        secondSelectedCommitId, landscapeToken, appName);
 
     List<String> modified = CommitComparisonHelper.getComparisonModifiedFiles(
         firstSelectedCommitId, 
-        secondSelectedCommitId, landscapeToken);
+        secondSelectedCommitId, landscapeToken, appName);
 
     List<String> deleted = CommitComparisonHelper.getComparisonDeletedFiles(
         firstSelectedCommitId, 
-        secondSelectedCommitId, landscapeToken);
+        secondSelectedCommitId, landscapeToken, appName);
 
     return new CommitComparison(added, modified, deleted);
   }

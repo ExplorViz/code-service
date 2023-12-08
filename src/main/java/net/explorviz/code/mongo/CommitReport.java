@@ -19,6 +19,7 @@ public class CommitReport extends PanacheMongoEntity  {
   public List<FileMetric> fileMetric;
   public String landscapeToken;
   public List<String> fileHash;
+  public String applicationName;
 
   /**
    * ...
@@ -30,8 +31,10 @@ public class CommitReport extends PanacheMongoEntity  {
     public int numberOfMethods;
   }
 
-  public static CommitReport findByCommitId(final String commitId) {
-    return find("commitId", commitId).firstResult();
+  public static CommitReport findByTokenAndApplicationNameAndCommitId(final String landscapeToken,
+      final String applicationName, final String commitId) {
+    return find("landscapeToken = ?1 and applicationName = ?2 and commitId = ?3", 
+        landscapeToken, applicationName, commitId).firstResult();
   }
 
   public static CommitReport findByParentCommitId(final String parentCommitId) {

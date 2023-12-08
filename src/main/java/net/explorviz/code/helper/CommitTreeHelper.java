@@ -20,16 +20,14 @@ public class CommitTreeHelper {
    * ...
    ** @return ..
    */
-  public static CommitTree createCommitTree(final String appName/*, final String landscapeToken*/) {
-    final List<BranchPoint> branchPoints = BranchPoint.listAll(); /* TODO: filter 
-                                                                   based on landscapeToken and 
-                                                                   appName*/
+  public static CommitTree createCommitTree(final String appName, final String landscapeToken) {
+    final List<BranchPoint> branchPoints = BranchPoint
+        .findByTokenAndApplicationName(landscapeToken, appName);
     final List<Branch> branches = new ArrayList<>();
 
     branchPoints.forEach(branchPoint -> {
       final String branchName = branchPoint.branchName;
       final String branchPointCommitId = branchPoint.commitId;
-      final String landscapeToken = branchPoint.landscapeToken; // TODO: use parameter
       final String emergedFromBranchName = branchPoint.emergedFromBranchName;
       final String emergedFromCommitId = branchPoint.emergedFromCommitId;
       LatestCommit latestCommit = LatestCommit
@@ -44,7 +42,8 @@ public class CommitTreeHelper {
         if (currentCommitId.equals(branchPointCommitId)) {
           finished = true;
         } else {
-          CommitReport currenCommitReport = CommitReport.findByCommitId(currentCommitId);
+          CommitReport currenCommitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
+              landscapeToken, appName, currentCommitId);
           if (currenCommitReport != null) {
             // should always be the case
             currentCommitId = currenCommitReport.parentCommitId;

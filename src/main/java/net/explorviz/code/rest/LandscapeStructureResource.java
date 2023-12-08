@@ -34,8 +34,12 @@ public class LandscapeStructureResource {
   public LandscapeStructure singleStructure(@RestPath String token, 
       @RestPath String appName, String commit) {
   
-    List<Package> packages = LandscapeStructureHelper.createListOfPackages(commit);
-    return this.buildLandscapeStructure(token, appName, packages);
+    List<Package> packages = LandscapeStructureHelper.createListOfPackages(token, commit, appName);
+    if (packages != null) {
+      return this.buildLandscapeStructure(token, appName, packages);
+    } else {
+      return new LandscapeStructure();
+    }
   }
 
   /**
@@ -52,14 +56,18 @@ public class LandscapeStructureResource {
       @RestPath String appName, String firstCommit, String secondCommit) {
       
     List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper
-        .createListOfPackages(firstCommit);
+        .createListOfPackages(token, firstCommit, appName);
     List<Package> packagesSecondSelectedCommit = LandscapeStructureHelper
-        .createListOfPackages(secondCommit);
+        .createListOfPackages(token, secondCommit, appName);
+
+    if (packagesFirstSelectedCommit == null || packagesSecondSelectedCommit == null) {
+      return new LandscapeStructure();
+    }
 
     // deal with modified files --------------------------------------------------------------------
     List<String> modified = CommitComparisonHelper.getComparisonModifiedFiles(
         firstCommit, 
-        secondCommit, token);
+        secondCommit, token, appName);
 
     List<String> modifiedPackageFileName = new ArrayList<>();
     
@@ -110,7 +118,7 @@ public class LandscapeStructureResource {
     // deal with added files ----------------------------------------------------------------------
     List<String> added = CommitComparisonHelper.getComparisonAddedFiles(
         firstCommit, 
-        secondCommit, token);
+        secondCommit, token, appName);
 
     List<String> addedPackageFileName = new ArrayList<>();
     

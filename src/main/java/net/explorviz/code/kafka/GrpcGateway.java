@@ -48,8 +48,6 @@ public class GrpcGateway {
    */
   public void processCommitReport(final CommitReportData commitReportData) {
 
-
-    // TODO: app name also needs to be received
     
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("Received Commit report: {}", commitReportData);
@@ -67,8 +65,7 @@ public class GrpcGateway {
     final List<FileMetric> receivedCommitReportFileMetric = new ArrayList<>();
     final String receivedCommitReportLandscapeToken = commitReportData.getLandscapeToken();
     final List<String> receivedCommitReportFileHash = commitReportData.getFileHashList();
-
-    receivedCommitReportFileHash.forEach(hash -> System.out.println("file hash: " + hash));
+    final String receivedCommitReportApplicationName = commitReportData.getApplicationName();
 
     for (final FileMetricData fileMetricData : receivedCommitReportFileMetricData) {
       CommitReport.FileMetric fileMetric = new CommitReport.FileMetric(); 
@@ -78,7 +75,9 @@ public class GrpcGateway {
       receivedCommitReportFileMetric.add(fileMetric);
     }
 
-    final CommitReport oldReport = CommitReport.findByCommitId(receivedCommitReportCommitId);
+    final CommitReport oldReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
+        receivedCommitReportLandscapeToken, receivedCommitReportApplicationName, 
+        receivedCommitReportCommitId);
 
     if (oldReport != null) {
       return;
@@ -95,10 +94,12 @@ public class GrpcGateway {
     commitReport.fileMetric = receivedCommitReportFileMetric;
     commitReport.landscapeToken = receivedCommitReportLandscapeToken;
     commitReport.fileHash = receivedCommitReportFileHash;
+    commitReport.applicationName = receivedCommitReportApplicationName;
 
 
     if (!receivedCommitReportAncestorId.equals("NONE")) {
-      if (CommitReport.findByCommitId(receivedCommitReportAncestorId) != null) {
+      if (CommitReport.findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken, 
+          receivedCommitReportApplicationName, receivedCommitReportAncestorId) != null) {
         // no missing reports
         commitReport.persist();
         LatestCommit latestCommit = LatestCommit
@@ -116,8 +117,10 @@ public class GrpcGateway {
           branchPoint.branchName = receivedCommitReportBranchName;
           branchPoint.commitId = receivedCommitReportCommitId;
           branchPoint.landscapeToken = receivedCommitReportLandscapeToken;
+          branchPoint.applicationName = receivedCommitReportApplicationName;
           CommitReport ancestorCommitReport = CommitReport
-               .findByCommitId(receivedCommitReportAncestorId);
+               .findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken, 
+               receivedCommitReportApplicationName, receivedCommitReportAncestorId);
           branchPoint.emergedFromCommitId = ancestorCommitReport.commitId;
           branchPoint.emergedFromBranchName = ancestorCommitReport.branchName; 
           branchPoint.persist();
@@ -140,6 +143,7 @@ public class GrpcGateway {
       branchPoint.branchName = receivedCommitReportBranchName;
       branchPoint.commitId = receivedCommitReportCommitId;
       branchPoint.landscapeToken = receivedCommitReportLandscapeToken;
+      branchPoint.applicationName = receivedCommitReportApplicationName;
       branchPoint.emergedFromBranchName = "NONE";
       branchPoint.emergedFromCommitId = "";
       branchPoint.persist();
@@ -155,8 +159,8 @@ public class GrpcGateway {
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("Received file data: {}", fileData);
 
-      final String receivedFileDataLandscapeToken = "default-token"; // TODO: receive token
-      final String receivedFileDataAppName = "default-app-name"; // TODO: receive app name
+      final String receivedFileDataLandscapeToken = fileData.getLandscapeToken();
+      final String receivedFileDataAppName = fileData.getApplicationName();
       final String receivedFileDataCommitId = fileData.getCommitID();
       final String receivedFileDataFileName = fileData.getFileName();
       final String receivedFileDataPackageName = fileData.getPackageName();
@@ -183,7 +187,6 @@ public class GrpcGateway {
           : receivedFileDataClassData.entrySet()) {
         final ClassData2 cd = new ClassData2();
 
-        // TODO: fill cd
         switch (entry.getValue().getType()) {
           case INTERFACE:
             cd.type = ClassType2.INTERFACE;

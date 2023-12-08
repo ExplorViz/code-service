@@ -34,13 +34,14 @@ public class LandscapeStructureHelper {
    ** @return ...
    */
   public static List<LandscapeStructure.Node.Application.Package> createListOfPackages(
-        //final String landscapeToken,
-        final String commitId 
-  /*,final String appName*/) { // TODO: app name
-    final String landscapeToken = "default-token";
-    final String appName = "default-app-name";
+        final String landscapeToken,
+        final String commitId, final String appName) {
 
-    CommitReport commitReport = CommitReport.findByCommitId(commitId); // TODO: and AppName
+    CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
+        landscapeToken, appName, commitId);
+    if (commitReport == null) {
+      return null;
+    }
     List<String> files = commitReport.getFiles();
 
     final Map<String, LandscapeStructure.Node.Application.Package> packageNameToPackageMap = 
@@ -182,17 +183,18 @@ public class LandscapeStructureHelper {
           fqFileName, commitId);
 
     if (fileReport == null) { // older commit has provided file report
-      // TODO: use also packageName
+
       List<FileReport> fileReportList = FileReport.findByTokenAndAppNameAndFileName(
             landscapeToken, appName, fileName);
 
       List<FileReport> candidateFileReportList = fileReportList.stream().filter(fr -> 
               !CommitComparisonHelper.getLatestCommonCommitId(fr.commitId, 
-              commitId, landscapeToken).equals(commitId) // get rid of file reports that
+              commitId, landscapeToken, appName).equals(commitId) // get rid of file reports that
               // happen later than our commit
               &&
                CommitComparisonHelper.getLatestCommonCommitId(fr.commitId,
-               commitId, landscapeToken).equals(fr.commitId) // get rid of file reports that 
+               commitId, landscapeToken, appName)
+                   .equals(fr.commitId) // get rid of file reports that 
               // have unordered commits w.r.t our commit
               &&
               fqFileName
@@ -201,7 +203,7 @@ public class LandscapeStructureHelper {
 
       Collections.sort(candidateFileReportList, (fr1, fr2) -> {
         if (CommitComparisonHelper.getLatestCommonCommitId(fr1.commitId, fr2.commitId, 
-              landscapeToken).equals(fr1.commitId)) {
+              landscapeToken, appName).equals(fr1.commitId)) {
           return 1;
         } else { // no return of 0 necessary since no two commit id's will be the same in our list
           return -1;

@@ -11,12 +11,19 @@ import net.explorviz.code.mongo.CommitReport;
 /**
  * ...
  */
-@Path("/commit-report/{commit}")
+@Path("/commit-report/{landscapeToken}/{applicationName}/{commit}")
 public class CommitReportResource {
 
   @GET
-  public CommitReport list(@RestPath String commit) { //TODO:alsobased on landscapetoken and appname
-    return CommitReport.findByCommitId(commit);
+  public CommitReport list(@RestPath String landscapeToken, @RestPath String applicationName,
+      @RestPath String commit) {
+    CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, 
+        applicationName, commit);
+    if (cr != null) {
+      return cr;
+    } else {
+      return new CommitReport();
+    }
   }
     
 }

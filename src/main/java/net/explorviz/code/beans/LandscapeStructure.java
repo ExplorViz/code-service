@@ -42,7 +42,7 @@ public class LandscapeStructure {
           public String name;
           public List<Method> methods;
           public String superClass; /*  full qualified class name. 
-                                       TODO: refactor so it is from type Class */
+                                       TODO: refactor so it is from type Class? */
 
           /**
            * ...

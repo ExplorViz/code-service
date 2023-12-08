@@ -67,4 +67,6 @@ message FileData {
   string modifiedLines = 8;
   string addedLines = 9;
   string deletedLines = 10;
+  string landscapeToken = 11;
+  string applicationName = 12;
 }
