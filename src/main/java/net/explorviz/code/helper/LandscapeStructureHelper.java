@@ -177,7 +177,13 @@ public class LandscapeStructureHelper {
   public static FileReport getFileReport(final String landscapeToken, final String appName, 
       final String fqFileName, final String commitId) {
     final String[] temp = fqFileName.split("\\.");
-    final String fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
+    final String fileName;
+    try {
+      fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
+    } catch (Exception e) {
+      return null;
+    }
+    
     FileReport fileReport = FileReport
           .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(landscapeToken, appName, 
           fqFileName, commitId);

@@ -105,7 +105,11 @@ public class FileReport extends PanacheMongoEntity {
       tmpString += temp[i];
       tmpString += ".";
     } 
-    tmpString = tmpString.substring(0, tmpString.length() - 1);
+    
+    if (!tmpString.equals("")){
+      tmpString = tmpString.substring(0, tmpString.length() - 1);
+    } 
+    
     final String folders = tmpString;
     List<FileReport> fileReportList = find(
         "landscapeToken = ?1 and appName = ?2 and fileName =?3 and commitId =?4", 
