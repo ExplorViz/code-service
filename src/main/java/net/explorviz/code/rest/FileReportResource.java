@@ -21,16 +21,15 @@ public class FileReportResource {
    */
   @Path("{token}/{appName}/{fqFileName}/{commit}")
   @GET
-  public FileReport list(String token, 
-      String appName, String fqFileName, String commit) {
+  public FileReport list(final String token, // NOPMD
+      final String appName, final String fqFileName, final String commit) {
 
-    FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+    final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
         fqFileName, commit);
 
     if (fileReport != null) {
       return fileReport;
-    } else {
-      return new FileReport();
-    }
+    } 
+    return new FileReport();
   }
 }

@@ -25,7 +25,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.commitId;
   }
 
-  public void setCommitId(String commitId) {
+  public void setCommitId(final String commitId) {
     this.commitId = commitId;
   }
   
@@ -41,7 +41,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.branchName;
   }
 
-  public void setBranchName(String branchName) {
+  public void setBranchName(final String branchName) {
     this.branchName = branchName;
   }
 
@@ -49,7 +49,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.files;
   }
 
-  public void setFiles(List<String> files) {
+  public void setFiles(final List<String> files) {
     this.files = files;
   }
 
@@ -57,7 +57,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.modified;
   }
 
-  public void setModified(List<String> modified) {
+  public void setModified(final List<String> modified) {
     this.modified = modified;
   }
 
@@ -65,7 +65,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.deleted;
   }
 
-  public void setDeleted(List<String> deleted) {
+  public void setDeleted(final List<String> deleted) {
     this.deleted = deleted;
   }
 
@@ -73,7 +73,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.added;
   }
 
-  public void setAdded(List<String> added) {
+  public void setAdded(final List<String> added) {
     this.added = added;
   }
 
@@ -81,7 +81,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.fileMetric;
   }
 
-  public void setFileMetric(List<FileMetric> fileMetric) {
+  public void setFileMetric(final List<FileMetric> fileMetric) {
     this.fileMetric = fileMetric;
   }
 
@@ -89,7 +89,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.landscapeToken;
   }
 
-  public void setLandscapeToken(String landscapeToken) {
+  public void setLandscapeToken(final String landscapeToken) {
     this.landscapeToken = landscapeToken;
   }
 
@@ -97,7 +97,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.fileHash;
   }
 
-  public void setFileHash(List<String> fileHash) {
+  public void setFileHash(final List<String> fileHash) {
     this.fileHash = fileHash;
   }
 
@@ -105,7 +105,7 @@ public class CommitReport extends PanacheMongoEntity  {
     return this.applicationName;
   }
 
-  public void setApplicationName(String applicationName) {
+  public void setApplicationName(final String applicationName) {
     this.applicationName = applicationName;
   }
 
@@ -118,7 +118,7 @@ public class CommitReport extends PanacheMongoEntity  {
     private int cyclomaticComplexity;
     private int numberOfMethods;
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
       this.fileName = fileName;
     }
 
@@ -126,7 +126,7 @@ public class CommitReport extends PanacheMongoEntity  {
       return this.fileName;
     }
 
-    public void setLoc(int loc) {
+    public void setLoc(final int loc) {
       this.loc = loc;
     }
 
@@ -134,7 +134,7 @@ public class CommitReport extends PanacheMongoEntity  {
       return this.loc;
     }
 
-    public void setCyclomaticComplexity(int cyclomaticComplexity) {
+    public void setCyclomaticComplexity(final int cyclomaticComplexity) {
       this.cyclomaticComplexity = cyclomaticComplexity;
     }
 
@@ -142,7 +142,7 @@ public class CommitReport extends PanacheMongoEntity  {
       return this.cyclomaticComplexity;
     }
 
-    public void setNumberOfMethods(int numberOfMethods) {
+    public void setNumberOfMethods(final int numberOfMethods) {
       this.numberOfMethods = numberOfMethods;
     }
 

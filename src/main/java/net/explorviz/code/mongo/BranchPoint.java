@@ -20,7 +20,7 @@ public class BranchPoint extends PanacheMongoEntity {
     return this.commitId;
   }
 
-  public void setCommitId(String commitId) {
+  public void setCommitId(final String commitId) {
     this.commitId = commitId;
   }
 
@@ -28,7 +28,7 @@ public class BranchPoint extends PanacheMongoEntity {
     return this.branchName;
   }
 
-  public void setBranchName(String branchName) {
+  public void setBranchName(final String branchName) {
     this.branchName = branchName;
   }
 
@@ -36,7 +36,7 @@ public class BranchPoint extends PanacheMongoEntity {
     return this.emergedFromBranchName;
   }
 
-  public void setEmergedFromBranchName(String emergedFromBranchName) {
+  public void setEmergedFromBranchName(final String emergedFromBranchName) {
     this.emergedFromBranchName = emergedFromBranchName;
   }
 
@@ -44,7 +44,7 @@ public class BranchPoint extends PanacheMongoEntity {
     return this.emergedFromCommitId;
   }
 
-  public void setEmergedFromCommitId(String emergedFromCommitId) {
+  public void setEmergedFromCommitId(final String emergedFromCommitId) {
     this.emergedFromCommitId = emergedFromCommitId;
   }
 
@@ -52,7 +52,7 @@ public class BranchPoint extends PanacheMongoEntity {
     return this.landscapeToken;
   }
 
-  public void setLandscapeToken(String landscapeToken) {
+  public void setLandscapeToken(final String landscapeToken) {
     this.landscapeToken = landscapeToken;
   }
 
@@ -60,7 +60,7 @@ public class BranchPoint extends PanacheMongoEntity {
     return this.applicationName;
   }
 
-  public void setApplicationName(String applicationName) {
+  public void setApplicationName(final String applicationName) {
     this.applicationName = applicationName;
   }
 

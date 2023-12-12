@@ -21,15 +21,14 @@ public class CommitReportResource {
    ** @return ...
    */
   @GET
-  public CommitReport list(@RestPath String landscapeToken, @RestPath String applicationName,
-      @RestPath String commit) {
-    CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, 
+  public CommitReport list(@RestPath final String landscapeToken, 
+      @RestPath final String applicationName, @RestPath final String commit) {
+    final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, 
         applicationName, commit);
     if (cr != null) {
       return cr;
-    } else {
-      return new CommitReport();
-    }
+    } 
+    return new CommitReport();
   }
     
 }

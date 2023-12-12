@@ -15,7 +15,7 @@ public class LatestCommit extends PanacheMongoEntity {
     return this.commitId;
   }
 
-  public void setCommitId(String commitId) {
+  public void setCommitId(final String commitId) {
     this.commitId = commitId;
   }
 
@@ -23,7 +23,7 @@ public class LatestCommit extends PanacheMongoEntity {
     return this.branchName;
   }
 
-  public void setBranchName(String branchName) {
+  public void setBranchName(final String branchName) {
     this.branchName = branchName;
   }
 
@@ -31,7 +31,7 @@ public class LatestCommit extends PanacheMongoEntity {
     return this.landscapeToken;
   }
 
-  public void setLandscapeToken(String landscapeToken) {
+  public void setLandscapeToken(final String landscapeToken) {
     this.landscapeToken = landscapeToken;
   }
 

@@ -138,6 +138,8 @@ public final class CommitComparisonHelper {
         final String secondSelectedCommitId, final String landscapeToken, 
         final String applicationName) {
 
+    final List<String> addedFiles = new ArrayList<>();
+
     final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             firstSelectedCommitId);
@@ -146,20 +148,21 @@ public final class CommitComparisonHelper {
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             secondSelectedCommitId);
 
-    if (commitReportFirstSelectedCommit == null 
-        || 
-        commitReportSecondSelectedCommit == null) {
-      return null;
+    if (commitReportFirstSelectedCommit != null 
+        && 
+        commitReportSecondSelectedCommit != null) {
+
+      final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
+      final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
+      filesInSecondSelectedCommit.forEach(file -> {
+
+        if (!filesInFirstSelectedCommit.contains(file)) {
+          addedFiles.add(file);
+        }
+      });
     }
 
-    final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
-    final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
-    final List<String> addedFiles = new ArrayList<>();
-    filesInSecondSelectedCommit.forEach(file -> {
-      if (!filesInFirstSelectedCommit.contains(file)) {
-        addedFiles.add(file);
-      }
-    });
+    
     return addedFiles;
   }
 
@@ -174,6 +177,7 @@ public final class CommitComparisonHelper {
         final String secondSelectedCommitId, final String landscapeToken, 
         final String applicationName) {
     
+    final List<String> deletedFiles = new ArrayList<>();
     final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             firstSelectedCommitId);
@@ -182,20 +186,18 @@ public final class CommitComparisonHelper {
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             secondSelectedCommitId);
 
-    if (commitReportFirstSelectedCommit == null 
-        || 
-        commitReportSecondSelectedCommit == null) {
-      return null;
+    if (commitReportFirstSelectedCommit != null 
+        && 
+        commitReportSecondSelectedCommit != null) {
+      final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
+      final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
+      filesInFirstSelectedCommit.forEach(file -> {
+        if (!filesInSecondSelectedCommit.contains(file)) {
+          deletedFiles.add(file);
+        }
+      });
     }
 
-    final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
-    final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
-    final List<String> deletedFiles = new ArrayList<>();
-    filesInFirstSelectedCommit.forEach(file -> {
-      if (!filesInSecondSelectedCommit.contains(file)) {
-        deletedFiles.add(file);
-      }
-    });
     return deletedFiles;
   }
 
@@ -211,6 +213,7 @@ public final class CommitComparisonHelper {
         final String secondSelectedCommitId, final String landscapeToken, 
         final String applicationName) {
 
+    final List<String> modifiedFiles = new ArrayList<>();
     final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             firstSelectedCommitId);
@@ -219,31 +222,26 @@ public final class CommitComparisonHelper {
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             secondSelectedCommitId);
 
-    if (commitReportFirstSelectedCommit == null 
-        || 
-        commitReportSecondSelectedCommit == null) {
-      return null;
-    }
+    if (commitReportFirstSelectedCommit != null 
+        && 
+        commitReportSecondSelectedCommit != null) {
+      final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
+      final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
 
-    final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
-    final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
-    final List<String> modifiedFiles = new ArrayList<>();
-
-
-
-    filesInFirstSelectedCommit.forEach(file -> {
-      if (filesInSecondSelectedCommit.contains(file)) {
-        final int indexFirstSelected = filesInFirstSelectedCommit.indexOf(file);
-        final int indexSecondSelected = filesInSecondSelectedCommit.indexOf(file);
-        final String fileHashFirstSelected = commitReportFirstSelectedCommit.getFileHash()
-            .get(indexFirstSelected);
-        final String fileHashSecondSelected = commitReportSecondSelectedCommit.getFileHash()
-            .get(indexSecondSelected);
-        if (!fileHashFirstSelected.equals(fileHashSecondSelected)) {
-          modifiedFiles.add(file);
+      filesInFirstSelectedCommit.forEach(file -> {
+        if (filesInSecondSelectedCommit.contains(file)) {
+          final int indexFirstSelected = filesInFirstSelectedCommit.indexOf(file);
+          final int indexSecondSelected = filesInSecondSelectedCommit.indexOf(file);
+          final String fileHashFirstSelected = commitReportFirstSelectedCommit.getFileHash()
+              .get(indexFirstSelected);
+          final String fileHashSecondSelected = commitReportSecondSelectedCommit.getFileHash()
+              .get(indexSecondSelected);
+          if (!fileHashFirstSelected.equals(fileHashSecondSelected)) { // NOPMD
+            modifiedFiles.add(file);
+          }
         }
-      }
-    });
+      });
+    }
     return modifiedFiles;
   }
 

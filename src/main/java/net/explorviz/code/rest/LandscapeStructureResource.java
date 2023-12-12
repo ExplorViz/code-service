@@ -31,15 +31,14 @@ public class LandscapeStructureResource {
    */
   @Path("{commit}")
   @GET
-  public LandscapeStructure singleStructure(@RestPath String token, 
-      @RestPath String appName, String commit) {
-  
-    List<Package> packages = LandscapeStructureHelper.createListOfPackages(token, commit, appName);
+  public LandscapeStructure singleStructure(@RestPath final String token, 
+      @RestPath final String appName, final String commit) {
+    final List<Package> packages = LandscapeStructureHelper.createListOfPackages(token, 
+        commit, appName);
     if (packages != null) {
       return this.buildLandscapeStructure(token, appName, packages);
-    } else {
-      return new LandscapeStructure();
-    }
+    } 
+    return new LandscapeStructure();
   }
 
   /**
@@ -52,12 +51,13 @@ public class LandscapeStructureResource {
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public LandscapeStructure mixedStructure(@RestPath String token, 
-      @RestPath String appName, String firstCommit, String secondCommit) {
+  public LandscapeStructure mixedStructure(@RestPath final String token, // NOPMD
+      @RestPath final String appName, final String firstCommit, 
+      final String secondCommit) {
       
-    List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper
+    final List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper
         .createListOfPackages(token, firstCommit, appName);
-    List<Package> packagesSecondSelectedCommit = LandscapeStructureHelper
+    final List<Package> packagesSecondSelectedCommit = LandscapeStructureHelper
         .createListOfPackages(token, secondCommit, appName);
 
     if (packagesFirstSelectedCommit == null || packagesSecondSelectedCommit == null) {
@@ -65,15 +65,15 @@ public class LandscapeStructureResource {
     }
 
     // deal with modified files --------------------------------------------------------------------
-    List<String> modified = CommitComparisonHelper.getComparisonModifiedFiles(
+    final List<String> modified = CommitComparisonHelper.getComparisonModifiedFiles(
         firstCommit, 
         secondCommit, token, appName);
 
-    List<String> modifiedPackageFileName = new ArrayList<>();
+    final List<String> modifiedPackageFileName = new ArrayList<>();
     
     for (final String fqFileName : modified) {
-      String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+      final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
           fqFileNameDotSeparator, secondCommit);
       if (fileReport != null) {
         modifiedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());
@@ -110,23 +110,23 @@ public class LandscapeStructureResource {
               clazzFirstSelectedCommit.getMethods().add(method);
             }
           }
-        } else {
-          // should not happen
+        } else { // NOPMD
+          // should not happen. Log error?
         }
       } 
     }
     // --------------------------------------------------------------------------------------------
 
     // deal with added files ----------------------------------------------------------------------
-    List<String> added = CommitComparisonHelper.getComparisonAddedFiles(
+    final List<String> added = CommitComparisonHelper.getComparisonAddedFiles(
         firstCommit, 
         secondCommit, token, appName);
 
-    List<String> addedPackageFileName = new ArrayList<>();
+    final List<String> addedPackageFileName = new ArrayList<>();
     
     for (final String fqFileName : added) {
-      String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+      final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
           fqFileNameDotSeparator, secondCommit);
       if (fileReport != null) {
         addedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());
@@ -144,9 +144,9 @@ public class LandscapeStructureResource {
       final Package packageSecondSelectedCommit = 
           this.getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
-      if (packageSecondSelectedCommit != null) {
+      if (packageSecondSelectedCommit != null) { // NOPMD
 
-        if (packageFirstSelectedCommit != null) {
+        if (packageFirstSelectedCommit != null) { // NOPMD
           final String packageName = packageFirstSelectedCommit.getName();
 
           if (packageName.equals(lastPackageName)) {
@@ -154,23 +154,24 @@ public class LandscapeStructureResource {
             final Class clazz = this.getClassByNameFromPackage(className, 
                 packageSecondSelectedCommit);
             
-            if (clazz != null) {
+            if (clazz != null) { // NOPMD
               packageFirstSelectedCommit.getClasses().add(clazz);
-            } else {
-              // should never happen
+            } else { // NOPMD
+              // should never happen. TODO: Log Error
             }
           } else {
             // add package
-            String subPackages = "";
+            final StringBuilder subPackages = new StringBuilder(""); // NOPMD
             for (int i = 0; i < packageFileNameSplit.length - numThree; i++) {
-              subPackages += packageFileNameSplit[i] + ".";
+              subPackages.append(packageFileNameSplit[i] + ".");
               if (packageFileNameSplit[i].equals(packageName)) {
-                subPackages += packageFileNameSplit[i + 1];
+                subPackages.append(packageFileNameSplit[i + 1]);
                 break;
               }
             }
             // file name needed for technical reason. We imitate one
-            final String subPackageFileName = subPackages + "." + "filename" + "." + "extension";
+            final String subPackageFileName = subPackages.toString() + "." + "filename" + "."
+                 + "extension";
             final Package pckg = this.getPackageFromPath(subPackageFileName, 
                 packagesSecondSelectedCommit);
             packageFirstSelectedCommit.getSubPackages().add(pckg);
@@ -178,14 +179,14 @@ public class LandscapeStructureResource {
         } else {
           packagesFirstSelectedCommit.add(packageSecondSelectedCommit);
         }
-      } else {
-        // should never happen
+      } else { // NOPMD
+        // should never happen. TODO: LOG error
       }
     }
     return this.buildLandscapeStructure(token, appName, packagesFirstSelectedCommit);
   }
 
-  private Class getClassByNameFromPackage(final String className, Package pckg) {
+  private Class getClassByNameFromPackage(final String className, final Package pckg) {
     for (final Class clazz : pckg.getClasses()) {
       if (clazz.getName().equals(className)) {
         return clazz;
@@ -195,7 +196,8 @@ public class LandscapeStructureResource {
   }
 
   // returns the "deepest" package available matching the package structure
-  private Package getPackageFromPath(final String packageFileName, List<Package> packages) {
+  private Package getPackageFromPath(final String packageFileName, // NOPMD
+      final List<Package> packages) {
     final String[] packageFileNameSplit = packageFileName.split("\\.");
     // packageFileName includes file extension
     final int numOfPackages = packageFileNameSplit.length - 2;
@@ -216,7 +218,7 @@ public class LandscapeStructureResource {
               break;
             }
           }
-          if (temp != null) {
+          if (temp != null) { // NOPMD
             currentPackage = temp;
             counter++;
           } else {
@@ -232,21 +234,21 @@ public class LandscapeStructureResource {
     return null;
   }
 
-  private LandscapeStructure buildLandscapeStructure(String landscapeToken, String appName, 
-      List<Package> packages) {
-    Node node = new Node();
-    node.setIpAdress("0.0.0.0");
+  private LandscapeStructure buildLandscapeStructure(final String landscapeToken, 
+      final String appName, final List<Package> packages) {
+    final Node node = new Node();
+    node.setIpAdress("0.0.0.0"); // NOPMD
     node.setHostName("default-node");
     node.setApplications(new ArrayList<>());
     
-    Application application = new Application();
+    final Application application = new Application();
     application.setName(appName);
     application.setLanguage("Java");
     application.setInstanceId("0");
     application.setPackages(packages);
     node.getApplications().add(application);
 
-    LandscapeStructure landscapeStructure = new LandscapeStructure();
+    final LandscapeStructure landscapeStructure = new LandscapeStructure();
     landscapeStructure.setLandscapeToken(landscapeToken);
     landscapeStructure.setNodes(new ArrayList<>());
     landscapeStructure.getNodes().add(node);

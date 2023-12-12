@@ -18,7 +18,7 @@ public class CommitTreeResource {
    * *@return .
    */
   @GET
-  public CommitTree list(@RestPath String token, @RestPath String appName) { 
+  public CommitTree list(@RestPath final String token, @RestPath final String appName) { 
     return CommitTreeHelper.createCommitTree(appName, token);
   }
 }

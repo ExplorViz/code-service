@@ -1,4 +1,4 @@
-package net.explorviz.code.mongo;
+package net.explorviz.code.mongo; // NOPMD
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.List;
@@ -27,7 +27,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.landscapeToken;
   }
 
-  public void setLandscapeToken(String landscapeToken) {
+  public void setLandscapeToken(final String landscapeToken) {
     this.landscapeToken = landscapeToken;
   }
 
@@ -35,7 +35,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.appName;
   }
 
-  public void setAppName(String appName) {
+  public void setAppName(final String appName) {
     this.appName = appName;
   }
 
@@ -43,7 +43,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.commitId;
   }
 
-  public void setCommitId(String commitId) {
+  public void setCommitId(final String commitId) {
     this.commitId = commitId;
   }
 
@@ -51,7 +51,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.fileName;
   }
 
-  public void setFileName(String fileName) {
+  public void setFileName(final String fileName) {
     this.fileName = fileName;
   }
 
@@ -59,7 +59,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.packageName;
   }
 
-  public void setPackageName(String packageName) {
+  public void setPackageName(final String packageName) {
     this.packageName = packageName;
   }
 
@@ -67,7 +67,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.importName;
   }
 
-  public void setImportName(List<String> importName) {
+  public void setImportName(final List<String> importName) {
     this.importName = importName;
   }
 
@@ -75,7 +75,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.classData;
   }
 
-  public void setClassData(Map<String, ClassData2> classData) {
+  public void setClassData(final Map<String, ClassData2> classData) {
     this.classData = classData;
   }
 
@@ -83,7 +83,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.fileMetric;
   }
 
-  public void setFileMetric(Map<String, String> fileMetric) {
+  public void setFileMetric(final Map<String, String> fileMetric) {
     this.fileMetric = fileMetric;
   }
 
@@ -91,7 +91,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.author;
   }
 
-  public void setAuthor(String author) {
+  public void setAuthor(final String author) {
     this.author = author;
   }
 
@@ -99,7 +99,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.modifiedLines;
   }
 
-  public void setModifiedLines(String modifiedLines) {
+  public void setModifiedLines(final String modifiedLines) {
     this.modifiedLines = modifiedLines;
   }
 
@@ -107,7 +107,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.addedLines;
   }
 
-  public void setAddedLines(String addedLines) {
+  public void setAddedLines(final String addedLines) {
     this.addedLines = addedLines;
   }
 
@@ -115,7 +115,7 @@ public class FileReport extends PanacheMongoEntity {
     return this.deletedLines;
   }
 
-  public void setDeletedLines(String deletedLines) {
+  public void setDeletedLines(final String deletedLines) {
     this.deletedLines = deletedLines;
   }
 
@@ -127,34 +127,33 @@ public class FileReport extends PanacheMongoEntity {
   ** @param commitId ...
   ** @return ...
   */
-  public static FileReport findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
+  public static FileReport findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(// NOPMD
       final String landscapeToken, 
       final String appName, 
       final String fqFileName, final String commitId) {
     final String[] temp = fqFileName.split("\\.");
-    if (temp.length < 2) {
+    if (temp.length < 2) { // NOPMD
       return null;
     }
     final String fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
-    String tmpString = "";
+    StringBuilder tmpString = new StringBuilder("");
     for (int i = 0; i < temp.length - 2; i++) {
-      tmpString += temp[i];
-      tmpString += ".";
+      tmpString.append(temp[i] + ".");
     } 
     
-    if (!tmpString.equals("")) {
-      tmpString = tmpString.substring(0, tmpString.length() - 1);
+    if (!"".equals(tmpString.toString())) { // NOPMD
+      tmpString = new StringBuilder(tmpString.toString().substring(0, tmpString.length() - 1));
     } 
     
-    final String folders = tmpString;
-    List<FileReport> fileReportList = find(
+    final String folders = tmpString.toString();
+    final List<FileReport> fileReportList = find(
         "landscapeToken = ?1 and appName = ?2 and fileName =?3 and commitId =?4", 
         landscapeToken, appName, fileName, commitId).list();
 
-    List<FileReport> filterFileReportList = fileReportList.stream()
+    final List<FileReport> filterFileReportList = fileReportList.stream()
         .filter(fr -> folders.endsWith(fr.packageName)).collect(Collectors.toList());
     
-    if (filterFileReportList.size() == 1) {
+    if (filterFileReportList.size() == 1) { // NOPMD
       return filterFileReportList.get(0);
     } else {
       return null;
@@ -190,7 +189,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.type;
     }
 
-    public void setType(ClassType2 type) {
+    public void setType(final ClassType2 type) {
       this.type = type;
     }
 
@@ -198,7 +197,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.modifier;
     }
 
-    public void setModifier(List<String> modifier) {
+    public void setModifier(final List<String> modifier) {
       this.modifier = modifier;
     }
 
@@ -206,7 +205,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.intrfc;
     }
 
-    public void setIntrfc(List<String> intrfc) {
+    public void setIntrfc(final List<String> intrfc) {
       this.intrfc = intrfc;
     }
 
@@ -214,7 +213,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.field;
     }
 
-    public void setField(List<FieldData2> field) {
+    public void setField(final List<FieldData2> field) {
       this.field = field;
     }
 
@@ -222,7 +221,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.innerClass;
     }
 
-    public void setInnerClass(List<String> innerClass) {
+    public void setInnerClass(final List<String> innerClass) {
       this.innerClass = innerClass;
     }
 
@@ -230,7 +229,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.constructor;
     }
 
-    public void setConstructor(List<MethodData2> constructor) {
+    public void setConstructor(final List<MethodData2> constructor) {
       this.constructor = constructor;
     }
 
@@ -238,7 +237,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.methodData;
     }
 
-    public void setMethodData(Map<String, MethodData2> methodData) {
+    public void setMethodData(final Map<String, MethodData2> methodData) {
       this.methodData = methodData;
     }
 
@@ -246,7 +245,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.variable;
     }
 
-    public void setVariable(List<String> variable) {
+    public void setVariable(final List<String> variable) {
       this.variable = variable;
     }
 
@@ -254,7 +253,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.superClass;
     }
 
-    public void setSuperClass(String superClass) {
+    public void setSuperClass(final String superClass) {
       this.superClass = superClass;
     }
 
@@ -262,7 +261,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.enumConstant;
     }
 
-    public void setEnumConstant(List<String> enumConstant) {
+    public void setEnumConstant(final List<String> enumConstant) {
       this.enumConstant = enumConstant;
     }
 
@@ -270,7 +269,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.annotation;
     }
 
-    public void setAnnotation(List<String> annotation) {
+    public void setAnnotation(final List<String> annotation) {
       this.annotation = annotation;
     }
 
@@ -278,7 +277,7 @@ public class FileReport extends PanacheMongoEntity {
       return this.classMetric;
     }
 
-    public void setClassMetric(Map<String, String> classMetric) {
+    public void setClassMetric(final Map<String, String> classMetric) {
       this.classMetric = classMetric;
     }
 
@@ -307,7 +306,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.name;
       }
 
-      public void setName(String name) {
+      public void setName(final String name) {
         this.name = name;
       }
 
@@ -315,7 +314,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.type;
       }
 
-      public void setType(String type) {
+      public void setType(final String type) {
         this.type = type;
       }
 
@@ -323,7 +322,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.modifier;
       }
 
-      public void setModifier(List<String> modifier) {
+      public void setModifier(final List<String> modifier) {
         this.modifier = modifier;
       }
     }
@@ -345,7 +344,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.returnType;
       }
 
-      public void setReturnType(String returnType) {
+      public void setReturnType(final String returnType) {
         this.returnType = returnType;
       }
 
@@ -353,7 +352,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.modifier;
       }
 
-      public void setModifier(List<String> modifier) {
+      public void setModifier(final List<String> modifier) {
         this.modifier = modifier;
       }
 
@@ -361,7 +360,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.parameter;
       }
 
-      public void setParameter(List<ParameterData2> parameter) {
+      public void setParameter(final List<ParameterData2> parameter) {
         this.parameter = parameter;
       }
 
@@ -369,7 +368,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.outgoingMethodCalls;
       }
 
-      public void setOutgoingMethodCalls(List<String> outgoingMethodCalls) {
+      public void setOutgoingMethodCalls(final List<String> outgoingMethodCalls) {
         this.outgoingMethodCalls = outgoingMethodCalls;
       }
 
@@ -377,11 +376,11 @@ public class FileReport extends PanacheMongoEntity {
         return this.isConstructor;
       }
 
-      public boolean getIsConstructor() {
+      public boolean getIsConstructor() { // NOPMD
         return this.isConstructor;
       }
 
-      public void setIsConstructor(boolean isConstructor) {
+      public void setIsConstructor(final boolean isConstructor) {
         this.isConstructor = isConstructor;
       }
 
@@ -389,7 +388,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.annotation;
       }
 
-      public void setAnnotation(List<String> annotation) {
+      public void setAnnotation(final List<String> annotation) {
         this.annotation = annotation;
       }
 
@@ -397,7 +396,7 @@ public class FileReport extends PanacheMongoEntity {
         return this.metric;
       }
 
-      public void setMetric(Map<String, String> metric) {
+      public void setMetric(final Map<String, String> metric) {
         this.metric = metric;
       }
 
@@ -414,7 +413,7 @@ public class FileReport extends PanacheMongoEntity {
           return this.name;
         }
 
-        public void setName(String name) {
+        public void setName(final String name) {
           this.name = name;
         }
 
@@ -422,7 +421,7 @@ public class FileReport extends PanacheMongoEntity {
           return this.type;
         }
 
-        public void setType(String type) {
+        public void setType(final String type) {
           this.type = type;
         }
 
@@ -430,7 +429,7 @@ public class FileReport extends PanacheMongoEntity {
           return this.modifier;
         }
 
-        public void setModifier(List<String> modifier) {
+        public void setModifier(final List<String> modifier) {
           this.modifier = modifier;
         }
       }
