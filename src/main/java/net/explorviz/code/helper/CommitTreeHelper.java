@@ -14,7 +14,10 @@ import net.explorviz.code.mongo.LatestCommit;
 /**
  * .
  */
-public class CommitTreeHelper {
+public final class CommitTreeHelper {
+
+  private CommitTreeHelper() {
+  }
 
   /**
    * ...
@@ -26,37 +29,39 @@ public class CommitTreeHelper {
     final List<Branch> branches = new ArrayList<>();
 
     branchPoints.forEach(branchPoint -> {
-      final String branchName = branchPoint.branchName;
-      final String branchPointCommitId = branchPoint.commitId;
-      final String emergedFromBranchName = branchPoint.emergedFromBranchName;
-      final String emergedFromCommitId = branchPoint.emergedFromCommitId;
-      LatestCommit latestCommit = LatestCommit
+      final String branchName = branchPoint.getBranchName();
+      final String branchPointCommitId = branchPoint.getCommitId();
+      final String emergedFromBranchName = branchPoint.getEmergedFromBranchName();
+      final String emergedFromCommitId = branchPoint.getEmergedFromCommitId();
+      final LatestCommit latestCommit = LatestCommit
           .findByBranchNameAndLandscapeToken(branchName, landscapeToken);
 
       // now iterate from latestCommit to branchPoint commit
-      String currentCommitId = latestCommit.commitId;
-      Stack<String> commits = new Stack<>();
+      String currentCommitId = latestCommit.getCommitId();
+      final Stack<String> commits = new Stack<>();
       Boolean finished = false;
       while (!finished) {
         commits.add(currentCommitId);
         if (currentCommitId.equals(branchPointCommitId)) {
           finished = true;
         } else {
-          CommitReport currenCommitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
+          final CommitReport currenCommitReport = CommitReport
+              .findByTokenAndApplicationNameAndCommitId(
               landscapeToken, appName, currentCommitId);
-          if (currenCommitReport != null) {
+          if (currenCommitReport != null) { // NOPMD
             // should always be the case
-            currentCommitId = currenCommitReport.parentCommitId;
+            currentCommitId = currenCommitReport.getParentCommitId();
           } else {
             break;
           }
         }
       }
 
-      List<String> commitList = new ArrayList<String>(commits);
+      final List<String> commitList = new ArrayList<String>(commits);
       Collections.reverse(commitList);
-      BranchPoint2 branchPoint2 = new BranchPoint2(emergedFromBranchName, emergedFromCommitId);
-      Branch branch = new Branch(branchName, commitList, branchPoint2);
+      final BranchPoint2 branchPoint2 = new BranchPoint2(emergedFromBranchName, 
+          emergedFromCommitId);
+      final Branch branch = new Branch(branchName, commitList, branchPoint2);
       branches.add(branch);
     });
 

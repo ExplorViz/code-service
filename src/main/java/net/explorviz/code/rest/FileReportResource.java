@@ -1,20 +1,9 @@
 package net.explorviz.code.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-
-import net.explorviz.code.beans.LandscapeStructure;
-import net.explorviz.code.beans.LandscapeStructure.Node;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
-import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.FileReport;
-import net.explorviz.code.mongo.FileReport.ClassData2;
 
 /**
  * ...

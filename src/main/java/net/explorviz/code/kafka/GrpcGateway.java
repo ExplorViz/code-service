@@ -5,18 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import net.explorviz.code.proto.FileMetricData;
-import net.explorviz.code.proto.ClassData;
-import net.explorviz.code.proto.ClassType;
-import net.explorviz.code.proto.FieldData;
-import net.explorviz.code.proto.ParameterData;
-import net.explorviz.code.proto.MethodData;
 import javax.enterprise.context.ApplicationScoped;
-// import javax.inject.Inject;
-import net.explorviz.code.grpc.FileDataServiceImpl;
 import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
+import net.explorviz.code.mongo.CommitReport.FileMetric;
 import net.explorviz.code.mongo.FileReport;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.ClassType2;
@@ -24,12 +16,18 @@ import net.explorviz.code.mongo.FileReport.ClassData2.FieldData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2.ParameterData2;
 import net.explorviz.code.mongo.LatestCommit;
-import net.explorviz.code.mongo.CommitReport.FileMetric;
+import net.explorviz.code.proto.ClassData;
 import net.explorviz.code.proto.CommitReportData;
+import net.explorviz.code.proto.FieldData;
 import net.explorviz.code.proto.FileData;
+import net.explorviz.code.proto.FileMetricData;
+import net.explorviz.code.proto.MethodData;
+import net.explorviz.code.proto.ParameterData;
 import net.explorviz.code.proto.StateDataRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 /**
  * This class functions as a gateway for the analysis data into kafka or another storage. It gets
@@ -39,6 +37,8 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class GrpcGateway {
 
+  private static final String NO_ANCESTOR = "NONE";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GrpcGateway.class);
 
   /**
@@ -46,7 +46,7 @@ public class GrpcGateway {
    *
    * @param commitReportData the CommitReportData to handle
    */
-  public void processCommitReport(final CommitReportData commitReportData) {
+  public void processCommitReport(final CommitReportData commitReportData) { // NOPMD
 
     
     if (LOGGER.isTraceEnabled()) {
@@ -54,26 +54,9 @@ public class GrpcGateway {
     }
 
     final String receivedCommitReportCommitId = commitReportData.getCommitID();
-    final String receivedCommitReportAncestorId = commitReportData.getParentCommitID();
-    final String receivedCommitReportBranchName = commitReportData.getBranchName();
-    final List<String> receivedCommitReportFiles = commitReportData.getFilesList();
-    final List<String> receivedCommitReportModified = commitReportData.getModifiedList();
-    final List<String> receivedCommitReportDeleted = commitReportData.getDeletedList();
-    final List<String> receivedCommitReportAdded = commitReportData.getAddedList();
-    final List<FileMetricData> receivedCommitReportFileMetricData = commitReportData
-        .getFileMetricList();
-    final List<FileMetric> receivedCommitReportFileMetric = new ArrayList<>();
-    final String receivedCommitReportLandscapeToken = commitReportData.getLandscapeToken();
-    final List<String> receivedCommitReportFileHash = commitReportData.getFileHashList();
-    final String receivedCommitReportApplicationName = commitReportData.getApplicationName();
-
-    for (final FileMetricData fileMetricData : receivedCommitReportFileMetricData) {
-      CommitReport.FileMetric fileMetric = new CommitReport.FileMetric(); 
-      fileMetric.fileName = fileMetricData.getFileName();
-      fileMetric.loc = fileMetricData.getLoc();
-      fileMetric.cyclomaticComplexity = fileMetricData.getCyclomaticComplexity();
-      receivedCommitReportFileMetric.add(fileMetric);
-    }
+    final String receivedCommitReportLandscapeToken = commitReportData.getLandscapeToken(); // NOPMD
+    final String receivedCommitReportApplicationName = commitReportData // NOPMD
+        .getApplicationName();
 
     final CommitReport oldReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
         receivedCommitReportLandscapeToken, receivedCommitReportApplicationName, 
@@ -83,22 +66,43 @@ public class GrpcGateway {
       return;
     }
 
-    CommitReport commitReport = new CommitReport();
-    commitReport.commitId = receivedCommitReportCommitId;
-    commitReport.parentCommitId = receivedCommitReportAncestorId;
-    commitReport.branchName = receivedCommitReportBranchName;
-    commitReport.files = receivedCommitReportFiles;
-    commitReport.modified = receivedCommitReportModified;
-    commitReport.deleted = receivedCommitReportDeleted;
-    commitReport.added = receivedCommitReportAdded;
-    commitReport.fileMetric = receivedCommitReportFileMetric;
-    commitReport.landscapeToken = receivedCommitReportLandscapeToken;
-    commitReport.fileHash = receivedCommitReportFileHash;
-    commitReport.applicationName = receivedCommitReportApplicationName;
+    final String receivedCommitReportAncestorId = commitReportData.getParentCommitID();
+    final String receivedCommitReportBranchName = commitReportData.getBranchName();
+    final List<String> receivedCommitReportFiles = commitReportData.getFilesList();
+    final List<String> receivedCommitReportModified = commitReportData.getModifiedList();
+    final List<String> receivedCommitReportDeleted = commitReportData.getDeletedList();
+    final List<String> receivedCommitReportAdded = commitReportData.getAddedList();
+    final List<FileMetricData> receivedCommitReportFileMetricData = commitReportData // NOPMD
+        .getFileMetricList();
+    final List<FileMetric> receivedCommitReportFileMetric = new ArrayList<>();
+    final List<String> receivedCommitReportFileHash = commitReportData.getFileHashList();
+    
+
+    for (final FileMetricData fileMetricData : receivedCommitReportFileMetricData) {
+      final CommitReport.FileMetric fileMetric = new CommitReport.FileMetric(); // NOPMD
+      fileMetric.setFileName(fileMetricData.getFileName());
+      fileMetric.setLoc(fileMetricData.getLoc());
+      fileMetric.setCyclomaticComplexity(fileMetricData.getCyclomaticComplexity());
+      receivedCommitReportFileMetric.add(fileMetric);
+    }
+
+    final CommitReport commitReport = new CommitReport();
+    commitReport.setCommitId(receivedCommitReportCommitId);
+    commitReport.setParentCommitId(receivedCommitReportAncestorId);
+    commitReport.setBranchName(receivedCommitReportBranchName);
+    commitReport.setFiles(receivedCommitReportFiles);
+    commitReport.setModified(receivedCommitReportModified);
+    commitReport.setDeleted(receivedCommitReportDeleted);
+    commitReport.setAdded(receivedCommitReportAdded);
+    commitReport.setFileMetric(receivedCommitReportFileMetric);
+    commitReport.setLandscapeToken(receivedCommitReportLandscapeToken);
+    commitReport.setFileHash(receivedCommitReportFileHash);
+    commitReport.setApplicationName(receivedCommitReportApplicationName);
 
 
-    if (!receivedCommitReportAncestorId.equals("NONE")) {
-      if (CommitReport.findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken, 
+    if (!NO_ANCESTOR.equals(receivedCommitReportAncestorId)) { // NOPMD
+      if (CommitReport.findByTokenAndApplicationNameAndCommitId(// NOPMD
+          receivedCommitReportLandscapeToken, 
           receivedCommitReportApplicationName, receivedCommitReportAncestorId) != null) {
         // no missing reports
         commitReport.persist();
@@ -108,44 +112,45 @@ public class GrpcGateway {
         if (latestCommit == null) {
           // commit of a new branch
           latestCommit = new LatestCommit();
-          latestCommit.branchName = receivedCommitReportBranchName;
-          latestCommit.commitId = receivedCommitReportCommitId;
-          latestCommit.landscapeToken = receivedCommitReportLandscapeToken;
+          latestCommit.setBranchName(receivedCommitReportBranchName);
+          latestCommit.setCommitId(receivedCommitReportCommitId);
+          latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
           latestCommit.persist();
 
-          BranchPoint branchPoint = new BranchPoint();
-          branchPoint.branchName = receivedCommitReportBranchName;
-          branchPoint.commitId = receivedCommitReportCommitId;
-          branchPoint.landscapeToken = receivedCommitReportLandscapeToken;
-          branchPoint.applicationName = receivedCommitReportApplicationName;
-          CommitReport ancestorCommitReport = CommitReport
+          final BranchPoint branchPoint = new BranchPoint();
+          branchPoint.setBranchName(receivedCommitReportBranchName);
+          branchPoint.setCommitId(receivedCommitReportCommitId);
+          branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
+          branchPoint.setApplicationName(receivedCommitReportApplicationName);
+          final CommitReport ancestorCommitReport = CommitReport
                .findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken, 
                receivedCommitReportApplicationName, receivedCommitReportAncestorId);
-          branchPoint.emergedFromCommitId = ancestorCommitReport.commitId;
-          branchPoint.emergedFromBranchName = ancestorCommitReport.branchName; 
+          branchPoint.setEmergedFromCommitId(ancestorCommitReport.getCommitId());
+          branchPoint.setEmergedFromBranchName(ancestorCommitReport.getBranchName()); 
           branchPoint.persist();
         } else {
-          latestCommit.commitId = receivedCommitReportCommitId;
+          latestCommit.setCommitId(receivedCommitReportCommitId);
           latestCommit.update();
         }
-      } else {
-        // missing reports. Do nothing until we get the missing reports. Analyzer has to rerun
+      } else { // NOPMD
+        // missing reports. Do nothing until we get the missing reports. Analyzer has to rerun or 
+        // we need to explicitly request missing reports (if analyzer does not fail on them)
       }
     } else {
       // first commit ever
       commitReport.persist();
-      LatestCommit latestCommit = new LatestCommit();
-      latestCommit.branchName = receivedCommitReportBranchName;
-      latestCommit.commitId = receivedCommitReportCommitId;
-      latestCommit.landscapeToken = receivedCommitReportLandscapeToken;
+      final LatestCommit latestCommit = new LatestCommit();
+      latestCommit.setBranchName(receivedCommitReportBranchName);
+      latestCommit.setCommitId(receivedCommitReportCommitId);
+      latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
       latestCommit.persist();
-      BranchPoint branchPoint = new BranchPoint();
-      branchPoint.branchName = receivedCommitReportBranchName;
-      branchPoint.commitId = receivedCommitReportCommitId;
-      branchPoint.landscapeToken = receivedCommitReportLandscapeToken;
-      branchPoint.applicationName = receivedCommitReportApplicationName;
-      branchPoint.emergedFromBranchName = "NONE";
-      branchPoint.emergedFromCommitId = "";
+      final BranchPoint branchPoint = new BranchPoint();
+      branchPoint.setBranchName(receivedCommitReportBranchName);
+      branchPoint.setCommitId(receivedCommitReportCommitId);
+      branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
+      branchPoint.setApplicationName(receivedCommitReportApplicationName);
+      branchPoint.setEmergedFromBranchName(NO_ANCESTOR);
+      branchPoint.setEmergedFromCommitId("");
       branchPoint.persist();
     }
   }
@@ -155,7 +160,7 @@ public class GrpcGateway {
    *
    * @param fileData the FileData to handle
    */
-  public void processFileData(final FileData fileData) {
+  public void processFileData(final FileData fileData) { // NOPMD
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("Received file data: {}", fileData);
 
@@ -172,136 +177,137 @@ public class GrpcGateway {
       final String receivedFileDataAddedLines = fileData.getAddedLines();
       final String receivedFileDataDeletedLines = fileData.getDeletedLines();
       
-      FileReport fileReport = new FileReport();
+      final FileReport fileReport = new FileReport();
 
-      fileReport.landscapeToken = receivedFileDataLandscapeToken;
-      fileReport.appName = receivedFileDataAppName;
-      fileReport.commitId = receivedFileDataCommitId;
-      fileReport.fileName = receivedFileDataFileName;
-      fileReport.packageName = receivedFileDataPackageName;
-      fileReport.importName = receivedFileDataImportName;
+      fileReport.setLandscapeToken(receivedFileDataLandscapeToken);
+      fileReport.setAppName(receivedFileDataAppName);
+      fileReport.setCommitId(receivedFileDataCommitId);
+      fileReport.setFileName(receivedFileDataFileName);
+      fileReport.setPackageName(receivedFileDataPackageName);
+      fileReport.setImportName(receivedFileDataImportName);
 
 
-      Map<String, ClassData2> classData = new HashMap<>();
-      for (Map.Entry<String, ClassData> entry 
+      final Map<String, ClassData2> classData = new HashMap<>();
+      for (final Map.Entry<String, ClassData> entry 
           : receivedFileDataClassData.entrySet()) {
-        final ClassData2 cd = new ClassData2();
+        final ClassData2 cd = new ClassData2(); // NOPMD
 
         switch (entry.getValue().getType()) {
           case INTERFACE:
-            cd.type = ClassType2.INTERFACE;
+            cd.setType(ClassType2.INTERFACE);
             break;
           case ABSTRACT_CLASS:
-            cd.type = ClassType2.ABSTRACT_CLASS;
+            cd.setType(ClassType2.ABSTRACT_CLASS);
             break;
           case CLASS:
-            cd.type = ClassType2.CLASS;
+            cd.setType(ClassType2.CLASS);
             break;
           case ENUM:
-            cd.type = ClassType2.ENUM;
+            cd.setType(ClassType2.ENUM);
             break;
           case ANONYMOUS_CLASS:
-            cd.type = ClassType2.ANONYMOUS_CLASS;
+            cd.setType(ClassType2.ANONYMOUS_CLASS);
             break;
           default:
             // nothing to do
         }
-        cd.modifier = entry.getValue().getModifierList();
-        cd.intrfc = entry.getValue().getInterfaceList();
+        cd.setModifier(entry.getValue().getModifierList());
+        cd.setIntrfc(entry.getValue().getInterfaceList());
         
-        List<FieldData2> field = new ArrayList<>();
-        for (FieldData fd : entry.getValue().getFieldList()) {
-          FieldData2 fd2 = new FieldData2();
-          fd2.name = fd.getName();
-          fd2.type = fd.getType();
-          fd2.modifier = fd.getModifierList();
+        final List<FieldData2> field = new ArrayList<>(); // NOPMD
+        for (final FieldData fd : entry.getValue().getFieldList()) {
+          final FieldData2 fd2 = new FieldData2(); // NOPMD
+          fd2.setName(fd.getName());
+          fd2.setType(fd.getType());
+          fd2.setModifier(fd.getModifierList());
           field.add(fd2);
         }
-        cd.field = field;
+        cd.setField(field);
 
 
-        cd.innerClass = entry.getValue().getInnerClassList();
+        cd.setInnerClass(entry.getValue().getInnerClassList());
 
-        List<MethodData2> constructor = new ArrayList<>();
-        for (MethodData md : entry.getValue().getConstructorList()) {
-          MethodData2 md2 = new MethodData2();
-          md2.returnType = md.getReturnType();
-          md2.modifier = md.getModifierList();
-          List<ParameterData2> parameter = new ArrayList<>();
-          for (ParameterData pd : md.getParameterList()) {
-            ParameterData2 pd2 = new ParameterData2();
-            pd2.name = pd.getName();
-            pd2.type = pd.getType();
-            pd2.modifier = pd.getModifierList();
+        final List<MethodData2> constructor = new ArrayList<>(); // NOPMD
+        for (final MethodData md : entry.getValue().getConstructorList()) {
+          final MethodData2 md2 = new MethodData2(); // NOPMD
+          md2.setReturnType(md.getReturnType());
+          md2.setModifier(md.getModifierList());
+          final List<ParameterData2> parameter = new ArrayList<>(); // NOPMD
+          for (final ParameterData pd : md.getParameterList()) {
+            final ParameterData2 pd2 = new ParameterData2(); // NOPMD
+            pd2.setName(pd.getName());
+            pd2.setType(pd.getType());
+            pd2.setModifier(pd.getModifierList());
             parameter.add(pd2);
           }
-          md2.parameter = parameter;
-          md2.outgoingMethodCalls = md.getOutgoingMethodCallsList();
-          md2.isConstructor = md.getIsConstructor();
-          md2.annotation = md.getAnnotationList();
-          md2.metric = md.getMetricMap();
+          md2.setParameter(parameter);
+          md2.setOutgoingMethodCalls(md.getOutgoingMethodCallsList());
+          md2.setIsConstructor(md.getIsConstructor());
+          md2.setAnnotation(md.getAnnotationList());
+          md2.setMetric(md.getMetricMap());
           constructor.add(md2);
         }
-        cd.constructor = constructor;
+        cd.setConstructor(constructor);
 
-        Map<String, MethodData2> methodData =
-             new HashMap<>();
+        final Map<String, MethodData2> methodData =
+             new HashMap<>(); // NOPMD
         
-        for (Map.Entry<String, MethodData> entry2 : entry.getValue().getMethodDataMap()
+        for (final Map.Entry<String, MethodData> entry2 : entry.getValue().getMethodDataMap()
             .entrySet()) {
-          MethodData2 md = new MethodData2();
-          md.returnType = entry2.getValue().getReturnType();
-          md.modifier = entry2.getValue().getModifierList();
+          final MethodData2 md = new MethodData2(); // NOPMD
+          md.setReturnType(entry2.getValue().getReturnType());
+          md.setModifier(entry2.getValue().getModifierList());
 
-          List<ParameterData2> parameter = new ArrayList<>();
-          for (ParameterData pd : entry2.getValue().getParameterList()) {
-            ParameterData2 pd2 = new ParameterData2();
-            pd2.name = pd.getName();
-            pd2.type = pd.getType();
-            pd2.modifier = pd.getModifierList();
+          final List<ParameterData2> parameter = new ArrayList<>(); // NOPMD
+          for (final ParameterData pd : entry2.getValue().getParameterList()) {
+            final ParameterData2 pd2 = new ParameterData2(); // NOPMD
+            pd2.setName(pd.getName());
+            pd2.setType(pd.getType());
+            pd2.setModifier(pd.getModifierList());
             parameter.add(pd2);
           }
-          md.parameter = parameter;
+          md.setParameter(parameter);
 
-          md.outgoingMethodCalls = entry2.getValue().getOutgoingMethodCallsList();
-          md.isConstructor = entry2.getValue().getIsConstructor();
-          md.annotation = entry2.getValue().getAnnotationList();
-          md.metric = entry2.getValue().getMetricMap();
+          md.setOutgoingMethodCalls(entry2.getValue().getOutgoingMethodCallsList());
+          md.setIsConstructor(entry2.getValue().getIsConstructor());
+          md.setAnnotation(entry2.getValue().getAnnotationList());
+          md.setMetric(entry2.getValue().getMetricMap());
           methodData.put(entry2.getKey(), md);
         }
-        cd.methodData = methodData;
-        cd.variable = entry.getValue().getVariableList();
-        cd.superClass = entry.getValue().getSuperClass();
-        cd.enumConstant = entry.getValue().getEnumConstantList();
-        cd.annotation = entry.getValue().getAnnotationList();
-        cd.classMetric = entry.getValue().getMetricMap();
+        cd.setMethodData(methodData);
+        cd.setVariable(entry.getValue().getVariableList());
+        cd.setSuperClass(entry.getValue().getSuperClass());
+        cd.setEnumConstant(entry.getValue().getEnumConstantList());
+        cd.setAnnotation(entry.getValue().getAnnotationList());
+        cd.setClassMetric(entry.getValue().getMetricMap());
 
         classData.put(entry.getKey(), cd);
       }
-      fileReport.classData = classData;
+      fileReport.setClassData(classData);
 
 
-      fileReport.fileMetric = receivedFileDataMetric;
-      fileReport.author = receivedFileDataAuthor;
-      fileReport.modifiedLines = receivedFileDataModifiedLines;
-      fileReport.addedLines = receivedFileDataAddedLines;
-      fileReport.deletedLines = receivedFileDataDeletedLines;
+      fileReport.setFileMetric(receivedFileDataMetric);
+      fileReport.setAuthor(receivedFileDataAuthor);
+      fileReport.setModifiedLines(receivedFileDataModifiedLines);
+      fileReport.setAddedLines(receivedFileDataAddedLines);
+      fileReport.setDeletedLines(receivedFileDataDeletedLines);
 
       // a filereport for the same file in the same commit can be received more than one time
       // Thus, we make sure to update it if it existed before
-      FileReport oldReport = FileReport.findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
+      final FileReport oldReport = FileReport
+          .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
             receivedFileDataLandscapeToken, receivedFileDataAppName, 
             receivedFileDataPackageName + "." + receivedFileDataFileName, receivedFileDataCommitId);
 
-      if (oldReport != null) {
-        oldReport.packageName = fileReport.packageName;
-        oldReport.importName = fileReport.importName;
-        oldReport.classData = fileReport.classData;
-        oldReport.fileMetric = fileReport.fileMetric;
-        oldReport.author = fileReport.author;
-        oldReport.modifiedLines = fileReport.modifiedLines;
-        oldReport.addedLines = fileReport.addedLines;
-        oldReport.deletedLines = fileReport.deletedLines;
+      if (oldReport != null) { // NOPMD
+        oldReport.setPackageName(fileReport.getPackageName());
+        oldReport.setImportName(fileReport.getImportName());
+        oldReport.setClassData(fileReport.getClassData());
+        oldReport.setFileMetric(fileReport.getFileMetric());
+        oldReport.setAuthor(fileReport.getAuthor());
+        oldReport.setModifiedLines(fileReport.getModifiedLines());
+        oldReport.setAddedLines(fileReport.getAddedLines());
+        oldReport.setDeletedLines(fileReport.getDeletedLines());
         oldReport.update();
       } else {
         fileReport.persist();
@@ -327,13 +333,13 @@ public class GrpcGateway {
 
     final String branchName = stateDataRequest.getBranchName();
     final String landscapeToken = stateDataRequest.getLandscapeToken();
-    LatestCommit latestCommit = LatestCommit
+    final LatestCommit latestCommit = LatestCommit
         .findByBranchNameAndLandscapeToken(branchName, landscapeToken);
 
     // Send the empty string if the state of the branch is unknown, otherwise the SHA1 of
     // the branch's last commit
     if (latestCommit != null) {
-      return latestCommit.commitId;
+      return latestCommit.getCommitId();
     } 
     return "";
   }

@@ -8,12 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import net.explorviz.code.beans.LandscapeStructure;
-import net.explorviz.code.beans.LandscapeStructure.Node;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class.Method;
@@ -21,32 +16,35 @@ import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.FileReport;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
-import net.explorviz.code.helper.CommitComparisonHelper;
+
 
 /**
  * ...
  */
-public class LandscapeStructureHelper {
+public final class LandscapeStructureHelper {
+
+  private LandscapeStructureHelper() {
+  }
     
   /**
    * ...
    ** @param commitId
    ** @return ...
    */
-  public static List<LandscapeStructure.Node.Application.Package> createListOfPackages(
+  public static List<Package> createListOfPackages(// NOPMD
         final String landscapeToken,
         final String commitId, final String appName) {
 
-    CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
+    final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
         landscapeToken, appName, commitId);
     if (commitReport == null) {
       return null;
     }
-    List<String> files = commitReport.getFiles();
+    final List<String> files = commitReport.getFiles();
 
-    final Map<String, LandscapeStructure.Node.Application.Package> packageNameToPackageMap = 
+    final Map<String, Package> packageNameToPackageMap = 
         new HashMap<>();
-    final Map<String, LandscapeStructure.Node.Application.Package.Class> fqnClassNameToClass =
+    final Map<String, Class> fqnClassNameToClass =
          new HashMap<>();
     final Set<String> firstLevelPackageNames = new HashSet<>();
     final Set<String> functionFqn = new HashSet<>();
@@ -54,19 +52,19 @@ public class LandscapeStructureHelper {
 
     for (final String file : files) {
       final String[] fileAndFolders = file.split("/");
-      final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders);
+      final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders); // NOPMD
       final String fileName = fileAndFolders[fileAndFolders.length - 1];
-      final String fileNameWithoutFileExtension = fileName.split("\\.")[0];
+      final String fileNameWithoutFileExtension = fileName.split("\\.")[0]; // NOPMD
 
 
-      FileReport fileReport = getFileReport(landscapeToken, appName, 
+      final FileReport fileReport = getFileReport(landscapeToken, appName, 
           fileAndFoldersWithDotSeparation, commitId);
 
       if (fileReport == null) {
         continue;
       }
 
-      final String packageName = fileReport.packageName;
+      final String packageName = fileReport.getPackageName();
       final String[] packages = packageName.split("\\.");
       Package parentPackage = null;
       Package currentPackage = null;
@@ -76,56 +74,57 @@ public class LandscapeStructureHelper {
           firstLevelPackageNames.add(currentPackageName);
         }
 
-        String id = packages[0];
+        final StringBuilder id = new StringBuilder(packages[0]); // NOPMD
         for (int j = 0; j < i; j++) {
-          id += "." + packages[j + 1];
+          id.append("." + packages[j + 1]); 
         }
 
         // use full qualified name as id to avoid name clashes
-        currentPackage = packageNameToPackageMap.get(id);
+        currentPackage = packageNameToPackageMap.get(id.toString());
         if (currentPackage == null) {
-          Package pckg = new Package();
-          pckg.name = currentPackageName;
-          pckg.subPackages = new ArrayList<>();
-          pckg.classes = new ArrayList<>();
+          final Package pckg = new Package(); // NOPMD
+          pckg.setName(currentPackageName);
+          pckg.setSubPackages(new ArrayList<>()); // NOPMD
+          pckg.setClasses(new ArrayList<>()); // NOPMD
           currentPackage = pckg;
-          packageNameToPackageMap.put(id, currentPackage);
+          packageNameToPackageMap.put(id.toString(), currentPackage);
         }
 
 
-        if (parentPackage != null) {
-          if (!parentPackage.subPackages.contains(currentPackage)) {
-            parentPackage.subPackages.add(currentPackage);
-          }
+
+        if (parentPackage != null && !parentPackage.getSubPackages().contains(currentPackage)) {
+          parentPackage.getSubPackages().add(currentPackage);
         }
+        
 
         parentPackage = currentPackage;
       }
 
-      String id = packageName + "." + fileNameWithoutFileExtension;
+      final String id = packageName + "." + fileNameWithoutFileExtension;
       Class clazz = fqnClassNameToClass.get(id);
       if (clazz == null) {
-        clazz = new Class();
-        clazz.name = fileNameWithoutFileExtension;
-        clazz.methods = new ArrayList<>();
+        clazz = new Class();  // NOPMD
+        clazz.setName(fileNameWithoutFileExtension);
+        clazz.setMethods(new ArrayList<>()); // NOPMD
         fqnClassNameToClass.put(id, clazz);
       }
 
       // // fill clazz with methods
       ClassData2 classData;
       if (
-          (classData = fileReport.classData.get(id)) == null /*TODO: walk through classData 
-                                                                      entry set instead? */
+          (classData = fileReport.getClassData().get(id)) == null // NOPMD /
+      // TODO: walk through classData entry set instead 
+      // because a class file could (but shouldn't) have multiple first level classes defined
       ) {
         continue;
       }
 
-      final String superClass = classData.superClass;
+      final String superClass = classData.getSuperClass();
       if (superClass != null) {
-        clazz.superClass = superClass;
+        clazz.setSuperClass(superClass);
       }
 
-      final Map<String, MethodData2> methodData = classData.methodData;
+      final Map<String, MethodData2> methodData = classData.getMethodData();
       
       if (methodData != null) {
 
@@ -134,32 +133,33 @@ public class LandscapeStructureHelper {
           final String[] temp2 = temp[temp.length - 1].split("#");
           final String[] prefixFqn = Arrays.copyOfRange(temp, 0, temp.length - 1);
           final String methodName = temp2[0]; // TODO: if methodName is constructor we write <init>
-          String methodFqn = "";
-          for (String name : prefixFqn) {
-            methodFqn += name + ".";
+          final StringBuilder methodFqn = new StringBuilder(""); // NOPMD
+          for (final String name : prefixFqn) {
+            methodFqn.append(name + ".");
           }
-          methodFqn += methodName; 
+          methodFqn.append(methodName); 
 
           // functionFqn really needed? Only if we want to "prevent" overloaded functions
-          if (!functionFqn.contains(methodFqn)) { /* entry.getKey() instead of methodFqn? 
-                                                     Otherwise we might miss overloaded functions */
-            final Method method = new Method();
-            method.name = methodName; // include parameter list due to overloaded functions?
-            method.hashCode = "default-hash-code"; // TODO: real hash code
-            clazz.methods.add(method);
-            functionFqn.add(methodFqn);
+          if (!functionFqn.contains(methodFqn.toString())) { 
+            /* entry.getKey() instead of methodFqn? 
+            Otherwise we might miss overloaded functions */
+            final Method method = new Method(); // NOPMD
+            method.setName(methodName); // include parameter list due to overloaded functions?
+            method.setHashCode("default-hash-code"); // TODO: real hash code
+            clazz.getMethods().add(method);
+            functionFqn.add(methodFqn.toString());
           }
         }
 
       }
 
       //if (!currentPackage.classes.contains(clazz)) {
-      currentPackage.classes.add(clazz);
+      currentPackage.getClasses().add(clazz);
       //}
 
     }
 
-    List<Package> packageList = new ArrayList<>();
+    final List<Package> packageList = new ArrayList<>();
     firstLevelPackageNames.forEach(name -> {
       packageList.add(packageNameToPackageMap.get(name));
     });
@@ -174,13 +174,13 @@ public class LandscapeStructureHelper {
    ** @param commitId ...
    ** @return ...
    */
-  public static FileReport getFileReport(final String landscapeToken, final String appName, 
+  public static FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
       final String fqFileName, final String commitId) {
     final String[] temp = fqFileName.split("\\.");
     final String fileName;
     try {
       fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
-    } catch (Exception e) {
+    } catch (ArrayIndexOutOfBoundsException e) {
       return null;
     }
     
@@ -190,36 +190,35 @@ public class LandscapeStructureHelper {
 
     if (fileReport == null) { // older commit has provided file report
 
-      List<FileReport> fileReportList = FileReport.findByTokenAndAppNameAndFileName(
+      final List<FileReport> fileReportList = FileReport.findByTokenAndAppNameAndFileName(
             landscapeToken, appName, fileName);
 
-      List<FileReport> candidateFileReportList = fileReportList.stream().filter(fr -> 
-              !CommitComparisonHelper.getLatestCommonCommitId(fr.commitId, 
+      final List<FileReport> candidateFileReportList = fileReportList.stream().filter(fr -> 
+              !CommitComparisonHelper.getLatestCommonCommitId(fr.getCommitId(), 
               commitId, landscapeToken, appName).equals(commitId) // get rid of file reports that
               // happen later than our commit
               &&
-               CommitComparisonHelper.getLatestCommonCommitId(fr.commitId,
+               CommitComparisonHelper.getLatestCommonCommitId(fr.getCommitId(),
                commitId, landscapeToken, appName)
-                   .equals(fr.commitId) // get rid of file reports that 
+                   .equals(fr.getCommitId()) // get rid of file reports that 
               // have unordered commits w.r.t our commit
               &&
               fqFileName
-              .contains(fr.packageName)).collect(Collectors.toList()); // get rid of file
+              .contains(fr.getPackageName())).collect(Collectors.toList()); // get rid of file
       // reports that do not involve our file of interest
 
       Collections.sort(candidateFileReportList, (fr1, fr2) -> {
-        if (CommitComparisonHelper.getLatestCommonCommitId(fr1.commitId, fr2.commitId, 
-              landscapeToken, appName).equals(fr1.commitId)) {
+        if (CommitComparisonHelper.getLatestCommonCommitId(fr1.getCommitId(), fr2.getCommitId(), 
+              landscapeToken, appName).equals(fr1.getCommitId())) {
           return 1;
         } else { // no return of 0 necessary since no two commit id's will be the same in our list
           return -1;
         }
       });
 
-      if (candidateFileReportList.size() > 0) {
+      fileReport = null; // NOPMD
+      if (!candidateFileReportList.isEmpty()) {
         fileReport = candidateFileReportList.get(0);
-      } else {
-        fileReport = null;
       }
     }
     return fileReport;

@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-
-import org.jboss.resteasy.reactive.RestPath;
-
 import net.explorviz.code.beans.CommitComparison;
 import net.explorviz.code.beans.CommitComparison.Metric;
 import net.explorviz.code.beans.CommitComparison.Metric.MetricVal;
@@ -18,6 +14,8 @@ import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.FileReport;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
+import org.jboss.resteasy.reactive.RestPath;
+
 
 /**
  * ...
@@ -63,47 +61,47 @@ public class CommitComparisonResource {
       if (fileReport != null) {
         System.out.println("NOT NULL");
 
-        for (final Map.Entry<String, ClassData2> entry : fileReport.classData.entrySet()) {
+        for (final Map.Entry<String, ClassData2> entry : fileReport.getClassData().entrySet()) {
           System.out.println("classData2 KEY: " + entry.getKey());
           Metric classMetric = new Metric();
-          classMetric.entityName = entry.getKey();
+          classMetric.setEntityName(entry.getKey());
           final Map<String, MetricVal> classMetricMap = new HashMap<>();
           final ClassData2 classData = entry.getValue();
           // add class metric
           for (final Map.Entry<String, String> classMetricEntry : 
-              classData.classMetric.entrySet()) {
+              classData.getClassMetric().entrySet()) {
             final String key = classMetricEntry.getKey();
             final String val = classMetricEntry.getValue();
             MetricVal metricVal = new MetricVal();
-            //metricVal.oldValue = "";
-            metricVal.newValue = val;
+            metricVal.setNewValue(val);
             classMetricMap.put(key, metricVal);
           }
 
-          classMetric.metricMap = classMetricMap;
+          classMetric.setMetricMap(classMetricMap);
           metrics.add(classMetric);
         
 
           // add method metric
-          Map<String, MethodData2> methodData = classData.methodData;
+          Map<String, MethodData2> methodData = classData.getMethodData();
 
           for (final Map.Entry<String, MethodData2> methodMetricEntry : methodData.entrySet()) {
             final Metric methodMetric = new Metric();
-            methodMetric.entityName = methodMetricEntry.getKey();
+            methodMetric.setEntityName(methodMetricEntry.getKey());
 
             final Map<String, MetricVal> methodMetricMap = new HashMap<>();
             final MethodData2 val = methodMetricEntry.getValue();
 
-            for (final Map.Entry<String, String> methodMetricEntryEntry : val.metric.entrySet()) {
+            for (final Map.Entry<String, String> methodMetricEntryEntry : val.getMetric()
+                .entrySet()) {
               final String metricKey = methodMetricEntryEntry.getKey();
               final String metricVal = methodMetricEntryEntry.getValue();
               
               final MetricVal metricVal2 = new MetricVal();
               //metricVal.oldValue = "";
-              metricVal2.newValue = metricVal;
+              metricVal2.setNewValue(metricVal);
               methodMetricMap.put(metricKey, metricVal2);
             }
-            methodMetric.metricMap = methodMetricMap;
+            methodMetric.setMetricMap(methodMetricMap);
             metrics.add(methodMetric);
           }
         }
@@ -122,58 +120,59 @@ public class CommitComparisonResource {
       if (fileReportFirstSelectedCommit != null && fileReportSecondSelectedCommit != null) {
 
         for (final Map.Entry<String, ClassData2> entry : fileReportFirstSelectedCommit
-            .classData.entrySet()) {
+            .getClassData().entrySet()) {
           Metric classMetric = new Metric();
-          classMetric.entityName = entry.getKey();
-          ClassData2 classDataSecondSelectedCommit = fileReportSecondSelectedCommit.classData
-              .get(classMetric.entityName);
+          classMetric.setEntityName(entry.getKey());
+          ClassData2 classDataSecondSelectedCommit = fileReportSecondSelectedCommit.getClassData()
+              .get(classMetric.getEntityName());
           final Map<String, MetricVal> classMetricMap = new HashMap<>();
           final ClassData2 classDataFirstSelectedCommit = entry.getValue();
           // add class metric
           for (final Map.Entry<String, String> classMetricEntry : 
-              classDataFirstSelectedCommit.classMetric.entrySet()) {
+              classDataFirstSelectedCommit.getClassMetric().entrySet()) {
             final String key = classMetricEntry.getKey();
             final String val = classMetricEntry.getValue();
             MetricVal metricVal = new MetricVal();
-            metricVal.oldValue = val;
+            metricVal.setOldValue(val);
 
             if (classDataSecondSelectedCommit != null) {
-              final String newVal = classDataSecondSelectedCommit.classMetric.get(key);
-              metricVal.newValue = newVal;
+              final String newVal = classDataSecondSelectedCommit.getClassMetric().get(key);
+              metricVal.setNewValue(newVal);
             }
             classMetricMap.put(key, metricVal);
           }
 
-          classMetric.metricMap = classMetricMap;
+          classMetric.setMetricMap(classMetricMap);
           metrics.add(classMetric);
         
 
           // add method metric
-          Map<String, MethodData2> methodData = classDataFirstSelectedCommit.methodData;
+          Map<String, MethodData2> methodData = classDataFirstSelectedCommit.getMethodData();
 
           for (final Map.Entry<String, MethodData2> methodMetricEntry : methodData.entrySet()) {
             final Metric methodMetric = new Metric();
-            methodMetric.entityName = methodMetricEntry.getKey();
+            methodMetric.setEntityName(methodMetricEntry.getKey());
 
             final Map<String, MetricVal> methodMetricMap = new HashMap<>();
             final MethodData2 val = methodMetricEntry.getValue();
             MethodData2 val2 = null;
             if (classDataSecondSelectedCommit != null) {
-              val2 = classDataSecondSelectedCommit.methodData.get(methodMetricEntry.getKey());
+              val2 = classDataSecondSelectedCommit.getMethodData().get(methodMetricEntry.getKey());
             }
 
-            for (final Map.Entry<String, String> methodMetricEntryEntry : val.metric.entrySet()) {
+            for (final Map.Entry<String, String> methodMetricEntryEntry : val.getMetric()
+                .entrySet()) {
               final String metricKey = methodMetricEntryEntry.getKey();
               final String metricVal = methodMetricEntryEntry.getValue();
               
               final MetricVal metricVal2 = new MetricVal();
-              metricVal2.oldValue = metricVal;
+              metricVal2.setOldValue(metricVal);
               if (val2 != null) {
-                metricVal2.newValue = val2.metric.get(metricKey);
+                metricVal2.setNewValue(val2.getMetric().get(metricKey));
               }
               methodMetricMap.put(metricKey, metricVal2);
             }
-            methodMetric.metricMap = methodMetricMap;
+            methodMetric.setMetricMap(methodMetricMap);
             metrics.add(methodMetric);
           }
         }

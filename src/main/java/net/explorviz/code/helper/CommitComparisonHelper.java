@@ -2,9 +2,7 @@ package net.explorviz.code.helper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.stream.Collectors;
-import net.explorviz.code.beans.CommitTree.Branch;
 import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.LatestCommit;
@@ -12,7 +10,10 @@ import net.explorviz.code.mongo.LatestCommit;
 /**
  * ...
  */
-public class CommitComparisonHelper {
+public final class CommitComparisonHelper {
+
+  private CommitComparisonHelper() {
+  }
 
   /**
    * ...
@@ -21,8 +22,11 @@ public class CommitComparisonHelper {
    ** @return returns the empty string ("") if no latest common commit existent, otherwise its id
    * 
    */
-  public static String getLatestCommonCommitId(final String firstSelectedId, 
-      final String secondSelectedId, final String landscapeToken, final String applicationName) {
+
+
+  public static String getLatestCommonCommitId(final String firstSelectedId, // NOPMD
+      final String secondSelectedId, final String landscapeToken,
+      final String applicationName) {
 
     final CommitReport firstSelected = CommitReport.findByTokenAndApplicationNameAndCommitId(
           landscapeToken, applicationName, firstSelectedId);
@@ -36,28 +40,28 @@ public class CommitComparisonHelper {
     final List<BranchPoint> firstSelectedBranchPoints = new ArrayList<>();
     final List<BranchPoint> secondSelectedBranchPoints = new ArrayList<>();
 
-    BranchPoint firstSelectedBranchPoint = new BranchPoint();
-    firstSelectedBranchPoint.emergedFromBranchName = firstSelected.branchName;
-    firstSelectedBranchPoint.emergedFromCommitId = firstSelected.commitId;
+    final BranchPoint firstSelectedBranchPoint = new BranchPoint();
+    firstSelectedBranchPoint.setEmergedFromBranchName(firstSelected.getBranchName());
+    firstSelectedBranchPoint.setEmergedFromCommitId(firstSelected.getCommitId());
 
-    BranchPoint secondSelectedBranchPoint = new BranchPoint();
-    secondSelectedBranchPoint.emergedFromBranchName = secondSelected.branchName;
-    secondSelectedBranchPoint.emergedFromCommitId = secondSelected.commitId;
+    final BranchPoint secondSelectedBranchPoint = new BranchPoint();
+    secondSelectedBranchPoint.setEmergedFromBranchName(secondSelected.getBranchName());
+    secondSelectedBranchPoint.setEmergedFromCommitId(secondSelected.getCommitId());
 
-    BranchPoint firstSelectedCurrentBranchPoint = firstSelectedBranchPoint;
-    BranchPoint secondSelectedCurrentBranchPoint = secondSelectedBranchPoint;
+    BranchPoint firstSelectedCurrentBranchPoint = firstSelectedBranchPoint; // NOPMD
+    BranchPoint secondSelectedCurrentBranchPoint = secondSelectedBranchPoint; // NOPMD
 
     firstSelectedBranchPoints.add(firstSelectedCurrentBranchPoint);
-    while ((firstSelectedCurrentBranchPoint = 
+    while ((firstSelectedCurrentBranchPoint = // NOPMD
     BranchPoint.findByTokenAndBranchName(landscapeToken, firstSelectedCurrentBranchPoint
-        .emergedFromBranchName)) != null) {
+        .getEmergedFromBranchName())) != null) {
       firstSelectedBranchPoints.add(firstSelectedCurrentBranchPoint);
     }
 
     secondSelectedBranchPoints.add(secondSelectedCurrentBranchPoint);
-    while ((secondSelectedCurrentBranchPoint = 
+    while ((secondSelectedCurrentBranchPoint = // NOPMD
     BranchPoint.findByTokenAndBranchName(
-      landscapeToken, secondSelectedCurrentBranchPoint.emergedFromBranchName)) != null) {
+      landscapeToken, secondSelectedCurrentBranchPoint.getEmergedFromBranchName())) != null) {
       secondSelectedBranchPoints.add(secondSelectedCurrentBranchPoint);
     }
 
@@ -65,60 +69,62 @@ public class CommitComparisonHelper {
     firstSelectedBranchPoints.removeIf(
         b1 -> {
         return secondSelectedBranchPoints.stream()
-                                  .filter(b2 -> b2.emergedFromBranchName
-                                                  .equals(b1.emergedFromBranchName))
+                                  .filter(b2 -> b2.getEmergedFromBranchName()
+                                                  .equals(b1.getEmergedFromBranchName()))
                                   .collect(Collectors.toList())
                                   .size() == 0;
       });
     
 
-    String latestCommonBranchName = firstSelectedBranchPoints.get(0).emergedFromBranchName;
-    String firstSelectedCommitInCommonBranch = firstSelectedBranchPoints.get(0).emergedFromCommitId;
-    List<BranchPoint> temp = secondSelectedBranchPoints.stream()
-                                                        .filter(b -> b.emergedFromBranchName
+    final String latestCommonBranchName = firstSelectedBranchPoints.get(0)
+        .getEmergedFromBranchName();
+    String firstSelectedCommitInCommonBranch = firstSelectedBranchPoints.get(0) // NOPMD
+        .getEmergedFromCommitId();
+    final List<BranchPoint> temp = secondSelectedBranchPoints.stream()
+                                                        .filter(b -> b.getEmergedFromBranchName()
                                                                       .equals(latestCommonBranchName
                                                                )
                                                         )
                                                         .collect(Collectors.toList());
                      
-    if (temp.size() > 0) {
-      String secondSelectedCommitInCommonBranch = temp.get(0).emergedFromCommitId;
+    if (!temp.isEmpty()) {
+      final String secondSelectedCommitInCommonBranch = temp.get(0) // NOPMD
+          .getEmergedFromCommitId(); // NOPMD
 
       if (firstSelectedCommitInCommonBranch.equals(secondSelectedCommitInCommonBranch)) {
         return firstSelectedCommitInCommonBranch;
       }
 
       // the common commit id is the one that comes before the other
-      LatestCommit latestCommit = 
+      final LatestCommit latestCommit = 
           LatestCommit.findByBranchNameAndLandscapeToken(latestCommonBranchName, landscapeToken);
       if (latestCommit == null) {
         return "";
       }
-      String currentCommit = latestCommit.commitId;
+      String currentCommit = latestCommit.getCommitId();
       
       CommitReport cr;
-      while ((cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, 
+      while ((cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, // NOPMD 
          applicationName, currentCommit)) != null 
         &&
-        !cr.commitId.equals(firstSelectedCommitInCommonBranch) 
+        !cr.getCommitId().equals(firstSelectedCommitInCommonBranch) 
         && 
-        !cr.commitId.equals(secondSelectedCommitInCommonBranch)
-      ){
-        currentCommit = cr.parentCommitId;
+        !cr.getCommitId().equals(secondSelectedCommitInCommonBranch)
+      ) {
+        currentCommit = cr.getParentCommitId();
       }
 
-      if (cr.commitId.equals(firstSelectedCommitInCommonBranch)) {
+      if (cr.getCommitId().equals(firstSelectedCommitInCommonBranch)) {
         return secondSelectedCommitInCommonBranch;
       }
 
-      if (cr.commitId.equals(secondSelectedCommitInCommonBranch)) {
+      if (cr.getCommitId().equals(secondSelectedCommitInCommonBranch)) {
         return firstSelectedCommitInCommonBranch;
       }
 
       return "";
-    } else {
-      return "";
-    }                                                   
+    } 
+    return "";                                              
   }
 
   /**
@@ -128,15 +134,15 @@ public class CommitComparisonHelper {
    ** @param landscapeToken ...
    ** @return ...
    */
-  public static List<String> getComparisonAddedFiles(final String firstSelectedCommitId, 
+  public static List<String> getComparisonAddedFiles(final String firstSelectedCommitId, // NOPMD
         final String secondSelectedCommitId, final String landscapeToken, 
         final String applicationName) {
 
-    CommitReport commitReportFirstSelectedCommit = CommitReport
+    final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             firstSelectedCommitId);
     
-    CommitReport commitReportSecondSelectedCommit = CommitReport
+    final CommitReport commitReportSecondSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             secondSelectedCommitId);
 
@@ -146,9 +152,9 @@ public class CommitComparisonHelper {
       return null;
     }
 
-    List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.files;
-    List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.files;
-    List<String> addedFiles = new ArrayList<>();
+    final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
+    final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
+    final List<String> addedFiles = new ArrayList<>();
     filesInSecondSelectedCommit.forEach(file -> {
       if (!filesInFirstSelectedCommit.contains(file)) {
         addedFiles.add(file);
@@ -164,15 +170,15 @@ public class CommitComparisonHelper {
    ** @param landscapeToken ...
    ** @return ...
    */
-  public static List<String> getComparisonDeletedFiles(final String firstSelectedCommitId, 
+  public static List<String> getComparisonDeletedFiles(final String firstSelectedCommitId, // NOPMD
         final String secondSelectedCommitId, final String landscapeToken, 
         final String applicationName) {
     
-    CommitReport commitReportFirstSelectedCommit = CommitReport
+    final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             firstSelectedCommitId);
     
-    CommitReport commitReportSecondSelectedCommit = CommitReport
+    final CommitReport commitReportSecondSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             secondSelectedCommitId);
 
@@ -182,9 +188,9 @@ public class CommitComparisonHelper {
       return null;
     }
 
-    List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.files;
-    List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.files;
-    List<String> deletedFiles = new ArrayList<>();
+    final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
+    final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
+    final List<String> deletedFiles = new ArrayList<>();
     filesInFirstSelectedCommit.forEach(file -> {
       if (!filesInSecondSelectedCommit.contains(file)) {
         deletedFiles.add(file);
@@ -201,15 +207,15 @@ public class CommitComparisonHelper {
    ** @param landscapeToken ...
    ** @return ...
    */
-  public static List<String> getComparisonModifiedFiles(final String firstSelectedCommitId, 
+  public static List<String> getComparisonModifiedFiles(final String firstSelectedCommitId, // NOPMD
         final String secondSelectedCommitId, final String landscapeToken, 
         final String applicationName) {
 
-    CommitReport commitReportFirstSelectedCommit = CommitReport
+    final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             firstSelectedCommitId);
     
-    CommitReport commitReportSecondSelectedCommit = CommitReport
+    final CommitReport commitReportSecondSelectedCommit = CommitReport // NOPMD
         .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
             secondSelectedCommitId);
 
@@ -219,19 +225,19 @@ public class CommitComparisonHelper {
       return null;
     }
 
-    List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.files;
-    List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.files;
-    List<String> modifiedFiles = new ArrayList<>();
+    final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
+    final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
+    final List<String> modifiedFiles = new ArrayList<>();
 
 
 
     filesInFirstSelectedCommit.forEach(file -> {
       if (filesInSecondSelectedCommit.contains(file)) {
-        int indexFirstSelected = filesInFirstSelectedCommit.indexOf(file);
-        int indexSecondSelected = filesInSecondSelectedCommit.indexOf(file);
-        String fileHashFirstSelected = commitReportFirstSelectedCommit.fileHash
+        final int indexFirstSelected = filesInFirstSelectedCommit.indexOf(file);
+        final int indexSecondSelected = filesInSecondSelectedCommit.indexOf(file);
+        final String fileHashFirstSelected = commitReportFirstSelectedCommit.getFileHash()
             .get(indexFirstSelected);
-        String fileHashSecondSelected = commitReportSecondSelectedCommit.fileHash
+        final String fileHashSecondSelected = commitReportSecondSelectedCommit.getFileHash()
             .get(indexSecondSelected);
         if (!fileHashFirstSelected.equals(fileHashSecondSelected)) {
           modifiedFiles.add(file);
