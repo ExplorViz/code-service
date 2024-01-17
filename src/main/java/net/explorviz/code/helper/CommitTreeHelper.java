@@ -34,8 +34,12 @@ public final class CommitTreeHelper {
       final String emergedFromBranchName = branchPoint.getEmergedFromBranchName();
       final String emergedFromCommitId = branchPoint.getEmergedFromCommitId();
       final LatestCommit latestCommit = LatestCommit
-          .findByBranchNameAndLandscapeToken(branchName, landscapeToken);
+          .findLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, appName, branchName);
 
+      if (latestCommit == null) {
+        return;
+      }
+      
       // now iterate from latestCommit to branchPoint commit
       String currentCommitId = latestCommit.getCommitId();
       final Stack<String> commits = new Stack<>();

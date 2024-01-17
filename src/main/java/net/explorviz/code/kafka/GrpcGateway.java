@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
+
+import net.explorviz.code.mongo.Application;
 import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.CommitReport.FileMetric;
@@ -107,14 +109,16 @@ public class GrpcGateway {
         // no missing reports
         commitReport.persist();
         LatestCommit latestCommit = LatestCommit
-            .findByBranchNameAndLandscapeToken(receivedCommitReportBranchName, 
-                                               receivedCommitReportLandscapeToken);
+            .findLandscapeTokenAndApplicationNameAndBranchName(
+                receivedCommitReportLandscapeToken, receivedCommitReportApplicationName, 
+                receivedCommitReportBranchName);
         if (latestCommit == null) {
           // commit of a new branch
           latestCommit = new LatestCommit();
           latestCommit.setBranchName(receivedCommitReportBranchName);
           latestCommit.setCommitId(receivedCommitReportCommitId);
           latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
+          latestCommit.setApplicationName(receivedCommitReportApplicationName);
           latestCommit.persist();
 
           final BranchPoint branchPoint = new BranchPoint();
@@ -143,6 +147,7 @@ public class GrpcGateway {
       latestCommit.setBranchName(receivedCommitReportBranchName);
       latestCommit.setCommitId(receivedCommitReportCommitId);
       latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
+      latestCommit.setApplicationName(receivedCommitReportApplicationName);
       latestCommit.persist();
       final BranchPoint branchPoint = new BranchPoint();
       branchPoint.setBranchName(receivedCommitReportBranchName);
@@ -152,6 +157,15 @@ public class GrpcGateway {
       branchPoint.setEmergedFromBranchName(NO_ANCESTOR);
       branchPoint.setEmergedFromCommitId("");
       branchPoint.persist();
+
+      Application application = Application.findByLandscapeTokenAndApplicationName(
+          receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+      if (application == null) {
+        application = new Application();
+        application.setApplicationName(receivedCommitReportApplicationName);
+        application.setLandscapeToken(receivedCommitReportLandscapeToken);
+        application.persist();
+      }
     }
   }
 
@@ -324,17 +338,21 @@ public class GrpcGateway {
    */
   public String processStateData(final StateDataRequest stateDataRequest) {
     if (LOGGER.isTraceEnabled()) {
-      LOGGER.trace("Request for state - upstream: {}, branch: {}, token: {}, secret: {}",
+      LOGGER.trace("Request for state - upstream: {}, branch: {}, token: {}, secret: {},"
+          + " application name: {}",
           stateDataRequest.getUpstreamName(),
           stateDataRequest.getBranchName(),
           stateDataRequest.getLandscapeToken(),
-          stateDataRequest.getLandscapeSecret());
+          stateDataRequest.getLandscapeSecret(),
+          stateDataRequest.getApplicationName());
     }
 
     final String branchName = stateDataRequest.getBranchName();
     final String landscapeToken = stateDataRequest.getLandscapeToken();
+    final String applicationName = stateDataRequest.getApplicationName();
     final LatestCommit latestCommit = LatestCommit
-        .findByBranchNameAndLandscapeToken(branchName, landscapeToken);
+        .findLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, applicationName,
+        branchName);
 
     // Send the empty string if the state of the branch is unknown, otherwise the SHA1 of
     // the branch's last commit

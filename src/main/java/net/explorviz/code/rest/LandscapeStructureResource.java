@@ -84,9 +84,9 @@ public class LandscapeStructureResource {
       final String[] packageFileNameSplit = packageFileName.split("\\.");
       final String className = packageFileNameSplit[packageFileNameSplit.length - 2];
       final Package packageFirstSelectedCommit = 
-          this.getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
+          getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
       final Package packageSecondSelectedCommit = 
-          this.getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
+          getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
  
       // packageFileName includes file extension
@@ -140,9 +140,9 @@ public class LandscapeStructureResource {
       final int numThree = 3;
       final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
       final Package packageFirstSelectedCommit = 
-          this.getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
+          getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
       final Package packageSecondSelectedCommit = 
-          this.getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
+          getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
       if (packageSecondSelectedCommit != null) { // NOPMD
 
@@ -166,13 +166,15 @@ public class LandscapeStructureResource {
               subPackages.append(packageFileNameSplit[i] + ".");
               if (packageFileNameSplit[i].equals(packageName)) {
                 subPackages.append(packageFileNameSplit[i + 1]);
+
                 break;
               }
             }
+            // TODO: subPackages.toString()
             // file name needed for technical reason. We imitate one
             final String subPackageFileName = subPackages.toString() + "." + "filename" + "."
                  + "extension";
-            final Package pckg = this.getPackageFromPath(subPackageFileName, 
+            final Package pckg = getPackageFromPath(subPackageFileName, 
                 packagesSecondSelectedCommit);
             packageFirstSelectedCommit.getSubPackages().add(pckg);
           }
@@ -195,8 +197,15 @@ public class LandscapeStructureResource {
     return null;
   }
 
-  // returns the "deepest" package available matching the package structure
-  private Package getPackageFromPath(final String packageFileName, // NOPMD
+ 
+  /**
+   * Returns the "deepest" package available matching the package structure. Therefore, the 
+   * deepest package and the parent package chain covers a prefix of the package structure.
+   ** @param packageFileName the package structure string
+   ** @param packages list of packages to search for a match
+   ** @return the "deepest" package
+   */
+  public static Package getPackageFromPath(final String packageFileName, // NOPMD
       final List<Package> packages) {
     final String[] packageFileNameSplit = packageFileName.split("\\.");
     // packageFileName includes file extension
@@ -243,7 +252,7 @@ public class LandscapeStructureResource {
     
     final Application application = new Application();
     application.setName(appName);
-    application.setLanguage("Java");
+    application.setLanguage("java");
     application.setInstanceId("0");
     application.setPackages(packages);
     node.getApplications().add(application);
