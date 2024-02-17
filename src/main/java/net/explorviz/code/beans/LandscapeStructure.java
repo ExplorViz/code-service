@@ -175,7 +175,7 @@ public class LandscapeStructure {
           public static class Method {
 
             private String name;
-            private String hashCode;
+            private String methodHash;
 
             public String getName() {
               return this.name;
@@ -185,12 +185,12 @@ public class LandscapeStructure {
               this.name = name;
             }
 
-            public String getHashCode() {
-              return this.hashCode;
+            public String getMethodHash() {
+              return this.methodHash;
             }
 
-            public void setHashCode(final String hashCode) {
-              this.hashCode = hashCode;
+            public void setMethodHash(final String hashCode) {
+              this.methodHash = hashCode;
             }
           }
         }

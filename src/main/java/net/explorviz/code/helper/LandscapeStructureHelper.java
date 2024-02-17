@@ -145,7 +145,7 @@ public final class LandscapeStructureHelper {
             Otherwise we might miss overloaded functions */
             final Method method = new Method(); // NOPMD
             method.setName(methodName); // include parameter list due to overloaded functions?
-            method.setHashCode(methodName + "-default-hash-code"); // TODO: real hash code
+            method.setMethodHash(methodName + "defaulthashcode"); // TODO: real hash code
             clazz.getMethods().add(method);
             functionFqn.add(methodFqn.toString());
           }

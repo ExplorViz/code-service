@@ -153,8 +153,8 @@ public class CommitReport extends PanacheMongoEntity  {
   }
 
 
-  public static CommitReport findByTokenAndApplicationNameAndCommitId(final String landscapeToken,
-      final String applicationName, final String commitId) {
+  public static CommitReport findByTokenAndApplicationNameAndCommitId(
+      final String landscapeToken, final String applicationName, final String commitId) {
     return find("landscapeToken = ?1 and applicationName = ?2 and commitId = ?3", 
         landscapeToken, applicationName, commitId).firstResult();
   }
