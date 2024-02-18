@@ -97,7 +97,7 @@ public final class CommitComparisonHelper {
 
       // the common commit id is the one that comes before the other
       final LatestCommit latestCommit = 
-          LatestCommit.findLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, 
+          LatestCommit.findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, 
           applicationName, latestCommonBranchName);
       if (latestCommit == null) {
         return "";

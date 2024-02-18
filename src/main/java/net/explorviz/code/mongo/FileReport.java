@@ -336,7 +336,7 @@ public class FileReport extends PanacheMongoEntity {
       private List<String> modifier;
       private List<ParameterData2> parameter;
       private List<String> outgoingMethodCalls;
-      private boolean isConstructor;
+      private boolean constructor;
       private List<String> annotation;
       private Map<String, String> metric;
 
@@ -372,16 +372,16 @@ public class FileReport extends PanacheMongoEntity {
         this.outgoingMethodCalls = outgoingMethodCalls;
       }
 
-      public boolean isIsConstructor() {
-        return this.isConstructor;
+      public boolean isConstructor() {
+        return this.constructor;
       }
 
-      public boolean getIsConstructor() { // NOPMD
-        return this.isConstructor;
-      }
+      // public boolean getConstructor() { // NOPMD
+      //   return this.constructor;
+      // }
 
-      public void setIsConstructor(final boolean isConstructor) {
-        this.isConstructor = isConstructor;
+      public void setConstructor(final boolean isConstructor) {
+        this.constructor = isConstructor;
       }
 
       public List<String> getAnnotation() {

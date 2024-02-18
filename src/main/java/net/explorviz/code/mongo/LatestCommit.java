@@ -51,7 +51,7 @@ public class LatestCommit extends PanacheMongoEntity {
    ** @param branchName ...
    ** @return ...
    */
-  public static LatestCommit findLandscapeTokenAndApplicationNameAndBranchName(
+  public static LatestCommit findByLandscapeTokenAndApplicationNameAndBranchName(
        final String landscapeToken, final String applicationName, final String branchName) {
     return find("landscapeToken = ?1 and applicationName = ?2 and branchName = ?3", landscapeToken, 
         applicationName, branchName)

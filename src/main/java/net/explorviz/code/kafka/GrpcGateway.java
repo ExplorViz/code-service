@@ -109,7 +109,7 @@ public class GrpcGateway {
         // no missing reports
         commitReport.persist();
         LatestCommit latestCommit = LatestCommit
-            .findLandscapeTokenAndApplicationNameAndBranchName(
+            .findByLandscapeTokenAndApplicationNameAndBranchName(
                 receivedCommitReportLandscapeToken, receivedCommitReportApplicationName, 
                 receivedCommitReportBranchName);
         if (latestCommit == null) {
@@ -256,7 +256,7 @@ public class GrpcGateway {
           }
           md2.setParameter(parameter);
           md2.setOutgoingMethodCalls(md.getOutgoingMethodCallsList());
-          md2.setIsConstructor(md.getIsConstructor());
+          md2.setConstructor(md.getIsConstructor());
           md2.setAnnotation(md.getAnnotationList());
           md2.setMetric(md.getMetricMap());
           constructor.add(md2);
@@ -283,7 +283,7 @@ public class GrpcGateway {
           md.setParameter(parameter);
 
           md.setOutgoingMethodCalls(entry2.getValue().getOutgoingMethodCallsList());
-          md.setIsConstructor(entry2.getValue().getIsConstructor());
+          md.setConstructor(entry2.getValue().getIsConstructor());
           md.setAnnotation(entry2.getValue().getAnnotationList());
           md.setMetric(entry2.getValue().getMetricMap());
           methodData.put(entry2.getKey(), md);
@@ -351,7 +351,7 @@ public class GrpcGateway {
     final String landscapeToken = stateDataRequest.getLandscapeToken();
     final String applicationName = stateDataRequest.getApplicationName();
     final LatestCommit latestCommit = LatestCommit
-        .findLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, applicationName,
+        .findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, applicationName,
         branchName);
 
     // Send the empty string if the state of the branch is unknown, otherwise the SHA1 of
