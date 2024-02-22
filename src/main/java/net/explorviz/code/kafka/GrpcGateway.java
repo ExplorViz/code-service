@@ -85,6 +85,7 @@ public class GrpcGateway {
       fileMetric.setFileName(fileMetricData.getFileName());
       fileMetric.setLoc(fileMetricData.getLoc());
       fileMetric.setCyclomaticComplexity(fileMetricData.getCyclomaticComplexity());
+      fileMetric.setNumberOfMethods(fileMetricData.getNumberOfMethods());
       receivedCommitReportFileMetric.add(fileMetric);
     }
 

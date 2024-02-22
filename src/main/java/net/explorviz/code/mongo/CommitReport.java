@@ -117,6 +117,9 @@ public class CommitReport extends PanacheMongoEntity  {
     private int loc;
     private int cyclomaticComplexity;
     private int numberOfMethods;
+    // private int numberOfAddedLines;
+    // private int numberOfModifiedLines;
+    // private int numberOfDeletedLines;
 
     public void setFileName(final String fileName) {
       this.fileName = fileName;
@@ -149,6 +152,22 @@ public class CommitReport extends PanacheMongoEntity  {
     public int getNumberOfMethods() {
       return this.numberOfMethods;
     }
+
+    // public void setNumberOfAddedLines(final int numberOfAddedLines) {
+    //   this.numberOfAddedLines = numberOfAddedLines;
+    // }
+
+    // public int getNumberOfAddedLines() {
+    //   return this.numberOfAddedLines;
+    // }
+
+    // public void setNumberOfModifiedLines(final int numberOfModifiedLines) {
+    //   this.numberOfModifiedLines = numberOfModifiedLines;
+    // }
+
+    // public int getNumberOfDeletedLines() {
+    //   return this.numberOfDeletedLines;
+    // }
 
   }
 
