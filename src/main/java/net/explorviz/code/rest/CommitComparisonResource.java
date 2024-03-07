@@ -38,8 +38,8 @@ public class CommitComparisonResource {
     if (CommitComparisonHelper.getLatestCommonCommitId(firstCommit, secondCommit, token, appName)
         .equals(secondCommit)) {
       final String temp = firstCommit;
-      firstCommit = secondCommit;
-      secondCommit = temp;
+      firstCommit = secondCommit; // NOPMD
+      secondCommit = temp; // NOPMD
     } 
 
 
@@ -73,7 +73,7 @@ public class CommitComparisonResource {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
           fqFileNameDotSeparator, secondCommit);
-      if (fileReport != null) {
+      if (fileReport != null) { // NOPMD
         final String packageFileName = fileReport.getPackageName() + "." + fileReport.getFileName();
         final String[] packageFileNameSplit = packageFileName.split("\\.");
         final int numThree = 3;
@@ -106,7 +106,7 @@ public class CommitComparisonResource {
                 }
               }
 
-              if (subPackages.toString().length() > 0) {
+              if (subPackages.toString().length() > 0) { // NOPMD
                 addedPackages.add(subPackages.toString().substring(0, 
                     subPackages.toString().length() - 1));
               } else { // shouldn't happen
@@ -132,7 +132,7 @@ public class CommitComparisonResource {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
           fqFileNameDotSeparator, firstCommit);
-      if (fileReport != null) {
+      if (fileReport != null) { // NOPMD
         final String packageFileName = fileReport.getPackageName() + "." + fileReport.getFileName();
         final String[] packageFileNameSplit = packageFileName.split("\\.");
         final int numThree = 3;

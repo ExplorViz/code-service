@@ -35,5 +35,5 @@ public class Application extends PanacheMongoEntity {
       final String applicationName) {
     return find("landscapeToken = ?1 and applicationName = ?2", landscapeToken, 
         applicationName).firstResult();
-      }
+  }
 }

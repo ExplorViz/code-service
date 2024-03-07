@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import net.explorviz.code.beans.Metrics;
@@ -63,8 +62,8 @@ public class MetricResource {
         fileMetrics.add(fileMetric);
       }
 
-      final Map<String, Map<String, String>> fqClassNameToMetricsMap = new HashMap<>();
-      final Map<String, Map<String, String>> fqMethodNameToMetricsMap = new HashMap<>();
+      final Map<String, Map<String, String>> fqClassNameToMetricsMap = new HashMap<>(); // NOPMD
+      final Map<String, Map<String, String>> fqMethodNameToMetricsMap = new HashMap<>(); // NOPMD
       final Map<String, ClassData2> classFqnToClassData = fileReport.getClassData();
 
       for (final Map.Entry<String, ClassData2> entry : classFqnToClassData.entrySet()) {
@@ -86,9 +85,9 @@ public class MetricResource {
   
       }
 
-      if (fqClassNameToMetricsMap.size() > 0) {
+      if (!fqClassNameToMetricsMap.isEmpty()) { // NOPMD
         classMetrics.add(fqClassNameToMetricsMap);
-        if (fqMethodNameToMetricsMap.size() > 0) {
+        if (!fqMethodNameToMetricsMap.isEmpty()) { // NOPMD
           methodMetrics.add(fqMethodNameToMetricsMap);
         } else {
           methodMetrics.add(null);

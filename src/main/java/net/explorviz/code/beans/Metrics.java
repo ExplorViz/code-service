@@ -18,7 +18,7 @@ public class Metrics {
     return this.files;
   }
 
-  public void setFiles(List<String> files) {
+  public void setFiles(final List<String> files) {
     this.files = files;
   }
 
@@ -26,7 +26,7 @@ public class Metrics {
     return this.fileMetrics;
   }
 
-  public void setFileMetrics(List<Map<String, String>> fileMetrics) {
+  public void setFileMetrics(final List<Map<String, String>> fileMetrics) {
     this.fileMetrics = fileMetrics;
   }
 
@@ -34,7 +34,7 @@ public class Metrics {
     return this.classMetrics;
   }
 
-  public void setClassMetrics(List<Map<String, Map<String, String>>> classMetrics) {
+  public void setClassMetrics(final List<Map<String, Map<String, String>>> classMetrics) {
     this.classMetrics = classMetrics;
   }
 
@@ -42,7 +42,7 @@ public class Metrics {
     return this.methodMetrics;
   }
 
-  public void setMethodMetrics(List<Map<String, Map<String, String>>> methodMetrics) {
+  public void setMethodMetrics(final List<Map<String, Map<String, String>>> methodMetrics) {
     this.methodMetrics = methodMetrics;
   }
     

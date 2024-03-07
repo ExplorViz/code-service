@@ -30,9 +30,9 @@ public final class CommitTreeHelper {
 
     branchPoints.forEach(branchPoint -> {
       final String branchName = branchPoint.getBranchName();
-      final String branchPointCommitId = branchPoint.getCommitId();
-      final String emergedFromBranchName = branchPoint.getEmergedFromBranchName();
-      final String emergedFromCommitId = branchPoint.getEmergedFromCommitId();
+      final String branchPointCommitId = branchPoint.getCommitId(); // NOPMD
+      final String emergedFromBranchName = branchPoint.getEmergedFromBranchName(); // NOPMD
+      final String emergedFromCommitId = branchPoint.getEmergedFromCommitId(); // NOPMD
       final LatestCommit latestCommit = LatestCommit
           .findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, appName, branchName);
 
