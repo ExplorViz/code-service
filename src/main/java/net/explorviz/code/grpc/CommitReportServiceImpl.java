@@ -15,11 +15,11 @@ import net.explorviz.code.proto.CommitReportService;
 public class CommitReportServiceImpl implements CommitReportService {
 
   @Inject
-  /* package */ GrpcGateway kafkaGateway; // NOCS
+  /* package */ GrpcGateway gRPCGateway; // NOCS
 
   @Override
   public Uni<Empty> sendCommitReport(final CommitReportData request) {
-    kafkaGateway.processCommitReport(request);
+    gRPCGateway.processCommitReport(request);
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 }

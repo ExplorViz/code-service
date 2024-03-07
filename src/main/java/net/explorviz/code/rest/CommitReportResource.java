@@ -28,7 +28,8 @@ public class CommitReportResource {
     if (cr != null) {
       return cr;
     } 
-    return new CommitReport();
+    return new CommitReport(); // we could enhance the file metric with the help of the 
+    // FileReport before we return
   }
     
 }
