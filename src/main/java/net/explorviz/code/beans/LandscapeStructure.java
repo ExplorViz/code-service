@@ -3,7 +3,7 @@ package net.explorviz.code.beans;
 import java.util.List;
 
 /**
- * ...
+ * A class for the static landscape structure used for a commit.
  */
 public class LandscapeStructure {
   private String landscapeToken;

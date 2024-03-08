@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ...
+ * The class containing the metrics for every file
+ * of a commit.
  */
 public class Metrics {
 

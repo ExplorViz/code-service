@@ -116,7 +116,8 @@ public final class LandscapeStructureHelper {
       if (
           (classData = fileReport.getClassData().get(id)) == null // NOPMD /
       // TODO: walk through classData entry set instead 
-      // because a class file could (but shouldn't) have multiple first level classes defined
+      // because a class file could theoretically (but shouldn't practically) 
+      // have multiple first level classes defined
       ) {
         continue;
       }
@@ -170,11 +171,11 @@ public final class LandscapeStructureHelper {
 
   /**
    * ...
-   ** @param landscapeToken ...
-   ** @param appName ...
-   ** @param fqFileName ...
-   ** @param commitId ...
-   ** @return ...
+   ** @param landscapeToken the landscape token.
+   ** @param appName the application name.
+   ** @param fqFileName the full qualified file name.
+   ** @param commitId the commit id.
+   ** @return the file report matching the params above.
    */
   public static FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
       final String fqFileName, final String commitId) {
