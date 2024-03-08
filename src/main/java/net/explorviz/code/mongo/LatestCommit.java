@@ -3,7 +3,7 @@ package net.explorviz.code.mongo;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 
 /**
- * ...
+ * The class for the most recent commit of a branch w.r.t the application and landscape token.
  */
 public class LatestCommit extends PanacheMongoEntity {
 
@@ -46,10 +46,10 @@ public class LatestCommit extends PanacheMongoEntity {
 
   /**
    * ...
-   ** @param landscapeToken ...
-   ** @param applicationName ...
-   ** @param branchName ...
-   ** @return ...
+   ** @param landscapeToken the landscape token.
+   ** @param applicationName the application name.
+   ** @param branchName the branch name.
+   ** @return the latest commit that matches the params above.
    */
   public static LatestCommit findByLandscapeTokenAndApplicationNameAndBranchName(
        final String landscapeToken, final String applicationName, final String branchName) {

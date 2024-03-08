@@ -13,15 +13,15 @@ public class FileReportResource {
 
   /**
    * ...
-   ** @param token ...
-   ** @param appName ...
-   ** @param fqFileName ...
-   ** @param commit ...
-   ** @return ... important note: it is even possible to request 
-    * a file report of a file that exists for a given commit but
-    * that has not been modified or added in that commit. We then 
-    * return the file report for the newest commit where that file
-    * has indeed been modified or added.
+   ** @param token the landscape token.
+   ** @param appName the application name.
+   ** @param fqFileName the full qualified file name.
+   ** @param commit the commit id.
+   ** @return the file report matching the params above. If the
+   ** file with the given file name has not been added or modified
+   ** in the given commit, the file report gets returned that matches above params
+   ** except the commit id being the latest where the given file name has indeed been
+   ** modified or added. 
    */
   @Path("{token}/{appName}/{fqFileName}/{commit}")
   @GET

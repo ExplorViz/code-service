@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- *  ...
+ *  A class for the file reports that the code-agent sends to us.
  */
 public class FileReport extends PanacheMongoEntity {
 
@@ -121,11 +121,11 @@ public class FileReport extends PanacheMongoEntity {
 
   /**
    * ...
-   ** @param landscapeToken ...
-  ** @param appName ...
-  ** @param fqFileName ...
-  ** @param commitId ...
-  ** @return ...
+   ** @param landscapeToken the landscape token.
+  ** @param appName the application name
+  ** @param fqFileName the full qualified file name.
+  ** @param commitId the commit id.
+  ** @return the FileReport that matches the above params.
   */
   public static FileReport findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(// NOPMD
       final String landscapeToken, 
@@ -168,7 +168,7 @@ public class FileReport extends PanacheMongoEntity {
   }
 
   /**
-   * ...
+   * A class for the class-respective meta-data and metrics.
    */
   public static class ClassData2 {
 
@@ -283,7 +283,7 @@ public class FileReport extends PanacheMongoEntity {
 
 
     /**
-     * ...
+     * An enum for the type of class.
      */
     public enum ClassType2 {
         INTERFACE,
@@ -294,7 +294,7 @@ public class FileReport extends PanacheMongoEntity {
     }
 
     /**
-     * ...
+     * A class for the field meta-data.
      */
     public static class FieldData2 {
 
@@ -328,7 +328,7 @@ public class FileReport extends PanacheMongoEntity {
     }
 
     /**
-     * ...
+     * A class for the method meta-data.
      */
     public static class MethodData2 {
 
@@ -401,7 +401,7 @@ public class FileReport extends PanacheMongoEntity {
       }
 
       /**
-       * ...
+       * A class for the parameter meta-data.
        */
       public static class ParameterData2 {
 

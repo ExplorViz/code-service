@@ -27,8 +27,11 @@ import org.jboss.resteasy.reactive.RestPath;
 public class CommitComparisonResource {
 
   /**
-   * ...
-   ** @return ...
+   ** @param token the landscape token.
+   ** @param appName the application name.
+   ** @param firstCommit the commit id of the first selected commit.
+   ** @param secondCommit the commit id of the second selected commit.
+   ** @return the commit comparison matching the params.
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET

@@ -14,8 +14,9 @@ import org.jboss.resteasy.reactive.RestPath;
 @Path("/commit-tree/{token}/{appName}")
 public class CommitTreeResource {
   /**
-   * ..
-   * *@return .
+   ** @param token the landscape token.
+   ** @param appName the application name.
+   ** @return the commit tree for the given landscape token and application name.
    */
   @GET
   public CommitTree list(@RestPath final String token, @RestPath final String appName) { 

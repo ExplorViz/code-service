@@ -17,9 +17,10 @@ public final class CommitComparisonHelper {
 
   /**
    * ...
-   ** @param firstSelectedId ...
-   ** @param secondSelectedId ...
-   ** @return returns the empty string ("") if no latest common commit existent, otherwise its id
+   ** @param firstSelectedId the first selected commit id.
+   ** @param secondSelectedId the second selected commit id.
+   ** @return returns the empty string ("") if no latest common commit existent, otherwise its 
+   * latest common commit id.
    * 
    */
 
@@ -130,10 +131,11 @@ public final class CommitComparisonHelper {
 
   /**
    * ...
-   ** @param firstSelectedCommitId ...
-   ** @param secondSelectedCommitId ...
-   ** @param landscapeToken ...
-   ** @return ...
+   ** @param firstSelectedCommitId the first selected commit's id.
+   ** @param secondSelectedCommitId the second selected commit's id.
+   ** @param landscapeToken the landscape token
+   ** @return the list of file names that have been added in the second selected commit
+   ** (i.e. that exist in the second selected commit but not in the first selected commit).
    */
   public static List<String> getComparisonAddedFiles(final String firstSelectedCommitId, // NOPMD
         final String secondSelectedCommitId, final String landscapeToken, 
@@ -169,10 +171,11 @@ public final class CommitComparisonHelper {
 
   /**
    * ...
-   ** @param firstSelectedCommitId ...
-   ** @param secondSelectedCommitId ...
-   ** @param landscapeToken ...
-   ** @return ...
+   ** @param firstSelectedCommitId the first selected commit's id.
+   ** @param secondSelectedCommitId the second selected commit's id.
+   ** @param landscapeToken the landscape token.
+   ** @return the list of file names that have been deleted in the second selected commit
+   ** (i.e. that do not exist in the second selected commit but in the first selected commit).
    */
   public static List<String> getComparisonDeletedFiles(final String firstSelectedCommitId, // NOPMD
         final String secondSelectedCommitId, final String landscapeToken, 
@@ -205,10 +208,11 @@ public final class CommitComparisonHelper {
 
   /**
    * ...
-   ** @param firstSelectedCommitId ...
-   ** @param secondSelectedCommitId ...
-   ** @param landscapeToken ...
-   ** @return ...
+   ** @param firstSelectedCommitId the first selected commit's id.
+   ** @param secondSelectedCommitId the second selected commit's id.
+   ** @param landscapeToken the landscape token.
+   ** @return the list of file names that have been modified in the second selected commit
+   ** (i.e. files that exist in both commits but have a different hash value).
    */
   public static List<String> getComparisonModifiedFiles(final String firstSelectedCommitId, // NOPMD
         final String secondSelectedCommitId, final String landscapeToken, 

@@ -5,7 +5,7 @@ import java.util.List;
 
 
 /**
- * ...
+ * A class for the very first commit of a branch.
  */
 public class BranchPoint extends PanacheMongoEntity {
 

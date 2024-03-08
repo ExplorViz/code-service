@@ -5,8 +5,7 @@ import java.util.List;
 
 
 /**
- * ...
- * 
+ * A class to store the commit reports that the code-agent sends to us.
  */
 public class CommitReport extends PanacheMongoEntity  {
   private String commitId;
@@ -110,7 +109,7 @@ public class CommitReport extends PanacheMongoEntity  {
   }
 
   /**
-   * ...
+   * A class for the file metrics of the modified files within a commit report.
    */
   public static class FileMetric {
     private String fileName;

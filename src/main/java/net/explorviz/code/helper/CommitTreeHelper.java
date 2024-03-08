@@ -20,8 +20,9 @@ public final class CommitTreeHelper {
   }
 
   /**
-   * ...
-   ** @return ..
+   ** @param appName the application name.
+   ** @param landscapeToken the landscape token.
+   ** @return the commit tree matching above params.
    */
   public static CommitTree createCommitTree(final String appName, final String landscapeToken) {
     final List<BranchPoint> branchPoints = BranchPoint

@@ -28,8 +28,10 @@ public final class LandscapeStructureHelper {
     
   /**
    * ...
-   ** @param commitId
-   ** @return ...
+   ** @param landscapeToken the landscape token.
+   ** @param commitId the commit id.
+   ** @param appName the application name.
+   ** @return the list of "first-order" packages of an application matching above params.
    */
   public static List<Package> createListOfPackages(// NOPMD
         final String landscapeToken,

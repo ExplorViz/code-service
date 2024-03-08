@@ -4,7 +4,7 @@ import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.List;
 
 /**
- * ...
+ * The class for every application that the code-agent analyzed.
  */
 public class Application extends PanacheMongoEntity {
 
