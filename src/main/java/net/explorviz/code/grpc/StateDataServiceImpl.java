@@ -2,7 +2,7 @@ package net.explorviz.code.grpc;
 
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import net.explorviz.code.kafka.GrpcGateway;
 import net.explorviz.code.proto.StateData;
 import net.explorviz.code.proto.StateDataRequest;

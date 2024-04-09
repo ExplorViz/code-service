@@ -1,7 +1,7 @@
 package net.explorviz.code.rest;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.FileReport;
 

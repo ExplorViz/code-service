@@ -1,9 +1,10 @@
 package net.explorviz.code.rest;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+
 import net.explorviz.code.mongo.Application;
 import org.jboss.resteasy.reactive.RestPath;
 
