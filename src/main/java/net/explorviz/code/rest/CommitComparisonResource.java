@@ -1,11 +1,11 @@
 package net.explorviz.code.rest;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import net.explorviz.code.beans.CommitComparison;
 import net.explorviz.code.beans.CommitComparison.Metric;
 import net.explorviz.code.beans.CommitComparison.Metric.MetricVal;
@@ -18,7 +18,6 @@ import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
 import org.jboss.resteasy.reactive.RestPath;
 
 
-
 /**
  * ...
  */
@@ -27,44 +26,39 @@ import org.jboss.resteasy.reactive.RestPath;
 public class CommitComparisonResource {
 
   /**
-   ** @param token the landscape token.
-   ** @param appName the application name.
-   ** @param firstCommit the commit id of the first selected commit.
-   ** @param secondCommit the commit id of the second selected commit.
-   ** @return the commit comparison matching the params.
+   * * @param token the landscape token. * @param appName the application name. * @param firstCommit
+   * the commit id of the first selected commit. * @param secondCommit the commit id of the second
+   * selected commit. * @return the commit comparison matching the params.
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public  CommitComparison list(@RestPath final String token, // NOPMD
-      @RestPath final String appName,  String firstCommit,  String secondCommit) {
+  public CommitComparison list(@RestPath final String token, // NOPMD
+      @RestPath final String appName, String firstCommit, String secondCommit) {
 
     if (CommitComparisonHelper.getLatestCommonCommitId(firstCommit, secondCommit, token, appName)
         .equals(secondCommit)) {
       final String temp = firstCommit;
       firstCommit = secondCommit; // NOPMD
       secondCommit = temp; // NOPMD
-    } 
-
+    }
 
     final List<String> added = CommitComparisonHelper.getComparisonAddedFiles(
-        firstCommit, 
+        firstCommit,
         secondCommit, token, appName);
 
     final List<String> addedPackages = new ArrayList<>();
 
     final List<String> modified = CommitComparisonHelper.getComparisonModifiedFiles(
-        firstCommit, 
+        firstCommit,
         secondCommit, token, appName);
 
     final List<String> deleted = CommitComparisonHelper.getComparisonDeletedFiles(
-        firstCommit, 
+        firstCommit,
         secondCommit, token, appName);
 
     final List<String> deletedPackages = new ArrayList<>();
 
     final List<Metric> metrics = new ArrayList<>();
-
-
 
     final List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper
         .createListOfPackages(token, firstCommit, appName);
@@ -74,25 +68,25 @@ public class CommitComparisonResource {
     // fill addedPackages with the packages that are added
     for (final String fqFileName : added) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, secondCommit);
       if (fileReport != null) { // NOPMD
         final String packageFileName = fileReport.getPackageName() + "." + fileReport.getFileName();
         final String[] packageFileNameSplit = packageFileName.split("\\.");
         final int numThree = 3;
         final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
-        final Package packageFirstSelectedCommit = 
+        final Package packageFirstSelectedCommit =
             LandscapeStructureResource
-            .getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
-        final Package packageSecondSelectedCommit = 
+                .getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
+        final Package packageSecondSelectedCommit =
             LandscapeStructureResource
-            .getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
+                .getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
         if (packageSecondSelectedCommit != null) { // NOPMD
 
           if (packageFirstSelectedCommit != null) { // NOPMD
             final String packageName = packageFirstSelectedCommit.getName();
-      
+
             if (packageName.equals(lastPackageName)) {
               // no new package added
               addedPackages.add("");
@@ -110,7 +104,7 @@ public class CommitComparisonResource {
               }
 
               if (subPackages.toString().length() > 0) { // NOPMD
-                addedPackages.add(subPackages.toString().substring(0, 
+                addedPackages.add(subPackages.toString().substring(0,
                     subPackages.toString().length() - 1));
               } else { // shouldn't happen
                 addedPackages.add("");
@@ -133,25 +127,25 @@ public class CommitComparisonResource {
     // fill deletedPackages with the packages that are deleted
     for (final String fqFileName : deleted) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, firstCommit);
       if (fileReport != null) { // NOPMD
         final String packageFileName = fileReport.getPackageName() + "." + fileReport.getFileName();
         final String[] packageFileNameSplit = packageFileName.split("\\.");
         final int numThree = 3;
         final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
-        final Package packageFirstSelectedCommit = 
+        final Package packageFirstSelectedCommit =
             LandscapeStructureResource
-            .getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
-        final Package packageSecondSelectedCommit = 
+                .getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
+        final Package packageSecondSelectedCommit =
             LandscapeStructureResource
-            .getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
+                .getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
         if (packageSecondSelectedCommit != null) { // NOPMD
 
           if (packageFirstSelectedCommit != null) { // NOPMD
             final String packageName = packageSecondSelectedCommit.getName();
-      
+
             if (packageName.equals(lastPackageName)) {
               // no package deleted
               deletedPackages.add("");
@@ -169,7 +163,7 @@ public class CommitComparisonResource {
               }
 
               if (subPackages.toString().length() > 0) {
-                deletedPackages.add(subPackages.toString().substring(0, 
+                deletedPackages.add(subPackages.toString().substring(0,
                     subPackages.toString().length() - 1));
               } else { // shouldn't happen
                 deletedPackages.add("");
@@ -189,16 +183,13 @@ public class CommitComparisonResource {
       }
     }
 
-
-
-
     // add metrics from added-files
     final String secondCommitFinal = secondCommit;
     added.forEach(fqFileName -> {
       fqFileName = fqFileName.replaceAll("\\/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, 
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token,
           appName, fqFileName, secondCommitFinal);
-      
+
       if (fileReport != null) {
 
         for (final Map.Entry<String, ClassData2> entry : fileReport.getClassData().entrySet()) {
@@ -207,7 +198,7 @@ public class CommitComparisonResource {
           final Map<String, MetricVal> classMetricMap = new HashMap<>(); // NOPMD
           final ClassData2 classData = entry.getValue();
           // add class metric
-          for (final Map.Entry<String, String> classMetricEntry : 
+          for (final Map.Entry<String, String> classMetricEntry :
               classData.getClassMetric().entrySet()) {
             final String key = classMetricEntry.getKey();
             final String val = classMetricEntry.getValue();
@@ -218,7 +209,6 @@ public class CommitComparisonResource {
 
           classMetric.setMetricMap(classMetricMap);
           metrics.add(classMetric);
-        
 
           // add method metric
           final Map<String, MethodData2> methodData = classData.getMethodData();
@@ -234,7 +224,7 @@ public class CommitComparisonResource {
                 .entrySet()) {
               final String metricKey = methodMetricEntryEntry.getKey();
               final String metricVal = methodMetricEntryEntry.getValue();
-              
+
               final MetricVal metricVal2 = new MetricVal(); // NOPMD
               //metricVal.oldValue = "";
               metricVal2.setNewValue(metricVal);
@@ -252,24 +242,24 @@ public class CommitComparisonResource {
     modified.forEach(fqFileName -> {
       fqFileName = fqFileName.replaceAll("\\/", ".");
       final FileReport fileReportFirstSelectedCommit = LandscapeStructureHelper.getFileReport(
-            token, appName, fqFileName, firstCommitFinal);
+          token, appName, fqFileName, firstCommitFinal);
 
       final FileReport fileReportSecondSelectedCommit = LandscapeStructureHelper.getFileReport(
-            token, appName, fqFileName, secondCommitFinal);
-      
+          token, appName, fqFileName, secondCommitFinal);
+
       if (fileReportFirstSelectedCommit != null && fileReportSecondSelectedCommit != null) {
 
         for (final Map.Entry<String, ClassData2> entry : fileReportFirstSelectedCommit
             .getClassData().entrySet()) {
           final Metric classMetric = new Metric(); // NOPMD
           classMetric.setEntityName(entry.getKey());
-          final ClassData2 classDataSecondSelectedCommit = 
+          final ClassData2 classDataSecondSelectedCommit =
               fileReportSecondSelectedCommit.getClassData()
-              .get(classMetric.getEntityName());
+                  .get(classMetric.getEntityName());
           final Map<String, MetricVal> classMetricMap = new HashMap<>(); // NOPMD
           final ClassData2 classDataFirstSelectedCommit = entry.getValue();
           // add class metric
-          for (final Map.Entry<String, String> classMetricEntry : 
+          for (final Map.Entry<String, String> classMetricEntry :
               classDataFirstSelectedCommit.getClassMetric().entrySet()) {
             final String key = classMetricEntry.getKey();
             final String val = classMetricEntry.getValue();
@@ -285,7 +275,6 @@ public class CommitComparisonResource {
 
           classMetric.setMetricMap(classMetricMap);
           metrics.add(classMetric);
-        
 
           // add method metric
           final Map<String, MethodData2> methodData = classDataFirstSelectedCommit.getMethodData();
@@ -305,7 +294,7 @@ public class CommitComparisonResource {
                 .entrySet()) {
               final String metricKey = methodMetricEntryEntry.getKey();
               final String metricVal = methodMetricEntryEntry.getValue();
-              
+
               final MetricVal metricVal2 = new MetricVal(); // NOPMD
               metricVal2.setOldValue(metricVal);
               if (val2 != null) {
@@ -318,9 +307,9 @@ public class CommitComparisonResource {
           }
         }
       }
-    }); 
+    });
 
     return new CommitComparison(added, modified, deleted, addedPackages, deletedPackages, metrics);
   }
-    
+
 }

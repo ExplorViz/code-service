@@ -1,11 +1,11 @@
 package net.explorviz.code.rest;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import net.explorviz.code.beans.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.CommitReport;
@@ -20,18 +20,15 @@ import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
 public class MetricResource {
 
   /**
-   * ...
-   ** @param token the landscape token
-   ** @param appName the application name.
-   ** @param commit the commit id.
-   ** @return the metrics and meta-data for all of a commit's files.
+   * ... * @param token the landscape token * @param appName the application name. * @param commit
+   * the commit id. * @return the metrics and meta-data for all of a commit's files.
    */
   @Path("{token}/{appName}/{commit}")
   @GET
   public Metrics list(final String token, // NOPMD
       final String appName, final String commit) {
 
-    final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(token, 
+    final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
         appName, commit);
 
     final Metrics metrics = new Metrics();
@@ -43,7 +40,7 @@ public class MetricResource {
 
     for (final String fileName : commitReport.getFiles()) {
       final String fullQualifiedFileName = fileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
           fullQualifiedFileName, commit);
 
       if (fileReport == null) {
@@ -52,7 +49,6 @@ public class MetricResource {
         methodMetrics.add(null);
         continue;
       }
-      
 
       final Map<String, String> fileMetric = fileReport.getFileMetric();
       if (fileMetric == null) {
@@ -78,10 +74,7 @@ public class MetricResource {
           fqMethodNameToMetricsMap.put(methodName, methodMetricMap);
         }
 
-        
 
-
-  
       }
 
       if (!fqClassNameToMetricsMap.isEmpty()) { // NOPMD

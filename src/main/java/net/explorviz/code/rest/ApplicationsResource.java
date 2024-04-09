@@ -4,7 +4,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
-
 import net.explorviz.code.mongo.Application;
 import org.jboss.resteasy.reactive.RestPath;
 
@@ -16,10 +15,8 @@ import org.jboss.resteasy.reactive.RestPath;
 public class ApplicationsResource {
 
   /**
-   * ...
-   ** @param token the landscape token.
-   ** @return A list of application names that have been analyzed and are part of 
-   ** the landscape with the given token. 
+   * ... * @param token the landscape token. * @return A list of application names that have been
+   * analyzed and are part of * the landscape with the given token.
    */
   @GET
   public List<String> list(final @RestPath String token) {

@@ -1,10 +1,10 @@
 package net.explorviz.code.rest;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import net.explorviz.code.beans.LandscapeStructure;
 import net.explorviz.code.beans.LandscapeStructure.Node;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application;
@@ -23,39 +23,33 @@ import org.jboss.resteasy.reactive.RestPath;
 public class LandscapeStructureResource {
 
   /**
-   * ...
-   ** @param token the landscape token.
-   ** @param appName the application name.
-   ** @param commit the commit id.
-   ** @return the static landscape structure matching the params above.
+   * ... * @param token the landscape token. * @param appName the application name. * @param commit
+   * the commit id. * @return the static landscape structure matching the params above.
    */
   @Path("{commit}")
   @GET
-  public LandscapeStructure singleStructure(@RestPath final String token, 
+  public LandscapeStructure singleStructure(@RestPath final String token,
       @RestPath final String appName, final String commit) {
-    final List<Package> packages = LandscapeStructureHelper.createListOfPackages(token, 
+    final List<Package> packages = LandscapeStructureHelper.createListOfPackages(token,
         commit, appName);
     if (packages != null) {
       return this.buildLandscapeStructure(token, appName, packages);
-    } 
+    }
     return new LandscapeStructure();
   }
 
   /**
-   * ...
-   ** @param token the landscape token.
-   ** @param appName the application name.
-   ** @param firstCommit the first selected commit id.
-   ** @param secondCommit the second selected commit id.
-   ** @return the combination of the static landscape structures for the
-   ** first and second selected commit.
+   * ... * @param token the landscape token. * @param appName the application name. * @param
+   * firstCommit the first selected commit id. * @param secondCommit the second selected commit id.
+   * * @return the combination of the static landscape structures for the * first and second
+   * selected commit.
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
   public LandscapeStructure mixedStructure(@RestPath final String token, // NOPMD
-      @RestPath final String appName, final String firstCommit, 
+      @RestPath final String appName, final String firstCommit,
       final String secondCommit) {
-      
+
     final List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper
         .createListOfPackages(token, firstCommit, appName);
     final List<Package> packagesSecondSelectedCommit = LandscapeStructureHelper
@@ -67,14 +61,14 @@ public class LandscapeStructureResource {
 
     // deal with modified files --------------------------------------------------------------------
     final List<String> modified = CommitComparisonHelper.getComparisonModifiedFiles(
-        firstCommit, 
+        firstCommit,
         secondCommit, token, appName);
 
     final List<String> modifiedPackageFileName = new ArrayList<>();
-    
+
     for (final String fqFileName : modified) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, secondCommit);
       if (fileReport != null) {
         modifiedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());
@@ -84,20 +78,19 @@ public class LandscapeStructureResource {
     for (final String packageFileName : modifiedPackageFileName) {
       final String[] packageFileNameSplit = packageFileName.split("\\.");
       final String className = packageFileNameSplit[packageFileNameSplit.length - 2];
-      final Package packageFirstSelectedCommit = 
+      final Package packageFirstSelectedCommit =
           getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
-      final Package packageSecondSelectedCommit = 
+      final Package packageSecondSelectedCommit =
           getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
- 
       // packageFileName includes file extension
       final int numThree = 3;
       final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
-      if (packageFirstSelectedCommit.getName().equals(lastPackageName) 
-          && 
+      if (packageFirstSelectedCommit.getName().equals(lastPackageName)
+          &&
           packageSecondSelectedCommit.getName().equals(lastPackageName)) {
         // add missing methods
-        
+
         final Class clazzSecondSelectedCommit = this.getClassByNameFromPackage(
             className, packageSecondSelectedCommit);
         final Class clazzFirstSelectedCommit = this.getClassByNameFromPackage(
@@ -114,20 +107,20 @@ public class LandscapeStructureResource {
         } else { // NOPMD
           // should not happen. Log error?
         }
-      } 
+      }
     }
     // --------------------------------------------------------------------------------------------
 
     // deal with added files ----------------------------------------------------------------------
     final List<String> added = CommitComparisonHelper.getComparisonAddedFiles(
-        firstCommit, 
+        firstCommit,
         secondCommit, token, appName);
 
     final List<String> addedPackageFileName = new ArrayList<>();
-    
+
     for (final String fqFileName : added) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName, 
+      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, secondCommit);
       if (fileReport != null) {
         addedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());
@@ -140,9 +133,9 @@ public class LandscapeStructureResource {
       final String className = packageFileNameSplit[packageFileNameSplit.length - 2];
       final int numThree = 3;
       final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
-      final Package packageFirstSelectedCommit = 
+      final Package packageFirstSelectedCommit =
           getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
-      final Package packageSecondSelectedCommit = 
+      final Package packageSecondSelectedCommit =
           getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
       if (packageSecondSelectedCommit != null) { // NOPMD
@@ -152,9 +145,9 @@ public class LandscapeStructureResource {
 
           if (packageName.equals(lastPackageName)) {
             // add class
-            final Class clazz = this.getClassByNameFromPackage(className, 
+            final Class clazz = this.getClassByNameFromPackage(className,
                 packageSecondSelectedCommit);
-            
+
             if (clazz != null) { // NOPMD
               packageFirstSelectedCommit.getClasses().add(clazz);
             } else { // NOPMD
@@ -174,8 +167,8 @@ public class LandscapeStructureResource {
             // TODO: subPackages.toString()
             // file name needed for technical reason. We imitate one
             final String subPackageFileName = subPackages.toString() + "." + "filename" + "."
-                 + "extension";
-            final Package pckg = getPackageFromPath(subPackageFileName, 
+                + "extension";
+            final Package pckg = getPackageFromPath(subPackageFileName,
                 packagesSecondSelectedCommit);
             packageFirstSelectedCommit.getSubPackages().add(pckg);
           }
@@ -198,20 +191,18 @@ public class LandscapeStructureResource {
     return null;
   }
 
- 
+
   /**
-   * Returns the "deepest" package available matching the package structure. Therefore, the 
-   * deepest package and the parent package chain covers a prefix of the package structure.
-   ** @param packageFileName the package structure string
-   ** @param packages list of packages to search for a match
-   ** @return the "deepest" package
+   * Returns the "deepest" package available matching the package structure. Therefore, the deepest
+   * package and the parent package chain covers a prefix of the package structure. * @param
+   * packageFileName the package structure string * @param packages list of packages to search for a
+   * match * @return the "deepest" package
    */
   public static Package getPackageFromPath(final String packageFileName, // NOPMD
       final List<Package> packages) {
     final String[] packageFileNameSplit = packageFileName.split("\\.");
     // packageFileName includes file extension
     final int numOfPackages = packageFileNameSplit.length - 2;
-
 
     for (final Package pckg : packages) {
       int counter = 0;
@@ -244,13 +235,13 @@ public class LandscapeStructureResource {
     return null;
   }
 
-  private LandscapeStructure buildLandscapeStructure(final String landscapeToken, 
+  private LandscapeStructure buildLandscapeStructure(final String landscapeToken,
       final String appName, final List<Package> packages) {
     final Node node = new Node();
     node.setIpAdress("0.0.0.0"); // NOPMD
     node.setHostName("default-node");
     node.setApplications(new ArrayList<>());
-    
+
     final Application application = new Application();
     application.setName(appName);
     application.setLanguage("java");
@@ -263,7 +254,7 @@ public class LandscapeStructureResource {
     landscapeStructure.setNodes(new ArrayList<>());
     landscapeStructure.getNodes().add(node);
 
-    return  landscapeStructure;
+    return landscapeStructure;
   }
-    
+
 }
