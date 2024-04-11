@@ -1,4 +1,4 @@
-package net.explorviz.code.rest;
+package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -22,7 +22,7 @@ import org.jboss.resteasy.reactive.RestPath;
  * ...
  */
 
-@Path("/commit-comparison/{token}/{appName}")
+@Path("/v2/code/commit-comparison/{token}/{appName}")
 public class CommitComparisonResource {
 
   /**

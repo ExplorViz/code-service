@@ -1,4 +1,4 @@
-package net.explorviz.code.rest;
+package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -8,7 +8,7 @@ import net.explorviz.code.mongo.FileReport;
 /**
  * ...
  */
-@Path("/file-report")
+@Path("/v2/code/file-report")
 public class FileReportResource {
 
   /**

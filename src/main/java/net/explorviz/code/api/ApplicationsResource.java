@@ -1,4 +1,4 @@
-package net.explorviz.code.rest;
+package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -11,7 +11,7 @@ import org.jboss.resteasy.reactive.RestPath;
 /**
  * ...
  */
-@Path("/v2/applications/{token}")
+@Path("/v2/code/")
 public class ApplicationsResource {
 
   /**
@@ -19,6 +19,7 @@ public class ApplicationsResource {
    * analyzed and are part of * the landscape with the given token.
    */
   @GET
+  @Path("applications/{token}")
   public List<String> list(final @RestPath String token) {
 
     final List<Application> applications = Application.findByLandscapeToken(token);

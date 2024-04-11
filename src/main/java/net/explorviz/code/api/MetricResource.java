@@ -1,4 +1,4 @@
-package net.explorviz.code.rest;
+package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -16,7 +16,7 @@ import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
 /**
  * ...
  */
-@Path("/metrics")
+@Path("/v2/code/metrics")
 public class MetricResource {
 
   /**

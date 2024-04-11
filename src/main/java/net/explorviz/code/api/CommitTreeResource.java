@@ -1,4 +1,4 @@
-package net.explorviz.code.rest;
+package net.explorviz.code.api;
 
 
 import jakarta.ws.rs.GET;
@@ -11,7 +11,7 @@ import org.jboss.resteasy.reactive.RestPath;
 /**
  * ...
  */
-@Path("/commit-tree/{token}/{appName}")
+@Path("/v2/code/commit-tree/{token}/{appName}")
 public class CommitTreeResource {
   /**
    ** @param token the landscape token.

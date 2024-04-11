@@ -1,4 +1,4 @@
-package net.explorviz.code.rest;
+package net.explorviz.code.api;
 
 
 import jakarta.ws.rs.GET;
@@ -10,7 +10,7 @@ import org.jboss.resteasy.reactive.RestPath;
 /**
  * ...
  */
-@Path("/commit-report/{landscapeToken}/{applicationName}/{commit}")
+@Path("/v2/code/commit-report/{landscapeToken}/{applicationName}/{commit}")
 public class CommitReportResource {
 
   /**

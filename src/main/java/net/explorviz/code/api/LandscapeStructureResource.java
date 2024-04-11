@@ -1,4 +1,4 @@
-package net.explorviz.code.rest;
+package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -19,7 +19,7 @@ import org.jboss.resteasy.reactive.RestPath;
 /**
  * ...
  */
-@Path("/structure/{token}/{appName}")
+@Path("/v2/code/structure/{token}/{appName}")
 public class LandscapeStructureResource {
 
   /**
