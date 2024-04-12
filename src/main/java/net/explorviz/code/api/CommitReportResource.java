@@ -3,33 +3,30 @@ package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import net.explorviz.code.mongo.CommitReport;
-import org.jboss.resteasy.reactive.RestPath;
 
 
 /**
  * ...
  */
-@Path("/v2/code/commit-report/{landscapeToken}/{applicationName}/{commit}")
+@Path("/v2/code/commit-report/{token}/{appName}/{commit}")
 public class CommitReportResource {
 
   /**
-   * ...
-   ** @param landscapeToken the landsacpe token.
-   ** @param applicationName the application name.
-   ** @param commit the commit id.
-   ** @return the commit report matching the params.
+   * ... * @param token the landsacpe token. * @param appName the application name. * @param commit
+   * the commit id. * @return the commit report matching the params.
    */
   @GET
-  public CommitReport list(@RestPath final String landscapeToken, 
-      @RestPath final String applicationName, @RestPath final String commit) {
-    final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, 
-        applicationName, commit);
+  public CommitReport list(@PathParam("token") final String token,
+      @PathParam("appName") final String appName, @PathParam("commit") final String commit) {
+    final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
+        appName, commit);
     if (cr != null) {
       return cr;
-    } 
+    }
     return new CommitReport(); // we could enhance the file metric with the help of the 
     // FileReport before we return
   }
-    
+
 }

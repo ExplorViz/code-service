@@ -2,10 +2,10 @@ package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 import net.explorviz.code.mongo.Application;
-import org.jboss.resteasy.reactive.RestPath;
 
 
 /**
@@ -20,7 +20,7 @@ public class ApplicationsResource {
    */
   @GET
   @Path("applications/{token}")
-  public List<String> list(final @RestPath String token) {
+  public List<String> list(@PathParam("token") final String token) {
 
     final List<Application> applications = Application.findByLandscapeToken(token);
     final List<String> applicationNames = new ArrayList<>();

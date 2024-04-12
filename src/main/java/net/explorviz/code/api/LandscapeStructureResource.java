@@ -2,6 +2,7 @@ package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +15,6 @@ import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Clas
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.FileReport;
-import org.jboss.resteasy.reactive.RestPath;
 
 /**
  * ...
@@ -28,8 +28,8 @@ public class LandscapeStructureResource {
    */
   @Path("{commit}")
   @GET
-  public LandscapeStructure singleStructure(@RestPath final String token,
-      @RestPath final String appName, final String commit) {
+  public LandscapeStructure singleStructure(@PathParam("token") final String token,
+      @PathParam("appName") final String appName, final String commit) {
     final List<Package> packages = LandscapeStructureHelper.createListOfPackages(token,
         commit, appName);
     if (packages != null) {
@@ -46,8 +46,8 @@ public class LandscapeStructureResource {
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public LandscapeStructure mixedStructure(@RestPath final String token, // NOPMD
-      @RestPath final String appName, final String firstCommit,
+  public LandscapeStructure mixedStructure(@PathParam("token") final String token,
+      @PathParam("appName") final String appName, final String firstCommit,
       final String secondCommit) {
 
     final List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper

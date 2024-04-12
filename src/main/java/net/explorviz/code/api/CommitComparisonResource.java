@@ -2,6 +2,7 @@ package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,6 @@ import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.FileReport;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
-import org.jboss.resteasy.reactive.RestPath;
 
 
 /**
@@ -32,8 +32,9 @@ public class CommitComparisonResource {
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public CommitComparison list(@RestPath final String token, // NOPMD
-      @RestPath final String appName, String firstCommit, String secondCommit) {
+  public CommitComparison list(@PathParam("token") final String token, // NOPMD
+      @PathParam("appName") final String appName, @PathParam("firstCommit") String firstCommit,
+      @PathParam("secondCommit") String secondCommit) {
 
     if (CommitComparisonHelper.getLatestCommonCommitId(firstCommit, secondCommit, token, appName)
         .equals(secondCommit)) {
