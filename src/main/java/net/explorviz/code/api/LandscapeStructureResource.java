@@ -15,12 +15,16 @@ import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Clas
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.FileReport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ...
  */
 @Path("/v2/code/structure/{token}/{appName}")
 public class LandscapeStructureResource {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeStructureResource.class);
 
   /**
    * ... * @param token the landscape token. * @param appName the application name. * @param commit
@@ -29,7 +33,9 @@ public class LandscapeStructureResource {
   @Path("{commit}")
   @GET
   public LandscapeStructure singleStructure(@PathParam("token") final String token,
-      @PathParam("appName") final String appName, final String commit) {
+      @PathParam("appName") final String appName, @PathParam("commit") final String commit) {
+    LOGGER.atInfo().addArgument(token).addArgument(appName).addArgument(commit)
+        .log("Requesting structure for token {}, appName {}, and commit {}.");
     final List<Package> packages = LandscapeStructureHelper.createListOfPackages(token,
         commit, appName);
     if (packages != null) {
