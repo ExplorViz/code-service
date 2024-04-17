@@ -33,7 +33,7 @@ public class MetricResource {
 
     final Metrics metrics = new Metrics();
 
-    if(commitReport == null) {
+    if (commitReport == null) {
       return metrics;
     }
 
