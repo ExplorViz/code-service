@@ -11,6 +11,7 @@ import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.CommitReport.FileMetric;
 import net.explorviz.code.mongo.FileReport;
+import net.explorviz.code.mongo.FileReportTable;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.ClassType2;
 import net.explorviz.code.mongo.FileReport.ClassData2.FieldData2;
@@ -193,12 +194,65 @@ public class GrpcGateway {
       
       final FileReport fileReport = new FileReport();
 
+      // FileReport Table ------------------------------------------------------------------
+      final FileReportTable fileReportTable = FileReportTable
+          .findByTokenAndAppName(receivedFileDataLandscapeToken, receivedFileDataAppName);
+      final String fqFileName = receivedFileDataPackageName + "." + receivedFileDataFileName;
+
+      if (fileReportTable == null) { 
+        final FileReportTable newFileReportTable = new FileReportTable();
+        newFileReportTable.setLandscapeToken(receivedFileDataLandscapeToken);
+        newFileReportTable.setAppName(receivedFileDataAppName);
+        final Map<String, Map<String, String>> table = new HashMap<>();
+        final Map<String, String> fqFileNameToCommitId = new HashMap<>();
+        fqFileNameToCommitId.put(fqFileName, receivedFileDataCommitId);
+        // after the table is filled we can store it
+        table.put(receivedFileDataCommitId, fqFileNameToCommitId);
+        newFileReportTable.setCommitIdTofqnFileNameToCommitIdMap(table);
+        newFileReportTable.persist();
+      } else {
+        // File Report Table already exists. We only add entries by manipulating the map.
+
+        final Map<String, Map<String, String>> table = fileReportTable
+            .getCommitIdTofqnFileNameToCommitIdMap();
+
+        if (!table.containsKey(receivedFileDataCommitId)) {
+          final Map<String, String> fqFileNameToCommitId = new HashMap<>();
+
+          // fill missing entries from parent commit
+          final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(
+              receivedFileDataLandscapeToken, receivedFileDataAppName, receivedFileDataCommitId);
+          final String parentId = cr.getParentCommitId();
+
+          if (!NO_ANCESTOR.equals(parentId)) {
+            final Map<String, String> parentEntries = table.get(parentId);
+            for (final Map.Entry<String, String> entry : parentEntries.entrySet()) {
+              fqFileNameToCommitId.put(entry.getKey(), entry.getValue());
+            }
+          } else {
+            // should never happen since the File Report Table already exists
+          }
+
+          table.put(receivedFileDataCommitId, fqFileNameToCommitId);
+        }
+
+        final Map<String, String> fqFileNameToCommitIdMap = table.get(receivedFileDataCommitId);
+
+        // fill missing entry for current file report (might overwrite entry copied from parent)
+        fqFileNameToCommitIdMap.put(fqFileName, receivedFileDataCommitId);
+        fileReportTable.update();
+      }
+
+      // -----------------------------------------------------------------------------------------
+
       fileReport.setLandscapeToken(receivedFileDataLandscapeToken);
       fileReport.setAppName(receivedFileDataAppName);
       fileReport.setCommitId(receivedFileDataCommitId);
       fileReport.setFileName(receivedFileDataFileName);
       fileReport.setPackageName(receivedFileDataPackageName);
       fileReport.setImportName(receivedFileDataImportName);
+
+
 
 
       final Map<String, ClassData2> classData = new HashMap<>();

@@ -175,7 +175,9 @@ public final class LandscapeStructureHelper {
    ** @param appName the application name.
    ** @param fqFileName the full qualified file name.
    ** @param commitId the commit id.
-   ** @return the file report matching the params above.
+   ** @return the file report matching the params above. 
+   ** If there is no file report for the given commitId
+   ** find the most recent file report before the given commitId
    */
   public static FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
       final String fqFileName, final String commitId) {
