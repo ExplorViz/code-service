@@ -43,6 +43,7 @@ public class GrpcGateway {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GrpcGateway.class);
 
+
   /**
    * Processes a CommitReportData package. Stores the data into the local storage.
    *
@@ -52,7 +53,7 @@ public class GrpcGateway {
 
     
     if (LOGGER.isTraceEnabled()) {
-      LOGGER.trace("Received Commit report: {}", commitReportData);
+       LOGGER.trace("Received Commit report: {}", commitReportData);
     }
 
     final String receivedCommitReportCommitId = commitReportData.getCommitID();
@@ -69,6 +70,49 @@ public class GrpcGateway {
     }
 
     final String receivedCommitReportAncestorId = commitReportData.getParentCommitID();
+    // Add entry for FileReportTable. We need to initiate it here because there can be some
+    // commits where the Code-Agent won't send File Reports at all
+
+    final FileReportTable fileReportTable = FileReportTable
+          .findByTokenAndAppName(receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+
+    if (fileReportTable != null) {
+      final Map<String, Map<String, String>> table = fileReportTable
+            .getCommitIdTofqnFileNameToCommitIdMap();
+
+      final String parentId = receivedCommitReportAncestorId;
+      if (!NO_ANCESTOR.equals(parentId)) {
+
+        final Map<String, String> parentEntries = table.get(parentId);
+
+        if(parentEntries != null) {
+          final boolean keyExists = table.containsKey(receivedCommitReportCommitId);
+
+          Map<String, String> fqFileNameToCommitId = new HashMap<>();
+          if(keyExists){
+            LOGGER.warn("Commit Report normally should be sent and received before its File Reports");
+            fqFileNameToCommitId = table.get(receivedCommitReportCommitId);
+          }
+
+          for (final Map.Entry<String, String> entry : parentEntries.entrySet()) {
+            if(keyExists){
+              if(!fqFileNameToCommitId.containsKey(entry.getKey())){ // don't overwrite new data
+                fqFileNameToCommitId.put(entry.getKey(), entry.getValue());
+              }
+            }else {
+              fqFileNameToCommitId.put(entry.getKey(), entry.getValue());
+            }
+          }
+
+          table.put(receivedCommitReportCommitId, fqFileNameToCommitId);
+          fileReportTable.setCommitIdTofqnFileNameToCommitIdMap(table);
+          fileReportTable.update();
+        }
+      }
+    }
+
+
+
     final String receivedCommitReportBranchName = commitReportData.getBranchName();
     final List<String> receivedCommitReportFiles = commitReportData.getFilesList();
     final List<String> receivedCommitReportModified = commitReportData.getModifiedList();
@@ -200,6 +244,7 @@ public class GrpcGateway {
       final String fqFileName = receivedFileDataPackageName + "." + receivedFileDataFileName;
 
       if (fileReportTable == null) { 
+        LOGGER.trace("CREATE FILE REPORT TABLE.");
         final FileReportTable newFileReportTable = new FileReportTable();
         newFileReportTable.setLandscapeToken(receivedFileDataLandscapeToken);
         newFileReportTable.setAppName(receivedFileDataAppName);
@@ -216,30 +261,18 @@ public class GrpcGateway {
         final Map<String, Map<String, String>> table = fileReportTable
             .getCommitIdTofqnFileNameToCommitIdMap();
 
-        if (!table.containsKey(receivedFileDataCommitId)) {
-          final Map<String, String> fqFileNameToCommitId = new HashMap<>();
+        final boolean keyExists = table.containsKey(receivedFileDataCommitId);
 
-          // fill missing entries from parent commit
-          final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(
-              receivedFileDataLandscapeToken, receivedFileDataAppName, receivedFileDataCommitId);
-          final String parentId = cr.getParentCommitId();
-
-          if (!NO_ANCESTOR.equals(parentId)) {
-            final Map<String, String> parentEntries = table.get(parentId);
-            for (final Map.Entry<String, String> entry : parentEntries.entrySet()) {
-              fqFileNameToCommitId.put(entry.getKey(), entry.getValue());
-            }
-          } else {
-            // should never happen since the File Report Table already exists
-          }
-
-          table.put(receivedFileDataCommitId, fqFileNameToCommitId);
+        Map<String, String> fqFileNameToCommitIdMap = new HashMap<>();
+        if(!keyExists) {
+          LOGGER.warn("Normally Commit Report should be received before one of its File Reports");
+        }else {
+          fqFileNameToCommitIdMap = table.get(receivedFileDataCommitId);
         }
-
-        final Map<String, String> fqFileNameToCommitIdMap = table.get(receivedFileDataCommitId);
-
         // fill missing entry for current file report (might overwrite entry copied from parent)
         fqFileNameToCommitIdMap.put(fqFileName, receivedFileDataCommitId);
+        table.put(receivedFileDataCommitId, fqFileNameToCommitIdMap);
+        fileReportTable.setCommitIdTofqnFileNameToCommitIdMap(table);
         fileReportTable.update();
       }
 
