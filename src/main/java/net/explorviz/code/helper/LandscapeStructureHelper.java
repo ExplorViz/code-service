@@ -14,6 +14,7 @@ import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Clas
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class.Method;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.FileReport;
+import net.explorviz.code.mongo.FileReportTable;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
 
@@ -181,51 +182,45 @@ public final class LandscapeStructureHelper {
    */
   public static FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
       final String fqFileName, final String commitId) {
-    final String[] temp = fqFileName.split("\\.");
-    final String fileName;
-    try {
-      fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
-    } catch (ArrayIndexOutOfBoundsException e) {
+    
+    final FileReportTable fileReportTable = FileReportTable.findByTokenAndAppName(landscapeToken, appName);
+
+    if(fileReportTable == null){
+      return null;
+    }
+
+    final Map<String, Map<String, String>>  table = fileReportTable.getCommitIdTofqnFileNameToCommitIdMap(); // fqnFileName with no non-package prefix
+    final Map<String, String> packagesAndFileNameWithFileExtensionToCommitIdMap = table.get(commitId); // packagesAndFileNameWithFileExtension is suffix of fqFileName
+    
+    if(packagesAndFileNameWithFileExtensionToCommitIdMap == null) {
       return null;
     }
     
-    FileReport fileReport = FileReport
-          .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(landscapeToken, appName, 
-          fqFileName, commitId);
+    final Set<String> keySet = packagesAndFileNameWithFileExtensionToCommitIdMap.keySet();
+    
+    // find key that is the longest suffix of fqFileName
+    // this technicality is not needed when we can be sure that fqFileName begins with a package name and not with
+    // a folder structure like src.main.java
 
-    if (fileReport == null) { // older commit has provided file report
-
-      final List<FileReport> fileReportList = FileReport.findByTokenAndAppNameAndFileName(
-            landscapeToken, appName, fileName);
-
-      final List<FileReport> candidateFileReportList = fileReportList.stream().filter(fr -> 
-              !CommitComparisonHelper.getLatestCommonCommitId(fr.getCommitId(), 
-              commitId, landscapeToken, appName).equals(commitId) // get rid of file reports that
-              // happen later than our commit
-              &&
-               CommitComparisonHelper.getLatestCommonCommitId(fr.getCommitId(),
-               commitId, landscapeToken, appName)
-                   .equals(fr.getCommitId()) // get rid of file reports that 
-              // have unordered commits w.r.t our commit
-              &&
-              fqFileName
-              .contains(fr.getPackageName())).collect(Collectors.toList()); // get rid of file
-      // reports that do not involve our file of interest
-
-      Collections.sort(candidateFileReportList, (fr1, fr2) -> {
-        if (CommitComparisonHelper.getLatestCommonCommitId(fr1.getCommitId(), fr2.getCommitId(), 
-              landscapeToken, appName).equals(fr1.getCommitId())) {
-          return 1;
-        } else { // no return of 0 necessary since no two commit id's will be the same in our list
-          return -1;
+    int startsAtIndex = fqFileName.length();
+    String actualKey = "";
+    for (final String key : keySet) {
+      if(fqFileName.endsWith(key)) {
+        final int startIndex = fqFileName.lastIndexOf(key);
+        if(startsAtIndex > startIndex) {
+          startsAtIndex = startIndex;
+          actualKey = key;
         }
-      });
-
-      fileReport = null; // NOPMD
-      if (!candidateFileReportList.isEmpty()) {
-        fileReport = candidateFileReportList.get(0);
       }
     }
+
+    final String actualCommitId = packagesAndFileNameWithFileExtensionToCommitIdMap.get(actualKey);
+
+    if(actualCommitId == null) {
+      return null;
+    }
+
+    final FileReport fileReport = FileReport.findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(landscapeToken, appName, fqFileName, actualCommitId);    
     return fileReport;
   }
 }
