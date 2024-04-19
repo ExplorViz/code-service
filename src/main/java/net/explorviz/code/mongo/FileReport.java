@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- *  A class for the file reports that the code-agent sends to us.
+ * A class for the file reports that the code-agent sends to us.
  */
 public class FileReport extends PanacheMongoEntity {
 
@@ -22,6 +22,51 @@ public class FileReport extends PanacheMongoEntity {
   private String modifiedLines;
   private String addedLines;
   private String deletedLines;
+
+  /**
+   * ... * @param landscapeToken the landscape token. * @param appName the application name * @param
+   * fqFileName the full qualified file name. * @param commitId the commit id. * @return the
+   * FileReport that matches the above params.
+   */
+  public static FileReport findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(// NOPMD
+      final String landscapeToken,
+      final String appName,
+      final String fqFileName, final String commitId) {
+    final String[] temp = fqFileName.split("\\.");
+    if (temp.length < 2) { // NOPMD
+      return null;
+    }
+    final String fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
+    StringBuilder tmpString = new StringBuilder();
+    for (int i = 0; i < temp.length - 2; i++) {
+      tmpString.append(temp[i] + ".");
+    }
+
+    if (!"".equals(tmpString.toString())) { // NOPMD
+      tmpString = new StringBuilder(tmpString.substring(0, tmpString.length() - 1));
+    }
+
+    final String folders = tmpString.toString();
+    final List<FileReport> fileReportList = find(
+        "landscapeToken = ?1 and appName = ?2 and fileName =?3 and commitId =?4",
+        landscapeToken, appName, fileName, commitId).list();
+
+    final List<FileReport> filterFileReportList = fileReportList.stream()
+        .filter(fr -> folders.endsWith(fr.packageName)).collect(Collectors.toList());
+
+    if (filterFileReportList.size() == 1) { // NOPMD
+      return filterFileReportList.get(0);
+    } else {
+      return null;
+    }
+  }
+
+  public static List<FileReport> findByTokenAndAppNameAndFileName(
+      final String landscapeToken,
+      final String appName, final String fileName) {
+    return find("landscapeToken = ?1 and appName = ?2 and fileName =?3",
+        landscapeToken, appName, fileName).list();
+  }
 
   public String getLandscapeToken() {
     return this.landscapeToken;
@@ -120,54 +165,6 @@ public class FileReport extends PanacheMongoEntity {
   }
 
   /**
-   * ...
-   ** @param landscapeToken the landscape token.
-  ** @param appName the application name
-  ** @param fqFileName the full qualified file name.
-  ** @param commitId the commit id.
-  ** @return the FileReport that matches the above params.
-  */
-  public static FileReport findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(// NOPMD
-      final String landscapeToken, 
-      final String appName, 
-      final String fqFileName, final String commitId) {
-    final String[] temp = fqFileName.split("\\.");
-    if (temp.length < 2) { // NOPMD
-      return null;
-    }
-    final String fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
-    StringBuilder tmpString = new StringBuilder("");
-    for (int i = 0; i < temp.length - 2; i++) {
-      tmpString.append(temp[i] + ".");
-    } 
-    
-    if (!"".equals(tmpString.toString())) { // NOPMD
-      tmpString = new StringBuilder(tmpString.toString().substring(0, tmpString.length() - 1));
-    } 
-    
-    final String folders = tmpString.toString();
-    final List<FileReport> fileReportList = find(
-        "landscapeToken = ?1 and appName = ?2 and fileName =?3 and commitId =?4", 
-        landscapeToken, appName, fileName, commitId).list();
-
-    final List<FileReport> filterFileReportList = fileReportList.stream()
-        .filter(fr -> folders.endsWith(fr.packageName)).collect(Collectors.toList());
-    
-    if (filterFileReportList.size() == 1) { // NOPMD
-      return filterFileReportList.get(0);
-    } else {
-      return null;
-    }
-  }
-
-  public static List<FileReport> findByTokenAndAppNameAndFileName(
-      final String landscapeToken, 
-      final String appName, final String fileName) {
-    return find("landscapeToken = ?1 and appName = ?2 and fileName =?3", 
-        landscapeToken, appName, fileName).list();
-  }
-
-  /**
    * A class for the class-respective meta-data and metrics.
    */
   public static class ClassData2 {
@@ -178,7 +175,7 @@ public class FileReport extends PanacheMongoEntity {
     private List<FieldData2> field;
     private List<String> innerClass;
     private List<MethodData2> constructor;
-    private Map<String, MethodData2>  methodData;
+    private Map<String, MethodData2> methodData;
     private List<String> variable;
     private String superClass;
     private List<String> enumConstant;
@@ -286,11 +283,11 @@ public class FileReport extends PanacheMongoEntity {
      * An enum for the type of class.
      */
     public enum ClassType2 {
-        INTERFACE,
-        ABSTRACT_CLASS,
-        CLASS,
-        ENUM,
-        ANONYMOUS_CLASS;
+      INTERFACE,
+      ABSTRACT_CLASS,
+      CLASS,
+      ENUM,
+      ANONYMOUS_CLASS
     }
 
     /**
