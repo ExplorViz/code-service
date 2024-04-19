@@ -7,7 +7,8 @@ import java.util.List;
 /**
  * A class to store the commit reports that the code-agent sends to us.
  */
-public class CommitReport extends PanacheMongoEntity  {
+public class CommitReport extends PanacheMongoEntity {
+
   private String commitId;
   private String parentCommitId;
   private String branchName;
@@ -20,6 +21,16 @@ public class CommitReport extends PanacheMongoEntity  {
   private List<String> fileHash;
   private String applicationName;
 
+  public static CommitReport findByTokenAndApplicationNameAndCommitId(
+      final String landscapeToken, final String applicationName, final String commitId) {
+    return find("landscapeToken = ?1 and applicationName = ?2 and commitId = ?3",
+        landscapeToken, applicationName, commitId).firstResult();
+  }
+
+  public static CommitReport findByParentCommitId(final String parentCommitId) {
+    return find("parentCommitId", parentCommitId).firstResult();
+  }
+
   public String getCommitId() {
     return this.commitId;
   }
@@ -27,7 +38,7 @@ public class CommitReport extends PanacheMongoEntity  {
   public void setCommitId(final String commitId) {
     this.commitId = commitId;
   }
-  
+
   public String getParentCommitId() {
     return this.parentCommitId;
   }
@@ -112,6 +123,7 @@ public class CommitReport extends PanacheMongoEntity  {
    * A class for the file metrics of the modified files within a commit report.
    */
   public static class FileMetric {
+
     private String fileName;
     private int loc;
     private int cyclomaticComplexity;
@@ -120,36 +132,36 @@ public class CommitReport extends PanacheMongoEntity  {
     // private int numberOfModifiedLines;
     // private int numberOfDeletedLines;
 
-    public void setFileName(final String fileName) {
-      this.fileName = fileName;
-    }
-
     public String getFileName() {
       return this.fileName;
     }
 
-    public void setLoc(final int loc) {
-      this.loc = loc;
+    public void setFileName(final String fileName) {
+      this.fileName = fileName;
     }
 
     public int getLoc() {
       return this.loc;
     }
 
-    public void setCyclomaticComplexity(final int cyclomaticComplexity) {
-      this.cyclomaticComplexity = cyclomaticComplexity;
+    public void setLoc(final int loc) {
+      this.loc = loc;
     }
 
     public int getCyclomaticComplexity() {
       return this.cyclomaticComplexity;
     }
 
-    public void setNumberOfMethods(final int numberOfMethods) {
-      this.numberOfMethods = numberOfMethods;
+    public void setCyclomaticComplexity(final int cyclomaticComplexity) {
+      this.cyclomaticComplexity = cyclomaticComplexity;
     }
 
     public int getNumberOfMethods() {
       return this.numberOfMethods;
+    }
+
+    public void setNumberOfMethods(final int numberOfMethods) {
+      this.numberOfMethods = numberOfMethods;
     }
 
     // public void setNumberOfAddedLines(final int numberOfAddedLines) {
@@ -169,19 +181,6 @@ public class CommitReport extends PanacheMongoEntity  {
     // }
 
   }
-
-
-  public static CommitReport findByTokenAndApplicationNameAndCommitId(
-      final String landscapeToken, final String applicationName, final String commitId) {
-    return find("landscapeToken = ?1 and applicationName = ?2 and commitId = ?3", 
-        landscapeToken, applicationName, commitId).firstResult();
-  }
-
-  public static CommitReport findByParentCommitId(final String parentCommitId) {
-    return find("parentCommitId", parentCommitId).firstResult();
-  }
-
-
 
 
 }

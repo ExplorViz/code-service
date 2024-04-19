@@ -27,6 +27,49 @@ public class LandscapeStructureResource {
   private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeStructureResource.class);
 
   /**
+   * Returns the "deepest" package available matching the package structure. Therefore, the deepest
+   * package and the parent package chain covers a prefix of the package structure. * @param
+   * packageFileName the package structure string * @param packages list of packages to search for a
+   * match * @return the "deepest" package
+   */
+  public static Package getPackageFromPath(final String packageFileName, // NOPMD
+      final List<Package> packages) {
+    final String[] packageFileNameSplit = packageFileName.split("\\.");
+    // packageFileName includes file extension
+    final int numOfPackages = packageFileNameSplit.length - 2;
+
+    for (final Package pckg : packages) {
+      int counter = 0;
+      Package currentPackage = pckg;
+
+      while (packageFileNameSplit[counter].equals(currentPackage.getName())) {
+
+        if (numOfPackages > counter + 1) {
+
+          Package temp = null;
+          for (final Package subPackage : currentPackage.getSubPackages()) {
+            if (subPackage.getName().equals(packageFileNameSplit[counter + 1])) {
+              temp = subPackage;
+              break;
+            }
+          }
+          if (temp != null) { // NOPMD
+            currentPackage = temp;
+            counter++;
+          } else {
+            return currentPackage;
+          }
+        } else {
+          return currentPackage;
+        }
+
+      }
+
+    }
+    return null;
+  }
+
+  /**
    * ... * @param token the landscape token. * @param appName the application name. * @param commit
    * the commit id. * @return the static landscape structure matching the params above.
    */
@@ -161,7 +204,7 @@ public class LandscapeStructureResource {
             }
           } else {
             // add package
-            final StringBuilder subPackages = new StringBuilder(""); // NOPMD
+            final StringBuilder subPackages = new StringBuilder(); // NOPMD
             for (int i = 0; i < packageFileNameSplit.length - numThree; i++) {
               subPackages.append(packageFileNameSplit[i] + ".");
               if (packageFileNameSplit[i].equals(packageName)) {
@@ -172,7 +215,7 @@ public class LandscapeStructureResource {
             }
             // TODO: subPackages.toString()
             // file name needed for technical reason. We imitate one
-            final String subPackageFileName = subPackages.toString() + "." + "filename" + "."
+            final String subPackageFileName = subPackages + "." + "filename" + "."
                 + "extension";
             final Package pckg = getPackageFromPath(subPackageFileName,
                 packagesSecondSelectedCommit);
@@ -193,50 +236,6 @@ public class LandscapeStructureResource {
       if (clazz.getName().equals(className)) {
         return clazz;
       }
-    }
-    return null;
-  }
-
-
-  /**
-   * Returns the "deepest" package available matching the package structure. Therefore, the deepest
-   * package and the parent package chain covers a prefix of the package structure. * @param
-   * packageFileName the package structure string * @param packages list of packages to search for a
-   * match * @return the "deepest" package
-   */
-  public static Package getPackageFromPath(final String packageFileName, // NOPMD
-      final List<Package> packages) {
-    final String[] packageFileNameSplit = packageFileName.split("\\.");
-    // packageFileName includes file extension
-    final int numOfPackages = packageFileNameSplit.length - 2;
-
-    for (final Package pckg : packages) {
-      int counter = 0;
-      Package currentPackage = pckg;
-
-      while (packageFileNameSplit[counter].equals(currentPackage.getName())) {
-
-        if (numOfPackages > counter + 1) {
-
-          Package temp = null;
-          for (final Package subPackage : currentPackage.getSubPackages()) {
-            if (subPackage.getName().equals(packageFileNameSplit[counter + 1])) {
-              temp = subPackage;
-              break;
-            }
-          }
-          if (temp != null) { // NOPMD
-            currentPackage = temp;
-            counter++;
-          } else {
-            return currentPackage;
-          }
-        } else {
-          return currentPackage;
-        }
-
-      }
-
     }
     return null;
   }

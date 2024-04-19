@@ -20,9 +20,8 @@ public final class CommitTreeHelper {
   }
 
   /**
-   ** @param appName the application name.
-   ** @param landscapeToken the landscape token.
-   ** @return the commit tree matching above params.
+   * * @param appName the application name. * @param landscapeToken the landscape token. * @return
+   * the commit tree matching above params.
    */
   public static CommitTree createCommitTree(final String appName, final String landscapeToken) {
     final List<BranchPoint> branchPoints = BranchPoint
@@ -40,7 +39,7 @@ public final class CommitTreeHelper {
       if (latestCommit == null) {
         return;
       }
-      
+
       // now iterate from latestCommit to branchPoint commit
       String currentCommitId = latestCommit.getCommitId();
       final Stack<String> commits = new Stack<>();
@@ -52,7 +51,7 @@ public final class CommitTreeHelper {
         } else {
           final CommitReport currenCommitReport = CommitReport
               .findByTokenAndApplicationNameAndCommitId(
-              landscapeToken, appName, currentCommitId);
+                  landscapeToken, appName, currentCommitId);
           if (currenCommitReport != null) { // NOPMD
             // should always be the case
             currentCommitId = currenCommitReport.getParentCommitId();
@@ -64,7 +63,7 @@ public final class CommitTreeHelper {
 
       final List<String> commitList = new ArrayList<String>(commits);
       Collections.reverse(commitList);
-      final BranchPoint2 branchPoint2 = new BranchPoint2(emergedFromBranchName, 
+      final BranchPoint2 branchPoint2 = new BranchPoint2(emergedFromBranchName,
           emergedFromCommitId);
       final Branch branch = new Branch(branchName, commitList, branchPoint2);
       branches.add(branch);

@@ -56,11 +56,7 @@ public class MetricResource {
       }
 
       final Map<String, String> fileMetric = fileReport.getFileMetric();
-      if (fileMetric == null) {
-        fileMetrics.add(null);
-      } else {
-        fileMetrics.add(fileMetric);
-      }
+      fileMetrics.add(fileMetric);
 
       final Map<String, Map<String, String>> fqClassNameToMetricsMap = new HashMap<>(); // NOPMD
       final Map<String, Map<String, String>> fqMethodNameToMetricsMap = new HashMap<>(); // NOPMD

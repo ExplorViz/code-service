@@ -38,15 +38,13 @@ public class CommitTree {
    * ...
    */
   public static class Branch {
+
     private String name;
     private List<String> commits;
     private BranchPoint2 branchPoint;
 
     /**
-     * ...
-     ** @param name .
-     ** @param commits .
-     * *@param branchPoint .
+     * ... * @param name . * @param commits . *@param branchPoint .
      */
     public Branch(final String name, final List<String> commits, final BranchPoint2 branchPoint) {
       this.name = name;
@@ -78,11 +76,12 @@ public class CommitTree {
       this.branchPoint = branchPoint;
     }
 
-       
+
     /**
      * ...
      */
     public static class BranchPoint2 {
+
       private String name;
       private String commit;
 

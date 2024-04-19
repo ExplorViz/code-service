@@ -16,6 +16,7 @@ import net.explorviz.code.mongo.FileReport.ClassData2.ClassType2;
 import net.explorviz.code.mongo.FileReport.ClassData2.FieldData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2.ParameterData2;
+import net.explorviz.code.mongo.FileReportTable;
 import net.explorviz.code.mongo.LatestCommit;
 import net.explorviz.code.proto.ClassData;
 import net.explorviz.code.proto.CommitReportData;
@@ -29,10 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
 /**
  * This class functions as a gateway for the analysis data into kafka or another storage. It gets
- * called by the respective GRPC endpoints. The first time analyzation from the code-agent should 
+ * called by the respective GRPC endpoints. The first time analyzation from the code-agent should
  * always start with the main/master branch
  */
 @ApplicationScoped
@@ -42,6 +42,7 @@ public class GrpcGateway {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GrpcGateway.class);
 
+
   /**
    * Processes a CommitReportData package. Stores the data into the local storage.
    *
@@ -49,7 +50,6 @@ public class GrpcGateway {
    */
   public void processCommitReport(final CommitReportData commitReportData) { // NOPMD
 
-    
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("Received Commit report: {}", commitReportData);
     }
@@ -60,7 +60,7 @@ public class GrpcGateway {
         .getApplicationName();
 
     final CommitReport oldReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
-        receivedCommitReportLandscapeToken, receivedCommitReportApplicationName, 
+        receivedCommitReportLandscapeToken, receivedCommitReportApplicationName,
         receivedCommitReportCommitId);
 
     if (oldReport != null) {
@@ -68,6 +68,49 @@ public class GrpcGateway {
     }
 
     final String receivedCommitReportAncestorId = commitReportData.getParentCommitID();
+    // Add entry for FileReportTable. We need to initiate it here because there can be some
+    // commits where the Code-Agent won't send File Reports at all
+
+    final FileReportTable fileReportTable = FileReportTable
+        .findByTokenAndAppName(receivedCommitReportLandscapeToken,
+            receivedCommitReportApplicationName);
+
+    if (fileReportTable != null) {
+      final Map<String, Map<String, String>> table = fileReportTable
+          .getCommitIdTofqnFileNameToCommitIdMap();
+
+      final String parentId = receivedCommitReportAncestorId;
+      if (!NO_ANCESTOR.equals(parentId)) {
+
+        final Map<String, String> parentEntries = table.get(parentId);
+
+        if (parentEntries != null) {
+          final boolean keyExists = table.containsKey(receivedCommitReportCommitId);
+
+          Map<String, String> fqFileNameToCommitId = new HashMap<>();
+          if (keyExists) {
+            LOGGER.warn(
+                "Commit Report normally should be sent and received before its File Reports");
+            fqFileNameToCommitId = table.get(receivedCommitReportCommitId);
+          }
+
+          for (final Map.Entry<String, String> entry : parentEntries.entrySet()) {
+            if (keyExists) {
+              if (!fqFileNameToCommitId.containsKey(entry.getKey())) { // don't overwrite new data
+                fqFileNameToCommitId.put(entry.getKey(), entry.getValue());
+              }
+            } else {
+              fqFileNameToCommitId.put(entry.getKey(), entry.getValue());
+            }
+          }
+
+          table.put(receivedCommitReportCommitId, fqFileNameToCommitId);
+          fileReportTable.setCommitIdTofqnFileNameToCommitIdMap(table);
+          fileReportTable.update();
+        }
+      }
+    }
+
     final String receivedCommitReportBranchName = commitReportData.getBranchName();
     final List<String> receivedCommitReportFiles = commitReportData.getFilesList();
     final List<String> receivedCommitReportModified = commitReportData.getModifiedList();
@@ -77,7 +120,6 @@ public class GrpcGateway {
         .getFileMetricList();
     final List<FileMetric> receivedCommitReportFileMetric = new ArrayList<>();
     final List<String> receivedCommitReportFileHash = commitReportData.getFileHashList();
-    
 
     for (final FileMetricData fileMetricData : receivedCommitReportFileMetricData) {
       final CommitReport.FileMetric fileMetric = new CommitReport.FileMetric(); // NOPMD
@@ -101,16 +143,15 @@ public class GrpcGateway {
     commitReport.setFileHash(receivedCommitReportFileHash);
     commitReport.setApplicationName(receivedCommitReportApplicationName);
 
-
     if (!NO_ANCESTOR.equals(receivedCommitReportAncestorId)) { // NOPMD
       if (CommitReport.findByTokenAndApplicationNameAndCommitId(// NOPMD
-          receivedCommitReportLandscapeToken, 
+          receivedCommitReportLandscapeToken,
           receivedCommitReportApplicationName, receivedCommitReportAncestorId) != null) {
         // no missing reports
         commitReport.persist();
         LatestCommit latestCommit = LatestCommit
             .findByLandscapeTokenAndApplicationNameAndBranchName(
-                receivedCommitReportLandscapeToken, receivedCommitReportApplicationName, 
+                receivedCommitReportLandscapeToken, receivedCommitReportApplicationName,
                 receivedCommitReportBranchName);
         if (latestCommit == null) {
           // commit of a new branch
@@ -127,10 +168,10 @@ public class GrpcGateway {
           branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
           branchPoint.setApplicationName(receivedCommitReportApplicationName);
           final CommitReport ancestorCommitReport = CommitReport
-               .findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken, 
-               receivedCommitReportApplicationName, receivedCommitReportAncestorId);
+              .findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken,
+                  receivedCommitReportApplicationName, receivedCommitReportAncestorId);
           branchPoint.setEmergedFromCommitId(ancestorCommitReport.getCommitId());
-          branchPoint.setEmergedFromBranchName(ancestorCommitReport.getBranchName()); 
+          branchPoint.setEmergedFromBranchName(ancestorCommitReport.getBranchName());
           branchPoint.persist();
         } else {
           latestCommit.setCommitId(receivedCommitReportCommitId);
@@ -190,8 +231,48 @@ public class GrpcGateway {
       final String receivedFileDataModifiedLines = fileData.getModifiedLines();
       final String receivedFileDataAddedLines = fileData.getAddedLines();
       final String receivedFileDataDeletedLines = fileData.getDeletedLines();
-      
+
       final FileReport fileReport = new FileReport();
+
+      // FileReport Table ------------------------------------------------------------------
+      final FileReportTable fileReportTable = FileReportTable
+          .findByTokenAndAppName(receivedFileDataLandscapeToken, receivedFileDataAppName);
+      final String fqFileName = receivedFileDataPackageName + "." + receivedFileDataFileName;
+
+      if (fileReportTable == null) {
+        LOGGER.trace("CREATE FILE REPORT TABLE.");
+        final FileReportTable newFileReportTable = new FileReportTable();
+        newFileReportTable.setLandscapeToken(receivedFileDataLandscapeToken);
+        newFileReportTable.setAppName(receivedFileDataAppName);
+        final Map<String, Map<String, String>> table = new HashMap<>();
+        final Map<String, String> fqFileNameToCommitId = new HashMap<>();
+        fqFileNameToCommitId.put(fqFileName, receivedFileDataCommitId);
+        // after the table is filled we can store it
+        table.put(receivedFileDataCommitId, fqFileNameToCommitId);
+        newFileReportTable.setCommitIdTofqnFileNameToCommitIdMap(table);
+        newFileReportTable.persist();
+      } else {
+        // File Report Table already exists. We only add entries by manipulating the map.
+
+        final Map<String, Map<String, String>> table = fileReportTable
+            .getCommitIdTofqnFileNameToCommitIdMap();
+
+        final boolean keyExists = table.containsKey(receivedFileDataCommitId);
+
+        Map<String, String> fqFileNameToCommitIdMap = new HashMap<>();
+        if (!keyExists) {
+          LOGGER.warn("Normally Commit Report should be received before one of its File Reports");
+        } else {
+          fqFileNameToCommitIdMap = table.get(receivedFileDataCommitId);
+        }
+        // fill missing entry for current file report (might overwrite entry copied from parent)
+        fqFileNameToCommitIdMap.put(fqFileName, receivedFileDataCommitId);
+        table.put(receivedFileDataCommitId, fqFileNameToCommitIdMap);
+        fileReportTable.setCommitIdTofqnFileNameToCommitIdMap(table);
+        fileReportTable.update();
+      }
+
+      // -----------------------------------------------------------------------------------------
 
       fileReport.setLandscapeToken(receivedFileDataLandscapeToken);
       fileReport.setAppName(receivedFileDataAppName);
@@ -200,9 +281,8 @@ public class GrpcGateway {
       fileReport.setPackageName(receivedFileDataPackageName);
       fileReport.setImportName(receivedFileDataImportName);
 
-
       final Map<String, ClassData2> classData = new HashMap<>();
-      for (final Map.Entry<String, ClassData> entry 
+      for (final Map.Entry<String, ClassData> entry
           : receivedFileDataClassData.entrySet()) {
         final ClassData2 cd = new ClassData2(); // NOPMD
 
@@ -227,7 +307,7 @@ public class GrpcGateway {
         }
         cd.setModifier(entry.getValue().getModifierList());
         cd.setIntrfc(entry.getValue().getInterfaceList());
-        
+
         final List<FieldData2> field = new ArrayList<>(); // NOPMD
         for (final FieldData fd : entry.getValue().getFieldList()) {
           final FieldData2 fd2 = new FieldData2(); // NOPMD
@@ -237,7 +317,6 @@ public class GrpcGateway {
           field.add(fd2);
         }
         cd.setField(field);
-
 
         cd.setInnerClass(entry.getValue().getInnerClassList());
 
@@ -264,8 +343,8 @@ public class GrpcGateway {
         cd.setConstructor(constructor);
 
         final Map<String, MethodData2> methodData =
-             new HashMap<>(); // NOPMD
-        
+            new HashMap<>(); // NOPMD
+
         for (final Map.Entry<String, MethodData> entry2 : entry.getValue().getMethodDataMap()
             .entrySet()) {
           final MethodData2 md = new MethodData2(); // NOPMD
@@ -299,7 +378,6 @@ public class GrpcGateway {
       }
       fileReport.setClassData(classData);
 
-
       fileReport.setFileMetric(receivedFileDataMetric);
       fileReport.setAuthor(receivedFileDataAuthor);
       fileReport.setModifiedLines(receivedFileDataModifiedLines);
@@ -310,8 +388,9 @@ public class GrpcGateway {
       // Thus, we make sure to update it if it existed before
       final FileReport oldReport = FileReport
           .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
-            receivedFileDataLandscapeToken, receivedFileDataAppName, 
-            receivedFileDataPackageName + "." + receivedFileDataFileName, receivedFileDataCommitId);
+              receivedFileDataLandscapeToken, receivedFileDataAppName,
+              receivedFileDataPackageName + "." + receivedFileDataFileName,
+              receivedFileDataCommitId);
 
       if (oldReport != null) { // NOPMD
         oldReport.setPackageName(fileReport.getPackageName());
@@ -339,7 +418,7 @@ public class GrpcGateway {
   public String processStateData(final StateDataRequest stateDataRequest) {
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("Request for state - upstream: {}, branch: {}, token: {}, secret: {},"
-          + " application name: {}",
+              + " application name: {}",
           stateDataRequest.getUpstreamName(),
           stateDataRequest.getBranchName(),
           stateDataRequest.getLandscapeToken(),
@@ -352,13 +431,13 @@ public class GrpcGateway {
     final String applicationName = stateDataRequest.getApplicationName();
     final LatestCommit latestCommit = LatestCommit
         .findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, applicationName,
-        branchName);
+            branchName);
 
     // Send the empty string if the state of the branch is unknown, otherwise the SHA1 of
     // the branch's last commit
     if (latestCommit != null) {
       return latestCommit.getCommitId();
-    } 
+    }
     return "";
   }
 

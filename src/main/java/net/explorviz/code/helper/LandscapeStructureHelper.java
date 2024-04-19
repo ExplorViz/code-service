@@ -2,13 +2,11 @@ package net.explorviz.code.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class.Method;
@@ -16,6 +14,7 @@ import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.FileReport;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.mongo.FileReportTable;
 
 
 /**
@@ -25,17 +24,15 @@ public final class LandscapeStructureHelper {
 
   private LandscapeStructureHelper() {
   }
-    
+
   /**
-   * ...
-   ** @param landscapeToken the landscape token.
-   ** @param commitId the commit id.
-   ** @param appName the application name.
-   ** @return the list of "first-order" packages of an application matching above params.
+   * ... * @param landscapeToken the landscape token. * @param commitId the commit id. * @param
+   * appName the application name. * @return the list of "first-order" packages of an application
+   * matching above params.
    */
   public static List<Package> createListOfPackages(// NOPMD
-        final String landscapeToken,
-        final String commitId, final String appName) {
+      final String landscapeToken,
+      final String commitId, final String appName) {
 
     final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
         landscapeToken, appName, commitId);
@@ -44,13 +41,12 @@ public final class LandscapeStructureHelper {
     }
     final List<String> files = commitReport.getFiles();
 
-    final Map<String, Package> packageNameToPackageMap = 
+    final Map<String, Package> packageNameToPackageMap =
         new HashMap<>();
     final Map<String, Class> fqnClassNameToClass =
-         new HashMap<>();
+        new HashMap<>();
     final Set<String> firstLevelPackageNames = new HashSet<>();
     final Set<String> functionFqn = new HashSet<>();
-
 
     for (final String file : files) {
       final String[] fileAndFolders = file.split("/");
@@ -58,8 +54,7 @@ public final class LandscapeStructureHelper {
       final String fileName = fileAndFolders[fileAndFolders.length - 1];
       final String fileNameWithoutFileExtension = fileName.split("\\.")[0]; // NOPMD
 
-
-      final FileReport fileReport = getFileReport(landscapeToken, appName, 
+      final FileReport fileReport = getFileReport(landscapeToken, appName,
           fileAndFoldersWithDotSeparation, commitId);
 
       if (fileReport == null) {
@@ -72,13 +67,13 @@ public final class LandscapeStructureHelper {
       Package currentPackage = null;
       for (int i = 0; i < packages.length; i++) {
         final String currentPackageName = packages[i];
-        if (i == 0 && !firstLevelPackageNames.contains(currentPackageName)) {
+        if (i == 0) {
           firstLevelPackageNames.add(currentPackageName);
         }
 
         final StringBuilder id = new StringBuilder(packages[0]); // NOPMD
         for (int j = 0; j < i; j++) {
-          id.append("." + packages[j + 1]); 
+          id.append("." + packages[j + 1]);
         }
 
         // use full qualified name as id to avoid name clashes
@@ -92,12 +87,9 @@ public final class LandscapeStructureHelper {
           packageNameToPackageMap.put(id.toString(), currentPackage);
         }
 
-
-
         if (parentPackage != null && !parentPackage.getSubPackages().contains(currentPackage)) {
           parentPackage.getSubPackages().add(currentPackage);
         }
-        
 
         parentPackage = currentPackage;
       }
@@ -113,12 +105,10 @@ public final class LandscapeStructureHelper {
 
       // // fill clazz with methods
       ClassData2 classData;
-      if (
-          (classData = fileReport.getClassData().get(id)) == null // NOPMD /
-      // TODO: walk through classData entry set instead 
-      // because a class file could theoretically (but shouldn't practically) 
-      // have multiple first level classes defined
-      ) {
+      if ((classData = fileReport.getClassData().get(id)) == null) {
+        // TODO: walk through classData entry set instead
+        // because a class file could theoretically (but shouldn't practically) have multiple
+        // first level classes defined
         continue;
       }
 
@@ -128,7 +118,7 @@ public final class LandscapeStructureHelper {
       }
 
       final Map<String, MethodData2> methodData = classData.getMethodData();
-      
+
       if (methodData != null) {
 
         for (final Map.Entry<String, MethodData2> entry : methodData.entrySet()) {
@@ -136,11 +126,11 @@ public final class LandscapeStructureHelper {
           final String[] temp2 = temp[temp.length - 1].split("#");
           final String[] prefixFqn = Arrays.copyOfRange(temp, 0, temp.length - 1);
           final String methodName = temp2[0]; // TODO: if methodName is constructor we write <init>
-          final StringBuilder methodFqn = new StringBuilder(""); // NOPMD
+          final StringBuilder methodFqn = new StringBuilder(); // NOPMD
           for (final String name : prefixFqn) {
             methodFqn.append(name + ".");
           }
-          methodFqn.append(methodName); 
+          methodFqn.append(methodName);
 
           // functionFqn really needed? Only if we want to "prevent" overloaded functions
           if (!functionFqn.contains(methodFqn.toString())) { 
@@ -170,60 +160,59 @@ public final class LandscapeStructureHelper {
   }
 
   /**
-   * ...
-   ** @param landscapeToken the landscape token.
-   ** @param appName the application name.
-   ** @param fqFileName the full qualified file name.
-   ** @param commitId the commit id.
-   ** @return the file report matching the params above.
+   * ... * @param landscapeToken the landscape token. * @param appName the application name. *
+   *
+   * @param fqFileName the full qualified file name. * @param commitId the commit id. * @return the
+   *                   file report matching the params above. * If there is no file report for the
+   *                   given commitId * find the most recent file report before the given commitId
    */
   public static FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
       final String fqFileName, final String commitId) {
-    final String[] temp = fqFileName.split("\\.");
-    final String fileName;
-    try {
-      fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
-    } catch (ArrayIndexOutOfBoundsException e) {
+
+    final FileReportTable fileReportTable = FileReportTable.findByTokenAndAppName(landscapeToken,
+        appName);
+
+    if (fileReportTable == null) {
       return null;
     }
-    
-    FileReport fileReport = FileReport
-          .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(landscapeToken, appName, 
-          fqFileName, commitId);
 
-    if (fileReport == null) { // older commit has provided file report
+    final Map<String, Map<String, String>> table = fileReportTable
+        .getCommitIdTofqnFileNameToCommitIdMap(); // fqnFileName with no non-package prefix
+    final Map<String, String> packagesAndFileNameWithFileExtensionToCommitIdMap = table.get(
+        commitId); // packagesAndFileNameWithFileExtension is suffix of fqFileName
 
-      final List<FileReport> fileReportList = FileReport.findByTokenAndAppNameAndFileName(
-            landscapeToken, appName, fileName);
+    if (packagesAndFileNameWithFileExtensionToCommitIdMap == null) {
+      return null;
+    }
 
-      final List<FileReport> candidateFileReportList = fileReportList.stream().filter(fr -> 
-              !CommitComparisonHelper.getLatestCommonCommitId(fr.getCommitId(), 
-              commitId, landscapeToken, appName).equals(commitId) // get rid of file reports that
-              // happen later than our commit
-              &&
-               CommitComparisonHelper.getLatestCommonCommitId(fr.getCommitId(),
-               commitId, landscapeToken, appName)
-                   .equals(fr.getCommitId()) // get rid of file reports that 
-              // have unordered commits w.r.t our commit
-              &&
-              fqFileName
-              .contains(fr.getPackageName())).collect(Collectors.toList()); // get rid of file
-      // reports that do not involve our file of interest
+    final Set<String> keySet = packagesAndFileNameWithFileExtensionToCommitIdMap.keySet();
 
-      Collections.sort(candidateFileReportList, (fr1, fr2) -> {
-        if (CommitComparisonHelper.getLatestCommonCommitId(fr1.getCommitId(), fr2.getCommitId(), 
-              landscapeToken, appName).equals(fr1.getCommitId())) {
-          return 1;
-        } else { // no return of 0 necessary since no two commit id's will be the same in our list
-          return -1;
+    // find key that is the longest suffix of fqFileName
+    // this technicality is not needed when we can be sure that fqFileName begins with a package
+    // name and not with
+    // a folder structure like src.main.java
+
+    int startsAtIndex = fqFileName.length();
+    String actualKey = "";
+    for (final String key : keySet) {
+      if (fqFileName.endsWith(key)) {
+        final int startIndex = fqFileName.lastIndexOf(key);
+        if (startsAtIndex > startIndex) {
+          startsAtIndex = startIndex;
+          actualKey = key;
         }
-      });
-
-      fileReport = null; // NOPMD
-      if (!candidateFileReportList.isEmpty()) {
-        fileReport = candidateFileReportList.get(0);
       }
     }
+
+    final String actualCommitId = packagesAndFileNameWithFileExtensionToCommitIdMap.get(actualKey);
+
+    if (actualCommitId == null) {
+      return null;
+    }
+
+    final FileReport fileReport = FileReport
+        .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
+            landscapeToken, appName, fqFileName, actualCommitId);
     return fileReport;
   }
 }

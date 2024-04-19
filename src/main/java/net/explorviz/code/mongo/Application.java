@@ -11,6 +11,16 @@ public class Application extends PanacheMongoEntity {
   private String applicationName;
   private String landscapeToken;
 
+  public static List<Application> findByLandscapeToken(final String landscapeToken) {
+    return list("landscapeToken", landscapeToken);
+  }
+
+  public static Application findByLandscapeTokenAndApplicationName(final String landscapeToken,
+      final String applicationName) {
+    return find("landscapeToken = ?1 and applicationName = ?2", landscapeToken,
+        applicationName).firstResult();
+  }
+
   public String getApplicationName() {
     return this.applicationName;
   }
@@ -25,15 +35,5 @@ public class Application extends PanacheMongoEntity {
 
   public void setLandscapeToken(final String landscapeToken) {
     this.landscapeToken = landscapeToken;
-  }
-
-  public static List<Application> findByLandscapeToken(final String landscapeToken) {
-    return list("landscapeToken", landscapeToken);
-  }
-
-  public static Application findByLandscapeTokenAndApplicationName(final String landscapeToken,
-      final String applicationName) {
-    return find("landscapeToken = ?1 and applicationName = ?2", landscapeToken, 
-        applicationName).firstResult();
   }
 }

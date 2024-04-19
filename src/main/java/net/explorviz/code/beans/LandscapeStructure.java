@@ -6,6 +6,7 @@ import java.util.List;
  * A class for the static landscape structure used for a commit.
  */
 public class LandscapeStructure {
+
   private String landscapeToken;
   private List<Node> nodes;
 
@@ -106,7 +107,7 @@ public class LandscapeStructure {
        */
       public static class Package {
 
-  
+
         private String name;
         private List<Package> subPackages;
         private List<Class> classes;
@@ -136,8 +137,8 @@ public class LandscapeStructure {
         }
 
         /**
-          * ...
-          */
+         * ...
+         */
         public static class Class {
 
           private String name;

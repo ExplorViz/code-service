@@ -7,7 +7,7 @@ import java.util.Map;
  * ...
  */
 public class CommitComparison {
- 
+
   private List<String> added;
   private List<String> modified;
   private List<String> deleted;
@@ -16,13 +16,9 @@ public class CommitComparison {
   private List<Metric> metrics;
 
   /**
-   * ...
-   ** @param added ...
-   ** @param modified ...
-   ** @param deleted ...
-   **
+   * ... * @param added ... * @param modified ... * @param deleted ... *
    */
-  public CommitComparison(final List<String> added, 
+  public CommitComparison(final List<String> added,
       final List<String> modified, final List<String> deleted,
       final List<String> addedPackages, final List<String> deletedPackages,
       final List<Metric> metrics) {
