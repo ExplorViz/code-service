@@ -4,6 +4,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.explorviz.code.beans.LandscapeStructure;
@@ -79,9 +80,9 @@ public class LandscapeStructureResource {
       final String[] packageFileNameSplit = packageFileName.split("\\.");
       final String className = packageFileNameSplit[packageFileNameSplit.length - 2];
       final Package packageFirstSelectedCommit =
-          getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
+          getPackageFromPath(packageFileName, packagesFirstSelectedCommit).getFirst();
       final Package packageSecondSelectedCommit =
-          getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
+          getPackageFromPath(packageFileName, packagesSecondSelectedCommit).getFirst();
 
       // packageFileName includes file extension
       final int numThree = 3;
@@ -129,55 +130,72 @@ public class LandscapeStructureResource {
 
     for (final String packageFileName : addedPackageFileName) {
       final String[] packageFileNameSplit = packageFileName.split("\\.");
+      final int numOfPackages = packageFileNameSplit.length - 2;
       // packageFileName includes file extension
       final String className = packageFileNameSplit[packageFileNameSplit.length - 2];
-      final int numThree = 3;
-      final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
-      final Package packageFirstSelectedCommit =
-          getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
-      final Package packageSecondSelectedCommit =
-          getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
+      //final int numThree = 3;
+      //final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
 
-      if (packageSecondSelectedCommit != null) { // NOPMD
+      final Tuple2<Package, String> tuple2 = getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
+       
+      if (tuple2 != null) { // NOPMD
+        final Package packageFirstSelectedCommit = tuple2.getFirst();
+        final String prefixPackageFileName = tuple2.getSecond();
+        final String[] prefixPackageFileNameSplit = prefixPackageFileName.split("\\.");
+        final int numOfPackagesInPrefix = prefixPackageFileNameSplit.length;
 
-        if (packageFirstSelectedCommit != null) { // NOPMD
-          final String packageName = packageFirstSelectedCommit.getName();
+        //final String packageName = packageFirstSelectedCommit.getName();
 
-          if (packageName.equals(lastPackageName)) {
-            // add class
+        if (numOfPackagesInPrefix == numOfPackages) {
+          // add class
+          final Tuple2<Package, String> tuple2second = getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
+          if(tuple2second == null) {
+            // should never happen. TODO: Error handling
+            System.out.println("passiert doch !");
+          } else {
+            final Package packageSecondSelectedCommit = tuple2second.getFirst();
             final Class clazz = this.getClassByNameFromPackage(className,
                 packageSecondSelectedCommit);
 
             if (clazz != null) { // NOPMD
-              packageFirstSelectedCommit.getClasses().add(clazz);
-            } else { // NOPMD
-              // should never happen. TODO: Log Error
-            }
-          } else {
-            // add package
-            final StringBuilder subPackages = new StringBuilder(""); // NOPMD
-            for (int i = 0; i < packageFileNameSplit.length - numThree; i++) {
-              subPackages.append(packageFileNameSplit[i] + ".");
-              if (packageFileNameSplit[i].equals(packageName)) {
-                subPackages.append(packageFileNameSplit[i + 1]);
-
-                break;
+              // add class only if not already existent!
+              boolean isClassContained = false;
+              for (final Class clazz2 : packageFirstSelectedCommit.getClasses()) {
+                if (clazz2.getName().equals(clazz.getName())) {
+                  isClassContained = true;
+                  break;
+                }
               }
+              if(!isClassContained)
+                packageFirstSelectedCommit.getClasses().add(clazz);
+            } else { // NOPMD
+              // should never happen. TODO: Error Handling
+              System.out.println("passiert doch 2!");
             }
-            // TODO: subPackages.toString()
-            // file name needed for technical reason. We imitate one
-            final String subPackageFileName = subPackages.toString() + "." + "filename" + "."
-                + "extension";
-            final Package pckg = getPackageFromPath(subPackageFileName,
-                packagesSecondSelectedCommit);
-            packageFirstSelectedCommit.getSubPackages().add(pckg);
           }
         } else {
-          packagesFirstSelectedCommit.add(packageSecondSelectedCommit);
+          // add missing package to existing package
+          final String prefixPackageFileName2 = String.join(".", Arrays.asList(packageFileNameSplit).subList(0, numOfPackagesInPrefix + 2));
+          System.out.println("prefixPackageFileName2: " + prefixPackageFileName2);
+          final Tuple2<Package, String> tuple2second = getPackageFromPath(prefixPackageFileName2, packagesSecondSelectedCommit);
+          if(tuple2second == null) {
+            // should never happen. TODO: Error Handling
+            System.out.println("passiert doch 3!");
+          }else {
+            final Package packageToAdd = tuple2second.getFirst();
+            packageFirstSelectedCommit.getSubPackages().add(packageToAdd);
+          }
         }
-      } else { // NOPMD
-        // should never happen. TODO: LOG error
+      } else {
+        // add first-level package to foundation
+        final String firstPackageName = packageFileNameSplit[0];
+        final Package firstLevelPackage = getPackageFromPath(firstPackageName + ".filename.extension", packagesSecondSelectedCommit).getFirst(); // TODO: Refactor getPackageFromPath so the suffix is not needed
+        packagesFirstSelectedCommit.add(firstLevelPackage);
       }
+    }
+    System.out.println("first level packages:");
+    for(final Package pckg : packagesFirstSelectedCommit) {
+      System.out.println(pckg.getName());
     }
     return this.buildLandscapeStructure(token, appName, packagesFirstSelectedCommit);
   }
@@ -194,15 +212,19 @@ public class LandscapeStructureResource {
 
   /**
    * Returns the "deepest" package available matching the package structure. Therefore, the deepest
-   * package and the parent package chain covers a prefix of the package structure. * @param
-   * packageFileName the package structure string * @param packages list of packages to search for a
-   * match * @return the "deepest" package
+   * package and the parent package chain covers a prefix of the package structure. 
+   * @param packageFileName the package structure string 
+   * @param packages list of packages to search for a match
+   * @return the "deepest" package
    */
-  public static Package getPackageFromPath(final String packageFileName, // NOPMD
+  public static Tuple2<Package, String> getPackageFromPath(final String packageFileName, // NOPMD
       final List<Package> packages) {
+
     final String[] packageFileNameSplit = packageFileName.split("\\.");
     // packageFileName includes file extension
     final int numOfPackages = packageFileNameSplit.length - 2;
+
+    String packagePath = "";
 
     for (final Package pckg : packages) {
       int counter = 0;
@@ -210,7 +232,12 @@ public class LandscapeStructureResource {
 
       while (packageFileNameSplit[counter].equals(currentPackage.getName())) {
 
-        if (numOfPackages > counter + 1) {
+        if("".equals(packagePath))
+          packagePath += currentPackage.getName();
+        else
+          packagePath += "." + currentPackage.getName();
+
+        if (numOfPackages > counter + 1) { 
 
           Package temp = null;
           for (final Package subPackage : currentPackage.getSubPackages()) {
@@ -223,10 +250,10 @@ public class LandscapeStructureResource {
             currentPackage = temp;
             counter++;
           } else {
-            return currentPackage;
+            return new Tuple2<Package, String>(currentPackage, packagePath);
           }
         } else {
-          return currentPackage;
+          return new Tuple2<Package, String>(currentPackage, packagePath);
         }
 
       }
@@ -256,5 +283,25 @@ public class LandscapeStructureResource {
 
     return landscapeStructure;
   }
+
+  public static class Tuple2<K, V> {
+
+    private K first;
+    private V second;
+  
+    public Tuple2(K first, V second){
+        this.first = first;
+        this.second = second;
+    }
+
+    // getters
+    public K getFirst() {
+      return this.first;
+    }
+    
+    public V getSecond() {
+      return this.second;
+    }
+}
 
 }

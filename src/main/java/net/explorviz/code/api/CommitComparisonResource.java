@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.explorviz.code.api.LandscapeStructureResource.Tuple2;
 import net.explorviz.code.beans.CommitComparison;
 import net.explorviz.code.beans.CommitComparison.Metric;
 import net.explorviz.code.beans.CommitComparison.Metric.MetricVal;
@@ -66,6 +68,7 @@ public class CommitComparisonResource {
     final List<Package> packagesSecondSelectedCommit = LandscapeStructureHelper
         .createListOfPackages(token, secondCommit, appName);
 
+    // TODO: REFACTOR
     // fill addedPackages with the packages that are added
     for (final String fqFileName : added) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
@@ -76,16 +79,17 @@ public class CommitComparisonResource {
         final String[] packageFileNameSplit = packageFileName.split("\\.");
         final int numThree = 3;
         final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
-        final Package packageFirstSelectedCommit =
+        final Tuple2<Package, String> tupleFirstSelectedCommit =
             LandscapeStructureResource
                 .getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
-        final Package packageSecondSelectedCommit =
+        final Tuple2<Package, String> tupleSecondSelectedCommit =
             LandscapeStructureResource
                 .getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
-        if (packageSecondSelectedCommit != null) { // NOPMD
-
-          if (packageFirstSelectedCommit != null) { // NOPMD
+        if (tupleSecondSelectedCommit != null) { // NOPMD
+          //final Package packageSecondSelectedCommit = tupleSecondSelectedCommit.getFirst();
+          if (tupleFirstSelectedCommit != null) { // NOPMD
+            final Package packageFirstSelectedCommit = tupleFirstSelectedCommit.getFirst();
             final String packageName = packageFirstSelectedCommit.getName();
 
             if (packageName.equals(lastPackageName)) {
@@ -135,16 +139,17 @@ public class CommitComparisonResource {
         final String[] packageFileNameSplit = packageFileName.split("\\.");
         final int numThree = 3;
         final String lastPackageName = packageFileNameSplit[packageFileNameSplit.length - numThree];
-        final Package packageFirstSelectedCommit =
+        final Tuple2<Package, String> tupleFirstSelectedCommit =
             LandscapeStructureResource
                 .getPackageFromPath(packageFileName, packagesFirstSelectedCommit);
-        final Package packageSecondSelectedCommit =
+        final Tuple2<Package, String> tupleSecondSelectedCommit =
             LandscapeStructureResource
                 .getPackageFromPath(packageFileName, packagesSecondSelectedCommit);
 
-        if (packageSecondSelectedCommit != null) { // NOPMD
-
-          if (packageFirstSelectedCommit != null) { // NOPMD
+        if (tupleSecondSelectedCommit != null) { // NOPMD
+          final Package packageSecondSelectedCommit = tupleSecondSelectedCommit.getFirst();
+          if (tupleFirstSelectedCommit != null) { // NOPMD
+            //final Package packageFirstSelectedCommit = tupleFirstSelectedCommit.getFirst();
             final String packageName = packageSecondSelectedCommit.getName();
 
             if (packageName.equals(lastPackageName)) {

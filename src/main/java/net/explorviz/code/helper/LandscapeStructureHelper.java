@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class;
@@ -142,6 +143,7 @@ public final class LandscapeStructureHelper {
             methodFqn.append(name + ".");
           }
           methodFqn.append(methodName); 
+          System.out.println("method FQN: " + methodFqn);
 
           // functionFqn really needed? Only if we want to "prevent" overloaded functions
           if (!functionFqn.contains(methodFqn.toString())) { 
@@ -149,7 +151,8 @@ public final class LandscapeStructureHelper {
             Otherwise we might miss overloaded functions */
             final Method method = new Method(); // NOPMD
             method.setName(methodName); // include parameter list due to overloaded functions?
-            method.setMethodHash(methodName + "defaulthashcode"); // TODO: real hash code
+            final String methodHash = HashHelper.calculateSpanHash(UUID.fromString(landscapeToken), "0.0.0.0", appName, 0, methodFqn.toString());
+            method.setMethodHash(methodHash);
             clazz.getMethods().add(method);
             functionFqn.add(methodFqn.toString());
           }
