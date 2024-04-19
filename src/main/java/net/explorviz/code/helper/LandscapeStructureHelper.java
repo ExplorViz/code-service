@@ -105,12 +105,10 @@ public final class LandscapeStructureHelper {
 
       // // fill clazz with methods
       ClassData2 classData;
-      if (
-          (classData = fileReport.getClassData().get(id)) == null // NOPMD /
+      if ((classData = fileReport.getClassData().get(id)) == null) {
         // TODO: walk through classData entry set instead
-        // because a class file could theoretically (but shouldn't practically)
-        // have multiple first level classes defined
-      ) {
+        // because a class file could theoretically (but shouldn't practically) have multiple
+        // first level classes defined
         continue;
       }
 
@@ -163,9 +161,10 @@ public final class LandscapeStructureHelper {
 
   /**
    * ... * @param landscapeToken the landscape token. * @param appName the application name. *
+   *
    * @param fqFileName the full qualified file name. * @param commitId the commit id. * @return the
-   * file report matching the params above. * If there is no file report for the given commitId *
-   * find the most recent file report before the given commitId
+   *                   file report matching the params above. * If there is no file report for the
+   *                   given commitId * find the most recent file report before the given commitId
    */
   public static FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
       final String fqFileName, final String commitId) {
@@ -177,7 +176,8 @@ public final class LandscapeStructureHelper {
       return null;
     }
 
-    final Map<String, Map<String, String>> table = fileReportTable.getCommitIdTofqnFileNameToCommitIdMap(); // fqnFileName with no non-package prefix
+    final Map<String, Map<String, String>> table = fileReportTable
+        .getCommitIdTofqnFileNameToCommitIdMap(); // fqnFileName with no non-package prefix
     final Map<String, String> packagesAndFileNameWithFileExtensionToCommitIdMap = table.get(
         commitId); // packagesAndFileNameWithFileExtension is suffix of fqFileName
 
@@ -188,7 +188,8 @@ public final class LandscapeStructureHelper {
     final Set<String> keySet = packagesAndFileNameWithFileExtensionToCommitIdMap.keySet();
 
     // find key that is the longest suffix of fqFileName
-    // this technicality is not needed when we can be sure that fqFileName begins with a package name and not with
+    // this technicality is not needed when we can be sure that fqFileName begins with a package
+    // name and not with
     // a folder structure like src.main.java
 
     int startsAtIndex = fqFileName.length();
@@ -209,8 +210,9 @@ public final class LandscapeStructureHelper {
       return null;
     }
 
-    final FileReport fileReport = FileReport.findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
-        landscapeToken, appName, fqFileName, actualCommitId);
+    final FileReport fileReport = FileReport
+        .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
+            landscapeToken, appName, fqFileName, actualCommitId);
     return fileReport;
   }
 }

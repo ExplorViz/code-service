@@ -15,7 +15,10 @@ public class FileReportTable extends PanacheMongoEntity {
   private Map<String, Map<String, String>> commitIdTofqnFileNameToCommitIdMap;
 
   /**
-   * ... * @param landscapeToken the landscape token. * @param appName the application name *
+   * Returns a FileReportTable by using token and appName.
+   *
+   * @param landscapeToken the landscape token.
+   * @param appName        the application name
    * @return the FileReportTable that matches the above params.
    */
   public static FileReportTable findByTokenAndAppName(// NOPMD
