@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import net.explorviz.code.api.LandscapeStructureResource.Tuple2;
 import net.explorviz.code.beans.CommitComparison;
 import net.explorviz.code.beans.CommitComparison.Metric;
@@ -98,7 +97,7 @@ public class CommitComparisonResource {
             } else {
               // add package
               boolean timeToAdd = false;
-              final StringBuilder subPackages = new StringBuilder(""); // NOPMD
+              final StringBuilder subPackages = new StringBuilder(); // NOPMD
               for (int i = 0; i <= packageFileNameSplit.length - numThree; i++) {
                 if (timeToAdd) {
                   subPackages.append(packageFileNameSplit[i] + ".");
@@ -109,7 +108,7 @@ public class CommitComparisonResource {
               }
 
               if (subPackages.toString().length() > 0) { // NOPMD
-                addedPackages.add(subPackages.toString().substring(0,
+                addedPackages.add(subPackages.substring(0,
                     subPackages.toString().length() - 1));
               } else { // shouldn't happen
                 addedPackages.add("");
@@ -158,7 +157,7 @@ public class CommitComparisonResource {
             } else {
               // deleted packages
               boolean timeToAdd = false;
-              final StringBuilder subPackages = new StringBuilder(""); // NOPMD
+              final StringBuilder subPackages = new StringBuilder(); // NOPMD
               for (int i = 0; i <= packageFileNameSplit.length - numThree; i++) {
                 if (timeToAdd) {
                   subPackages.append(packageFileNameSplit[i] + ".");
@@ -169,7 +168,7 @@ public class CommitComparisonResource {
               }
 
               if (subPackages.toString().length() > 0) {
-                deletedPackages.add(subPackages.toString().substring(0,
+                deletedPackages.add(subPackages.substring(0,
                     subPackages.toString().length() - 1));
               } else { // shouldn't happen
                 deletedPackages.add("");

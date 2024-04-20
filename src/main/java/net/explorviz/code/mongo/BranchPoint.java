@@ -16,6 +16,17 @@ public class BranchPoint extends PanacheMongoEntity {
   private String landscapeToken;
   private String applicationName;
 
+  public static BranchPoint findByTokenAndBranchName(final String landscapeToken,
+      final String branchName) {
+    return find("landscapeToken = ?1 and branchName = ?2", landscapeToken,
+        branchName).firstResult();
+  }
+
+  public static List<BranchPoint> findByTokenAndApplicationName(final String landscapeToken,
+      final String applicationName) {
+    return list("landscapeToken = ?1 and applicationName = ?2", landscapeToken, applicationName);
+  }
+
   public String getCommitId() {
     return this.commitId;
   }
@@ -62,16 +73,5 @@ public class BranchPoint extends PanacheMongoEntity {
 
   public void setApplicationName(final String applicationName) {
     this.applicationName = applicationName;
-  }
-
-  public static BranchPoint findByTokenAndBranchName(final String landscapeToken, 
-      final String branchName) {
-    return find("landscapeToken = ?1 and branchName = ?2", landscapeToken, 
-        branchName).firstResult();
-  }
-
-  public static List<BranchPoint> findByTokenAndApplicationName(final String landscapeToken, 
-      final String applicationName) {
-    return list("landscapeToken = ?1 and applicationName = ?2", landscapeToken, applicationName);
   }
 }
