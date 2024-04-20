@@ -197,8 +197,8 @@ public class GrpcGateway {
           branchPoint.setCommitId(receivedCommitReportCommitId);
           branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
           branchPoint.setApplicationName(receivedCommitReportApplicationName);
-          branchPoint.setEmergedFromCommitId("UNKNOWN");
-          branchPoint.setEmergedFromBranchName("UNKNOWN");
+          branchPoint.setEmergedFromCommitId("UNKNOWN-EMERGED-COMMIT");
+          branchPoint.setEmergedFromBranchName("UNKNOWN-EMERGED-BRANCH");
           branchPoint.persist();
         } else {
           latestCommit.setCommitId(receivedCommitReportCommitId);
