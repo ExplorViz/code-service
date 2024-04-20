@@ -178,8 +178,40 @@ public class GrpcGateway {
           latestCommit.update();
         }
       } else { // NOPMD
-        // missing reports. Do nothing until we get the missing reports. Analyzer has to rerun or 
-        // we need to explicitly request missing reports (if analyzer does not fail on them)
+        commitReport.persist();
+        LatestCommit latestCommit = LatestCommit
+            .findByLandscapeTokenAndApplicationNameAndBranchName(
+                receivedCommitReportLandscapeToken, receivedCommitReportApplicationName,
+                receivedCommitReportBranchName);
+        if (latestCommit == null) {
+          // commit of a new branch
+          latestCommit = new LatestCommit();
+          latestCommit.setBranchName(receivedCommitReportBranchName);
+          latestCommit.setCommitId(receivedCommitReportCommitId);
+          latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
+          latestCommit.setApplicationName(receivedCommitReportApplicationName);
+          latestCommit.persist();
+
+          final BranchPoint branchPoint = new BranchPoint();
+          branchPoint.setBranchName(receivedCommitReportBranchName);
+          branchPoint.setCommitId(receivedCommitReportCommitId);
+          branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
+          branchPoint.setApplicationName(receivedCommitReportApplicationName);
+          branchPoint.setEmergedFromCommitId("UNKNOWN");
+          branchPoint.setEmergedFromBranchName("UNKNOWN");
+          branchPoint.persist();
+        } else {
+          latestCommit.setCommitId(receivedCommitReportCommitId);
+          latestCommit.update();
+        }
+        Application application = Application.findByLandscapeTokenAndApplicationName(
+            receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+        if (application == null) {
+          application = new Application();
+          application.setApplicationName(receivedCommitReportApplicationName);
+          application.setLandscapeToken(receivedCommitReportLandscapeToken);
+          application.persist();
+        }
       }
     } else {
       // first commit ever
