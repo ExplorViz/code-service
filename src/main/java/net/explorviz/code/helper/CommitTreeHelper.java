@@ -45,13 +45,22 @@ public final class CommitTreeHelper {
       final Stack<String> commits = new Stack<>();
       Boolean finished = false;
       while (!finished) {
-        commits.add(currentCommitId);
+        final CommitReport currenCommitReport = CommitReport
+            .findByTokenAndApplicationNameAndCommitId(
+                landscapeToken, appName, currentCommitId);
+
+        boolean isCommitReportRelevant =
+            !currenCommitReport.getAdded().isEmpty() || !currenCommitReport.getDeleted().isEmpty()
+                || !currenCommitReport.getModified().isEmpty();
+
+        if (currenCommitReport != null && isCommitReportRelevant) {
+          commits.add(currentCommitId);
+        }
+
         if (currentCommitId.equals(branchPointCommitId)) {
           finished = true;
         } else {
-          final CommitReport currenCommitReport = CommitReport
-              .findByTokenAndApplicationNameAndCommitId(
-                  landscapeToken, appName, currentCommitId);
+
           if (currenCommitReport != null) { // NOPMD
             // should always be the case
             currentCommitId = currenCommitReport.getParentCommitId();
