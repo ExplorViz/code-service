@@ -3,10 +3,8 @@ package net.explorviz.code.helper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -17,11 +15,22 @@ import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.LatestCommit;
 
+/**
+ * Helper class that calculates the commit tree.
+ */
 public final class CommitTreeHelper {
 
   private CommitTreeHelper() {
   }
 
+  /**
+   * Calculates the CommitTree, i.e., all relevant commits and branches, for a given token and
+   * appName.
+   *
+   * @param appName        application name
+   * @param landscapeToken landscape token value
+   * @return CommitTree for the given parameters.
+   */
   public static CommitTree createCommitTree(final String appName, final String landscapeToken) {
     final List<BranchPoint> branchPoints = BranchPoint.findByTokenAndApplicationName(landscapeToken,
         appName);
@@ -34,8 +43,9 @@ public final class CommitTreeHelper {
         .collect(Collectors.toList());
 
     // Fetch all latest commits for these branches
-    List<LatestCommit> latestCommits = LatestCommit.findAllLatestCommitsByLandscapeTokenAndApplicationName(
-        landscapeToken, appName, branchNames);
+    List<LatestCommit> latestCommits = LatestCommit
+        .findAllLatestCommitsByLandscapeTokenAndApplicationName(
+            landscapeToken, appName, branchNames);
 
     // Map latest commits by branch name for quick access
     Map<String, LatestCommit> latestCommitMap = latestCommits.stream()
@@ -54,8 +64,9 @@ public final class CommitTreeHelper {
         continue;
       }
 
-      List<CommitReport> commitReportsForBranch = CommitReport.findByTokenAndApplicationNameAndBranchName(
-          landscapeToken, appName, branchName);
+      List<CommitReport> commitReportsForBranch = CommitReport
+          .findByTokenAndApplicationNameAndBranchName(
+              landscapeToken, appName, branchName);
 
       Map<String, CommitReport> commitReportMap = new HashMap<>();
       for (CommitReport report : commitReportsForBranch) {
@@ -68,9 +79,9 @@ public final class CommitTreeHelper {
       while (!finished) {
         CommitReport currentCommitReport = commitReportMap.get(currentCommitId);
         if (currentCommitReport != null) {
-          boolean isCommitReportRelevant = !currentCommitReport.getAdded().isEmpty() ||
-              !currentCommitReport.getDeleted().isEmpty() ||
-              !currentCommitReport.getModified().isEmpty();
+          boolean isCommitReportRelevant = !currentCommitReport.getAdded().isEmpty()
+              || !currentCommitReport.getDeleted().isEmpty()
+              || !currentCommitReport.getModified().isEmpty();
 
           if (isCommitReportRelevant) {
             commits.push(currentCommitId);
