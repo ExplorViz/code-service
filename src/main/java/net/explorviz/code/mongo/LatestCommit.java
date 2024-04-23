@@ -1,6 +1,7 @@
 package net.explorviz.code.mongo;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
+import java.util.List;
 
 /**
  * The class for the most recent commit of a branch w.r.t the application and landscape token.
@@ -22,6 +23,12 @@ public class LatestCommit extends PanacheMongoEntity {
     return find("landscapeToken = ?1 and applicationName = ?2 and branchName = ?3", landscapeToken,
         applicationName, branchName)
         .firstResult();
+  }
+
+  public static List<LatestCommit> findAllLatestCommitsByLandscapeTokenAndApplicationName(
+      final String landscapeToken, final String applicationName, List<String> branchNames) {
+    return find("landscapeToken = ?1 and applicationName = ?2 and branchName in ?3",
+        landscapeToken, applicationName, branchNames).list();
   }
 
   public String getCommitId() {
