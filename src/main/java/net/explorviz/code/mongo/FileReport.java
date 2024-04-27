@@ -13,9 +13,9 @@ public class FileReport extends PanacheMongoEntity {
   private String landscapeToken;
   private String appName;
   private String commitId;
-  private String fileName;
-  private String packageName;
-  private List<String> importName;
+  private String fileName; // class name (not full qualified) + ".java" 
+  private String packageName; // includes parent package names separated by dots
+  private List<String> importName; // list of full qualified class names
   private Map<String, ClassData2> classData;
   private Map<String, String> fileMetric;
   private String author;

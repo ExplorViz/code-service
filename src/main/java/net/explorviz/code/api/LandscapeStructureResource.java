@@ -5,7 +5,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import net.explorviz.code.beans.LandscapeStructure;
 import net.explorviz.code.beans.LandscapeStructure.Node;
@@ -53,6 +56,7 @@ public class LandscapeStructureResource {
 
     final List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper
         .createListOfPackages(token, firstCommit, appName);
+
     final List<Package> packagesSecondSelectedCommit = LandscapeStructureHelper
         .createListOfPackages(token, secondCommit, appName);
 
@@ -141,6 +145,7 @@ public class LandscapeStructureResource {
       if (tuple2 != null) { // NOPMD
         final Package packageFirstSelectedCommit = tuple2.getFirst();
         final String prefixPackageFileName = tuple2.getSecond();
+        //System.out.println("====>>> " + prefixPackageFileName);
         final String[] prefixPackageFileNameSplit = prefixPackageFileName.split("\\.");
         final int numOfPackagesInPrefix = prefixPackageFileNameSplit.length;
 
@@ -158,7 +163,7 @@ public class LandscapeStructureResource {
                 packageSecondSelectedCommit);
 
             if (clazz != null) { // NOPMD
-              // add class only if not already existent!
+              //  add class only if not already existent! Indeed they could already exist if the package they are contained in was added before
               boolean isClassContained = false;
               for (final Class clazz2 : packageFirstSelectedCommit.getClasses()) {
                 if (clazz2.getName().equals(clazz.getName())) {
@@ -167,7 +172,7 @@ public class LandscapeStructureResource {
                 }
               }
               if(!isClassContained)
-                packageFirstSelectedCommit.getClasses().add(clazz);
+              packageFirstSelectedCommit.getClasses().add(clazz);
             } else { // NOPMD
               // should never happen. TODO: Error Handling
               System.out.println("passiert doch 2!");
@@ -175,9 +180,8 @@ public class LandscapeStructureResource {
           }
         } else {
           // add missing package to existing package
-          final String prefixPackageFileName2 = String.join(".", Arrays.asList(packageFileNameSplit).subList(0, numOfPackagesInPrefix + 2));
-          System.out.println("prefixPackageFileName2: " + prefixPackageFileName2);
-          final Tuple2<Package, String> tuple2second = getPackageFromPath(prefixPackageFileName2, packagesSecondSelectedCommit);
+          final String prefixPackageFileName2 = String.join(".", Arrays.asList(packageFileNameSplit).subList(0, numOfPackagesInPrefix + 1));
+          final Tuple2<Package, String> tuple2second = getPackageFromPath(prefixPackageFileName2 + ".filename.extension", packagesSecondSelectedCommit);
           if(tuple2second == null) {
             // should never happen. TODO: Error Handling
             System.out.println("passiert doch 3!");
@@ -189,13 +193,97 @@ public class LandscapeStructureResource {
       } else {
         // add first-level package to foundation
         final String firstPackageName = packageFileNameSplit[0];
-        final Package firstLevelPackage = getPackageFromPath(firstPackageName + ".filename.extension", packagesSecondSelectedCommit).getFirst(); // TODO: Refactor getPackageFromPath so the suffix is not needed
+        final Package firstLevelPackage = getPackageFromPath(firstPackageName + ".filename.extension", packagesSecondSelectedCommit).getFirst(); // TODO: Refactor getPackageFromPath so the suffix .filename.extension is not needed
         packagesFirstSelectedCommit.add(firstLevelPackage);
       }
     }
-    System.out.println("first level packages:");
-    for(final Package pckg : packagesFirstSelectedCommit) {
-      System.out.println(pckg.getName());
+    // ------------------------------------------------------------------------------------
+
+    // // deal with deleted files !!! ACTUALLY NOT NEEDED SINCE WE WANT TO KEEP DELETED CLASSES IN STRUCTURE TO GIVE THEM A "-"-TEXTURE !!!
+
+    // final List<String> deleted = CommitComparisonHelper.getComparisonDeletedFiles(firstCommit, secondCommit, token, appName);
+    // final List<String> deletedPackageFileName = new ArrayList<>();
+
+    // for (final String fqFileName : deleted) {
+    //   final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
+    //   final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
+    //       fqFileNameDotSeparator, secondCommit);
+    //   if (fileReport != null) {
+    //     deletedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());
+    //   }
+    // }
+
+    // // count the deleted classes within a package and remove the whole package
+    // // if the amount of deleted classes is equal to the number of contained classes
+    // // AND the package does not contain any non-empty subpackages
+    // final Map<String, Integer> packageToNumOfContainedClasses = new HashMap<>();
+    // for (final String packageFileName : deletedPackageFileName) {
+
+    //   final String[] packageFileNameSplit = packageFileName.split("\\.");
+      
+    //   final String key = String.join(".", Arrays.asList(packageFileNameSplit).subList(0, packageFileNameSplit.length - 2));
+    //   if (packageToNumOfContainedClasses.containsKey(key)) {
+    //     final int numOfDeletedClasses = packageToNumOfContainedClasses.get(key);
+    //     packageToNumOfContainedClasses.put(key, numOfDeletedClasses + 1);
+    //   } else {
+    //     packageToNumOfContainedClasses.put(key, 1);
+    //   }
+    // }
+
+    // final List<String> packagesWithAllClassesRemoved = new ArrayList<>();
+    // for ( final Map.Entry<String, Integer> entry : packageToNumOfContainedClasses.entrySet()) {
+    //   final String packageFileName = entry.getKey() + ".filename.extension"; // TODO: Refactor getPackageFromPath so the suffix .filename.extension is not needed
+    //   final Package packageFirstSelectedCommit =
+    //       getPackageFromPath(packageFileName, packagesFirstSelectedCommit).getFirst();
+
+    //   final int numOfClasses = packageFirstSelectedCommit.getClasses().size();
+    //   //final int numOfSubPackages = packageFirstSelectedCommit.getSubPackages().size();
+    //   if (numOfClasses == entry.getValue() /*&& numOfSubPackages == 0*/) {
+    //     packagesWithAllClassesRemoved.add(entry.getKey());
+    //   }
+    // }
+
+    // // Sort the full qualified package names so that we begin by removing the "deepest/innermost" removable packages
+    // Collections.sort(packagesWithAllClassesRemoved, Collections.reverseOrder());
+    // System.out.println("Deleted Files: " + packagesWithAllClassesRemoved);
+    // for (final String packageWithAllClassesRemoved : packagesWithAllClassesRemoved) {
+    //   final String packageFileName = packageWithAllClassesRemoved + ".filename.extension"; // TODO: Refactor getPackageFromPath so the suffix .filename.extension is not needed
+    //   final Package packageFirstSelectedCommit =
+    //       getPackageFromPath(packageFileName, packagesFirstSelectedCommit).getFirst();
+    //   if (packageFirstSelectedCommit.getSubPackages().size() == 0) {
+    //     // remove empty packages
+    //     //String deepestNonEmptyPackage = "";
+    //     final String[] packageWithAllClassesRemovedSplit = packageWithAllClassesRemoved.split("\\.");
+    //     if (packageWithAllClassesRemovedSplit.length == 1) {
+    //       // remove top-level package
+    //       packagesFirstSelectedCommit.removeIf(pckg -> pckg.getName().equals(packageWithAllClassesRemovedSplit[0]));
+    //     } {
+    //       // traverse the chain of parent packages to remove all empty packages
+    //       for (int i = 1; i < packageWithAllClassesRemovedSplit.length; i++) {
+    //         final String currentFullQualifiedPackageName = String.join(".", Arrays.asList(packageWithAllClassesRemovedSplit).subList(0, packageWithAllClassesRemovedSplit.length - i));
+    //         final Package currentPackage = getPackageFromPath(currentFullQualifiedPackageName, packagesFirstSelectedCommit).getFirst();
+    //         final int index = i;
+    //         currentPackage.getSubPackages().removeIf(subPckg -> subPckg.getName().equals(packageWithAllClassesRemovedSplit[packageWithAllClassesRemovedSplit.length - index]));
+    //         if (i == packageWithAllClassesRemovedSplit.length - 1 && currentPackage.getSubPackages().size() != 0) {
+    //           // Don't forget to remove top-level package
+    //           packagesFirstSelectedCommit.removeIf(pckg -> pckg.getName().equals(packageWithAllClassesRemovedSplit[0]));
+    //         } else if (currentPackage.getSubPackages().size() != 0) {
+    //           break;
+    //         }
+    //       }
+    //       // done
+    //     }
+    //   }
+    // }
+
+    // --------------------------------------------------------------------------------
+
+
+
+    System.out.println(" PACKAGES RESULT ");
+    for (final Package resPackage : packagesFirstSelectedCommit) {
+      System.out.println(resPackage);
+      System.out.println("---------------------------------------");
     }
     return this.buildLandscapeStructure(token, appName, packagesFirstSelectedCommit);
   }

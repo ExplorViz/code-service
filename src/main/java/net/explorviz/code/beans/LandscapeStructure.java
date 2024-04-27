@@ -135,6 +135,18 @@ public class LandscapeStructure {
           this.classes = classes;
         }
 
+        public String toString() {
+          if (this.getSubPackages().size() == 0) {
+            return this.getName();
+          }
+          
+          String retString = "";
+          for (final Package subPackage : this.getSubPackages()) {
+            retString += this.getName() + "->" + subPackage.toString() + "\n";
+          }
+          return retString;
+        }
+
         /**
           * ...
           */
