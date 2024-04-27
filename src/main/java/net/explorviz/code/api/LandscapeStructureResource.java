@@ -5,10 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 import net.explorviz.code.beans.LandscapeStructure;
 import net.explorviz.code.beans.LandscapeStructure.Node;
@@ -239,7 +236,8 @@ public class LandscapeStructureResource {
           // add missing package to existing package
           final String prefixPackageFileName2 = String.join(".",
               Arrays.asList(packageFileNameSplit).subList(0, numOfPackagesInPrefix + 1));
-          final Tuple2<Package, String> tuple2second = getPackageFromPath(prefixPackageFileName2 + ".filename.extension",
+          final Tuple2<Package, String> tuple2second = getPackageFromPath(
+              prefixPackageFileName2 + ".filename.extension",
               packagesSecondSelectedCommit);
           if (tuple2second == null) {
             // should never happen. TODO: Error Handling
@@ -282,7 +280,7 @@ public class LandscapeStructureResource {
     // for (final String packageFileName : deletedPackageFileName) {
 
     //   final String[] packageFileNameSplit = packageFileName.split("\\.");
-      
+
     //   final String key = String.join(".", Arrays.asList(packageFileNameSplit).subList(0, packageFileNameSplit.length - 2));
     //   if (packageToNumOfContainedClasses.containsKey(key)) {
     //     final int numOfDeletedClasses = packageToNumOfContainedClasses.get(key);
@@ -339,8 +337,6 @@ public class LandscapeStructureResource {
     // }
 
     // --------------------------------------------------------------------------------
-
-
 
     System.out.println(" PACKAGES RESULT ");
     for (final Package resPackage : packagesFirstSelectedCommit) {

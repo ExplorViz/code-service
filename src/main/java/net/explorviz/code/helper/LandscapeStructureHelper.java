@@ -2,13 +2,13 @@ package net.explorviz.code.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class.Method;
@@ -89,11 +89,12 @@ public final class LandscapeStructureHelper {
           packageNameToPackageMap.put(id.toString(), currentPackage);
         }
 
-
         final Package currentPackageFinal = currentPackage; // needed for next code line so there is no compile time error
-        if (parentPackage != null && parentPackage.getSubPackages().stream().filter(subPckg -> subPckg.getName().equals(currentPackageFinal.getName())).collect(Collectors.toList()).size() == 0) {
+        if (parentPackage != null && parentPackage.getSubPackages().stream()
+            .filter(subPckg -> subPckg.getName().equals(currentPackageFinal.getName()))
+            .collect(Collectors.toList()).size() == 0) {
           parentPackage.getSubPackages().add(currentPackage);
-         // System.out.println("A D D " + parentPackage.getName() + " ====> " + currentPackage.getName());
+          // System.out.println("A D D " + parentPackage.getName() + " ====> " + currentPackage.getName());
         }
         parentPackage = currentPackage;
       }
@@ -135,7 +136,7 @@ public final class LandscapeStructureHelper {
           for (final String name : prefixFqn) {
             methodFqn.append(name + ".");
           }
-          methodFqn.append(methodName); 
+          methodFqn.append(methodName);
           //System.out.println("method FQN: " + methodFqn);
 
           UUID landscapeTokenValue = UUID.fromString("7cd8a9a7-b840-4735-9ef0-2dbbfa01c039");
