@@ -27,6 +27,18 @@ public class CommitReport extends PanacheMongoEntity {
         landscapeToken, applicationName, commitId).firstResult();
   }
 
+  public static List<CommitReport> findByTokenAndApplicationNameAndCommitIds(
+      String landscapeToken, String applicationName, List<String> commitIds) {
+    return list("landscapeToken = ?1 and applicationName = ?2 and commitId in ?3",
+        landscapeToken, applicationName, commitIds);
+  }
+
+  public static List<CommitReport> findByTokenAndApplicationNameAndBranchName(
+      String landscapeToken, String applicationName, String branchName) {
+    return list("landscapeToken = ?1 and applicationName = ?2 and branchName in ?3",
+        landscapeToken, applicationName, branchName);
+  }
+
   public static CommitReport findByParentCommitId(final String parentCommitId) {
     return find("parentCommitId", parentCommitId).firstResult();
   }

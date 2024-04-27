@@ -138,13 +138,19 @@ public final class LandscapeStructureHelper {
           methodFqn.append(methodName); 
           //System.out.println("method FQN: " + methodFqn);
 
+          UUID landscapeTokenValue = UUID.fromString("7cd8a9a7-b840-4735-9ef0-2dbbfa01c039");
+
+          if (!"mytokenvalue".equals(landscapeToken)) {
+            landscapeTokenValue = UUID.fromString(landscapeToken);
+          }
+
           // functionFqn really needed? Only if we want to "prevent" overloaded functions
           if (!functionFqn.contains(methodFqn.toString())) { 
             /* entry.getKey() instead of methodFqn? 
             Otherwise we might miss overloaded functions */
             final Method method = new Method(); // NOPMD
             method.setName(methodName); // include parameter list due to overloaded functions?
-            final String methodHash = HashHelper.calculateSpanHash(UUID.fromString(landscapeToken),
+            final String methodHash = HashHelper.calculateSpanHash(landscapeTokenValue,
                 "0.0.0.0", appName, 0, methodFqn.toString());
             method.setMethodHash(methodHash);
             clazz.getMethods().add(method);

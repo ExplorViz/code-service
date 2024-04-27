@@ -32,6 +32,11 @@ public class MetricResource {
         appName, commit);
 
     final Metrics metrics = new Metrics();
+
+    if (commitReport == null) {
+      return metrics;
+    }
+
     metrics.setFiles(commitReport.getFiles());
 
     final List<Map<String, String>> fileMetrics = new ArrayList<>();
