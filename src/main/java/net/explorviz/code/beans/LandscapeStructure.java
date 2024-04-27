@@ -103,7 +103,7 @@ public class LandscapeStructure {
 
 
       /**
-       * ...
+       * Helper class.
        */
       public static class Package {
 
@@ -136,6 +136,11 @@ public class LandscapeStructure {
           this.classes = classes;
         }
 
+        /**
+         * Override for toString.
+         *
+         * @return String reprenstation
+         */
         public String toString() {
           if (this.getSubPackages().size() == 0) {
             return this.getName();

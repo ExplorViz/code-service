@@ -89,12 +89,14 @@ public final class LandscapeStructureHelper {
           packageNameToPackageMap.put(id.toString(), currentPackage);
         }
 
-        final Package currentPackageFinal = currentPackage; // needed for next code line so there is no compile time error
+        final Package currentPackageFinal =
+            currentPackage; // needed for next code line so there is no compile time error
         if (parentPackage != null && parentPackage.getSubPackages().stream()
             .filter(subPckg -> subPckg.getName().equals(currentPackageFinal.getName()))
             .collect(Collectors.toList()).size() == 0) {
           parentPackage.getSubPackages().add(currentPackage);
-          // System.out.println("A D D " + parentPackage.getName() + " ====> " + currentPackage.getName());
+          // System.out.println("A D D " + parentPackage.getName() + " ====> "
+          // + currentPackage.getName());
         }
         parentPackage = currentPackage;
       }
