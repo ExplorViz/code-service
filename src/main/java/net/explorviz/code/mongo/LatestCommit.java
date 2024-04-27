@@ -12,6 +12,18 @@ public class LatestCommit extends PanacheMongoEntity {
   private String landscapeToken;
   private String applicationName;
 
+  /**
+   * ... * @param landscapeToken the landscape token. * @param applicationName the application name.
+   * * @param branchName the branch name. * @return the latest commit that matches the params
+   * above.
+   */
+  public static LatestCommit findByLandscapeTokenAndApplicationNameAndBranchName(
+      final String landscapeToken, final String applicationName, final String branchName) {
+    return find("landscapeToken = ?1 and applicationName = ?2 and branchName = ?3", landscapeToken,
+        applicationName, branchName)
+        .firstResult();
+  }
+
   public String getCommitId() {
     return this.commitId;
   }
@@ -42,19 +54,5 @@ public class LatestCommit extends PanacheMongoEntity {
 
   public void setApplicationName(final String applicationName) {
     this.applicationName = applicationName;
-  }
-
-  /**
-   * ...
-   ** @param landscapeToken the landscape token.
-   ** @param applicationName the application name.
-   ** @param branchName the branch name.
-   ** @return the latest commit that matches the params above.
-   */
-  public static LatestCommit findByLandscapeTokenAndApplicationNameAndBranchName(
-       final String landscapeToken, final String applicationName, final String branchName) {
-    return find("landscapeToken = ?1 and applicationName = ?2 and branchName = ?3", landscapeToken, 
-        applicationName, branchName)
-        .firstResult();
   }
 }

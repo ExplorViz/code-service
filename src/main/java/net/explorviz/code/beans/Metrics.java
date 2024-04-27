@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The class containing the metrics for every file
- * of a commit.
+ * The class containing the metrics for every file of a commit.
  */
 public class Metrics {
 
@@ -46,5 +45,5 @@ public class Metrics {
   public void setMethodMetrics(final List<Map<String, Map<String, String>>> methodMetrics) {
     this.methodMetrics = methodMetrics;
   }
-    
+
 }

@@ -16,12 +16,9 @@ public final class CommitComparisonHelper {
   }
 
   /**
-   * ...
-   ** @param firstSelectedId the first selected commit id.
-   ** @param secondSelectedId the second selected commit id.
-   ** @return returns the empty string ("") if no latest common commit existent, otherwise its 
-   * latest common commit id.
-   * 
+   * ... * @param firstSelectedId the first selected commit id. * @param secondSelectedId the second
+   * selected commit id. * @return returns the empty string ("") if no latest common commit
+   * existent, otherwise its latest common commit id.
    */
 
 
@@ -30,9 +27,9 @@ public final class CommitComparisonHelper {
       final String applicationName) {
 
     final CommitReport firstSelected = CommitReport.findByTokenAndApplicationNameAndCommitId(
-          landscapeToken, applicationName, firstSelectedId);
+        landscapeToken, applicationName, firstSelectedId);
     final CommitReport secondSelected = CommitReport.findByTokenAndApplicationNameAndCommitId(
-         landscapeToken, applicationName, secondSelectedId);
+        landscapeToken, applicationName, secondSelectedId);
 
     if (firstSelected == null || secondSelected == null) {
       return "";
@@ -54,40 +51,39 @@ public final class CommitComparisonHelper {
 
     firstSelectedBranchPoints.add(firstSelectedCurrentBranchPoint);
     while ((firstSelectedCurrentBranchPoint = // NOPMD
-    BranchPoint.findByTokenAndBranchName(landscapeToken, firstSelectedCurrentBranchPoint
-        .getEmergedFromBranchName())) != null) {
+        BranchPoint.findByTokenAndBranchName(landscapeToken, firstSelectedCurrentBranchPoint
+            .getEmergedFromBranchName())) != null) {
       firstSelectedBranchPoints.add(firstSelectedCurrentBranchPoint);
     }
 
     secondSelectedBranchPoints.add(secondSelectedCurrentBranchPoint);
     while ((secondSelectedCurrentBranchPoint = // NOPMD
-    BranchPoint.findByTokenAndBranchName(
-      landscapeToken, secondSelectedCurrentBranchPoint.getEmergedFromBranchName())) != null) {
+        BranchPoint.findByTokenAndBranchName(
+            landscapeToken, secondSelectedCurrentBranchPoint.getEmergedFromBranchName())) != null) {
       secondSelectedBranchPoints.add(secondSelectedCurrentBranchPoint);
     }
 
     // latest common branch
     firstSelectedBranchPoints.removeIf(
         b1 -> {
-        return secondSelectedBranchPoints.stream()
-                                  .filter(b2 -> b2.getEmergedFromBranchName()
-                                                  .equals(b1.getEmergedFromBranchName()))
-                                  .collect(Collectors.toList())
-                                  .size() == 0;
-      });
-    
+          return secondSelectedBranchPoints.stream()
+              .filter(b2 -> b2.getEmergedFromBranchName()
+                  .equals(b1.getEmergedFromBranchName()))
+              .collect(Collectors.toList())
+              .size() == 0;
+        });
 
     final String latestCommonBranchName = firstSelectedBranchPoints.get(0)
         .getEmergedFromBranchName();
     String firstSelectedCommitInCommonBranch = firstSelectedBranchPoints.get(0) // NOPMD
         .getEmergedFromCommitId();
     final List<BranchPoint> temp = secondSelectedBranchPoints.stream()
-                                                        .filter(b -> b.getEmergedFromBranchName()
-                                                                      .equals(latestCommonBranchName
-                                                               )
-                                                        )
-                                                        .collect(Collectors.toList());
-                     
+        .filter(b -> b.getEmergedFromBranchName()
+            .equals(latestCommonBranchName
+            )
+        )
+        .collect(Collectors.toList());
+
     if (!temp.isEmpty()) {
       final String secondSelectedCommitInCommonBranch = temp.get(0) // NOPMD
           .getEmergedFromCommitId(); // NOPMD
@@ -97,21 +93,21 @@ public final class CommitComparisonHelper {
       }
 
       // the common commit id is the one that comes before the other
-      final LatestCommit latestCommit = 
-          LatestCommit.findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, 
-          applicationName, latestCommonBranchName);
+      final LatestCommit latestCommit =
+          LatestCommit.findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken,
+              applicationName, latestCommonBranchName);
       if (latestCommit == null) {
         return "";
       }
       String currentCommit = latestCommit.getCommitId();
-      
+
       CommitReport cr;
       while ((cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, // NOPMD 
-         applicationName, currentCommit)) != null 
-        &&
-        !cr.getCommitId().equals(firstSelectedCommitInCommonBranch) 
-        && 
-        !cr.getCommitId().equals(secondSelectedCommitInCommonBranch)
+          applicationName, currentCommit)) != null
+          &&
+          !cr.getCommitId().equals(firstSelectedCommitInCommonBranch)
+          &&
+          !cr.getCommitId().equals(secondSelectedCommitInCommonBranch)
       ) {
         currentCommit = cr.getParentCommitId();
       }
@@ -125,34 +121,32 @@ public final class CommitComparisonHelper {
       }
 
       return "";
-    } 
-    return "";                                              
+    }
+    return "";
   }
 
   /**
-   * ...
-   ** @param firstSelectedCommitId the first selected commit's id.
-   ** @param secondSelectedCommitId the second selected commit's id.
-   ** @param landscapeToken the landscape token
-   ** @return the list of file names that have been added in the second selected commit
-   ** (i.e. that exist in the second selected commit but not in the first selected commit).
+   * ... * @param firstSelectedCommitId the first selected commit's id. * @param
+   * secondSelectedCommitId the second selected commit's id. * @param landscapeToken the landscape
+   * token * @return the list of file names that have been added in the second selected commit *
+   * (i.e. that exist in the second selected commit but not in the first selected commit).
    */
   public static List<String> getComparisonAddedFiles(final String firstSelectedCommitId, // NOPMD
-        final String secondSelectedCommitId, final String landscapeToken, 
-        final String applicationName) {
+      final String secondSelectedCommitId, final String landscapeToken,
+      final String applicationName) {
 
     final List<String> addedFiles = new ArrayList<>();
 
     final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
-        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
+        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName,
             firstSelectedCommitId);
-    
+
     final CommitReport commitReportSecondSelectedCommit = CommitReport // NOPMD
-        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
+        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName,
             secondSelectedCommitId);
 
-    if (commitReportFirstSelectedCommit != null 
-        && 
+    if (commitReportFirstSelectedCommit != null
+        &&
         commitReportSecondSelectedCommit != null) {
 
       final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
@@ -165,33 +159,30 @@ public final class CommitComparisonHelper {
       });
     }
 
-    
     return addedFiles;
   }
 
   /**
-   * ...
-   ** @param firstSelectedCommitId the first selected commit's id.
-   ** @param secondSelectedCommitId the second selected commit's id.
-   ** @param landscapeToken the landscape token.
-   ** @return the list of file names that have been deleted in the second selected commit
-   ** (i.e. that do not exist in the second selected commit but in the first selected commit).
+   * ... * @param firstSelectedCommitId the first selected commit's id. * @param
+   * secondSelectedCommitId the second selected commit's id. * @param landscapeToken the landscape
+   * token. * @return the list of file names that have been deleted in the second selected commit *
+   * (i.e. that do not exist in the second selected commit but in the first selected commit).
    */
   public static List<String> getComparisonDeletedFiles(final String firstSelectedCommitId, // NOPMD
-        final String secondSelectedCommitId, final String landscapeToken, 
-        final String applicationName) {
-    
+      final String secondSelectedCommitId, final String landscapeToken,
+      final String applicationName) {
+
     final List<String> deletedFiles = new ArrayList<>();
     final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
-        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
+        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName,
             firstSelectedCommitId);
-    
+
     final CommitReport commitReportSecondSelectedCommit = CommitReport // NOPMD
-        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
+        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName,
             secondSelectedCommitId);
 
-    if (commitReportFirstSelectedCommit != null 
-        && 
+    if (commitReportFirstSelectedCommit != null
+        &&
         commitReportSecondSelectedCommit != null) {
       final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
       final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
@@ -207,28 +198,26 @@ public final class CommitComparisonHelper {
 
 
   /**
-   * ...
-   ** @param firstSelectedCommitId the first selected commit's id.
-   ** @param secondSelectedCommitId the second selected commit's id.
-   ** @param landscapeToken the landscape token.
-   ** @return the list of file names that have been modified in the second selected commit
-   ** (i.e. files that exist in both commits but have a different hash value).
+   * ... * @param firstSelectedCommitId the first selected commit's id. * @param
+   * secondSelectedCommitId the second selected commit's id. * @param landscapeToken the landscape
+   * token. * @return the list of file names that have been modified in the second selected commit *
+   * (i.e. files that exist in both commits but have a different hash value).
    */
   public static List<String> getComparisonModifiedFiles(final String firstSelectedCommitId, // NOPMD
-        final String secondSelectedCommitId, final String landscapeToken, 
-        final String applicationName) {
+      final String secondSelectedCommitId, final String landscapeToken,
+      final String applicationName) {
 
     final List<String> modifiedFiles = new ArrayList<>();
     final CommitReport commitReportFirstSelectedCommit = CommitReport // NOPMD
-        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
+        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName,
             firstSelectedCommitId);
-    
+
     final CommitReport commitReportSecondSelectedCommit = CommitReport // NOPMD
-        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName, 
+        .findByTokenAndApplicationNameAndCommitId(landscapeToken, applicationName,
             secondSelectedCommitId);
 
-    if (commitReportFirstSelectedCommit != null 
-        && 
+    if (commitReportFirstSelectedCommit != null
+        &&
         commitReportSecondSelectedCommit != null) {
       final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.getFiles();
       final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.getFiles();
@@ -249,9 +238,6 @@ public final class CommitComparisonHelper {
     }
     return modifiedFiles;
   }
-
-
-
 
 
 }
