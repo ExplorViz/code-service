@@ -1,5 +1,6 @@
 package net.explorviz.code.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -109,8 +110,12 @@ public class LandscapeStructure {
 
 
         private String name;
-        private List<Package> subPackages;
-        private List<Class> classes;
+        private List<Package> subPackages = new ArrayList<>();
+        private List<Class> classes = new ArrayList<>();
+
+        public Package(final String name) {
+          this.name = name;
+        }
 
         public String getName() {
           return this.name;
@@ -159,7 +164,7 @@ public class LandscapeStructure {
         public static class Class {
 
           private String name;
-          private List<Method> methods;
+          private List<Method> methods = new ArrayList<>();
           private String superClass; /*  full qualified class name. 
                                        TODO: refactor so it is from type Class? */
 
