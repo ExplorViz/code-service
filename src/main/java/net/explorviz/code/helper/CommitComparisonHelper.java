@@ -2,7 +2,6 @@ package net.explorviz.code.helper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.LatestCommit;
@@ -66,26 +65,23 @@ public final class CommitComparisonHelper {
     // latest common branch
     firstSelectedBranchPoints.removeIf(
         b1 -> {
-          return secondSelectedBranchPoints.stream()
-              .filter(b2 -> b2.getEmergedFromBranchName()
-                  .equals(b1.getEmergedFromBranchName()))
-              .collect(Collectors.toList())
-              .size() == 0;
+          return secondSelectedBranchPoints.stream().noneMatch(b2 -> b2.getEmergedFromBranchName()
+              .equals(b1.getEmergedFromBranchName()));
         });
 
-    final String latestCommonBranchName = firstSelectedBranchPoints.get(0)
+    final String latestCommonBranchName = firstSelectedBranchPoints.getFirst()
         .getEmergedFromBranchName();
-    String firstSelectedCommitInCommonBranch = firstSelectedBranchPoints.get(0) // NOPMD
+    String firstSelectedCommitInCommonBranch = firstSelectedBranchPoints.getFirst() // NOPMD
         .getEmergedFromCommitId();
     final List<BranchPoint> temp = secondSelectedBranchPoints.stream()
         .filter(b -> b.getEmergedFromBranchName()
             .equals(latestCommonBranchName
             )
         )
-        .collect(Collectors.toList());
+        .toList();
 
     if (!temp.isEmpty()) {
-      final String secondSelectedCommitInCommonBranch = temp.get(0) // NOPMD
+      final String secondSelectedCommitInCommonBranch = temp.getFirst() // NOPMD
           .getEmergedFromCommitId(); // NOPMD
 
       if (firstSelectedCommitInCommonBranch.equals(secondSelectedCommitInCommonBranch)) {
@@ -112,11 +108,11 @@ public final class CommitComparisonHelper {
         currentCommit = cr.getParentCommitId();
       }
 
-      if (cr.getCommitId().equals(firstSelectedCommitInCommonBranch)) {
+      if (cr != null && cr.getCommitId().equals(firstSelectedCommitInCommonBranch)) {
         return secondSelectedCommitInCommonBranch;
       }
 
-      if (cr.getCommitId().equals(secondSelectedCommitInCommonBranch)) {
+      if (cr != null && cr.getCommitId().equals(secondSelectedCommitInCommonBranch)) {
         return firstSelectedCommitInCommonBranch;
       }
 
