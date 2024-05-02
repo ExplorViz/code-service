@@ -113,6 +113,10 @@ public class LandscapeStructure {
         private List<Package> subPackages = new ArrayList<>();
         private List<Class> classes = new ArrayList<>();
 
+        public Package() {
+
+        }
+
         public Package(final String name) {
           this.name = name;
         }
@@ -167,6 +171,13 @@ public class LandscapeStructure {
           private List<Method> methods = new ArrayList<>();
           private String superClass; /*  full qualified class name. 
                                        TODO: refactor so it is from type Class? */
+
+          public Class() {
+          }
+
+          public Class(final String name) {
+            this.name = name;
+          }
 
           public String getName() {
             return this.name;
