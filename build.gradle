@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'io.quarkus'
     id 'com.adarshr.test-logger' version '3.2.0'
+    id "org.kordamp.gradle.jandex" version "1.1.0"
 }
 
 apply from: 'buildscripts/code-analysis.gradle'
@@ -15,22 +16,13 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.quarkus:quarkus-mongodb-panache'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-container-image-jib'
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
     implementation 'io.quarkus:quarkus-grpc'
-    
-    implementation 'io.quarkus:quarkus-avro'
 
-    // Kafka
-    implementation 'io.quarkus:quarkus-confluent-registry-avro'
-    implementation group: 'io.confluent', name: 'kafka-avro-serializer', version: '7.2.1'
-    implementation 'io.quarkus:quarkus-avro'
-    implementation group: 'io.quarkus', name: 'quarkus-smallrye-reactive-messaging-kafka'
-
-  	implementation 'io.opencensus:opencensus-proto:0.2.0'
-    	      
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
 }
@@ -39,8 +31,8 @@ group 'net.explorviz'
 version '1.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 compileJava {
@@ -58,4 +50,37 @@ sourceSets {
             srcDirs 'build/classes/java/quarkus-generated-sources/grpc', 'build/classes/java/quarkus-generated-sources/avdl'
         }
     }
+}
+
+// Regarding jandex dependency for each task
+// https://github.com/kordamp/jandex-gradle-plugin/issues/9
+
+tasks.named('checkstyleMain') {
+    dependsOn 'jandex'
+}
+
+tasks.named('pmdMain') {
+    dependsOn 'jandex'
+}
+
+tasks.named('compileTestJava') {
+    dependsOn 'jandex'
+}
+
+tasks.named('test') {
+    dependsOn 'jandex'
+}
+
+tasks.named('quarkusDependenciesBuild') {
+    dependsOn 'jandex'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // Turn on all javac warnings except classfile and processing, which produces many false-positives about annotations
+    options.compilerArgs << "-Xlint:all" << "-Xlint:-classfile" << "-Xlint:-processing"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
 }
