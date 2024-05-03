@@ -5,6 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
+import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.Application;
 
 
@@ -22,7 +23,8 @@ public class ApplicationsResource {
   @Path("applications/{token}")
   public List<String> list(@PathParam("token") final String token) {
 
-    final List<Application> applications = Application.findByLandscapeToken(token);
+    final List<Application> applications =
+        Application.findByLandscapeToken(TokenHelper.handlePotentialDummyToken(token));
     final List<String> applicationNames = new ArrayList<>();
     for (final Application application : applications) {
       applicationNames.add(application.getApplicationName());
