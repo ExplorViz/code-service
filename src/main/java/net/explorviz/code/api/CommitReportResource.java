@@ -4,6 +4,7 @@ package net.explorviz.code.api;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.CommitReport;
 
 
@@ -20,7 +21,8 @@ public class CommitReportResource {
   @GET
   public CommitReport list(@PathParam("token") final String token,
       @PathParam("appName") final String appName, @PathParam("commit") final String commit) {
-    final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
+    final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(
+        TokenHelper.handlePotentialDummyToken(token),
         appName, commit);
     if (cr != null) {
       return cr;

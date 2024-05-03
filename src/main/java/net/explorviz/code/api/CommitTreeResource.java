@@ -6,6 +6,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import net.explorviz.code.beans.CommitTree;
 import net.explorviz.code.helper.CommitTreeHelper;
+import net.explorviz.code.helper.TokenHelper;
 
 
 /**
@@ -21,6 +22,6 @@ public class CommitTreeResource {
   @GET
   public CommitTree list(@PathParam("token") final String token,
       @PathParam("appName") final String appName) {
-    return CommitTreeHelper.createCommitTree(appName, token);
+    return CommitTreeHelper.createCommitTree(appName, TokenHelper.handlePotentialDummyToken(token));
   }
 }

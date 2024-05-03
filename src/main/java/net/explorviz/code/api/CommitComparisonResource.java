@@ -14,6 +14,7 @@ import net.explorviz.code.beans.CommitComparison.Metric.MetricVal;
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
+import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.FileReport;
 import net.explorviz.code.mongo.FileReport.ClassData2;
 import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
@@ -33,9 +34,11 @@ public class CommitComparisonResource {
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public CommitComparison list(@PathParam("token") final String token, // NOPMD
+  public CommitComparison list(@PathParam("token") final String landscapeToken, // NOPMD
       @PathParam("appName") final String appName, @PathParam("firstCommit") String firstCommit,
       @PathParam("secondCommit") String secondCommit) {
+
+    final String token = TokenHelper.handlePotentialDummyToken(landscapeToken);
 
     if (CommitComparisonHelper.getLatestCommonCommitId(firstCommit, secondCommit, token, appName)
         .equals(secondCommit)) {
