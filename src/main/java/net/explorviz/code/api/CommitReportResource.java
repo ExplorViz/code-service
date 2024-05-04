@@ -4,6 +4,7 @@ package net.explorviz.code.api;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.CommitReport;
 
 
@@ -22,6 +23,9 @@ public class CommitReportResource {
       @PathParam("appName") final String appName, @PathParam("commit") final String commit) {
     final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
         appName, commit);
+
+    cr.setLandscapeToken(TokenHelper.handlePotentialDummyToken(cr.getLandscapeToken()));
+
     if (cr != null) {
       return cr;
     }

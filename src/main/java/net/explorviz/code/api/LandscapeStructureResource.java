@@ -15,6 +15,7 @@ import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Clas
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class.Method;
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
+import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.FileReport;
 
 /**
@@ -293,7 +294,7 @@ public class LandscapeStructureResource {
     node.getApplications().add(application);
 
     final LandscapeStructure landscapeStructure = new LandscapeStructure();
-    landscapeStructure.setLandscapeToken(landscapeToken);
+    landscapeStructure.setLandscapeToken(TokenHelper.handlePotentialDummyToken(landscapeToken));
     landscapeStructure.setNodes(new ArrayList<>());
     landscapeStructure.getNodes().add(node);
 
