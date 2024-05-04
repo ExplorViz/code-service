@@ -4,7 +4,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.FileReport;
 
 /**
@@ -27,10 +26,8 @@ public class FileReportResource {
       @PathParam("appName") final String appName, @PathParam("fqFileName") final String fqFileName,
       @PathParam("commit") final String commit) {
 
-    final FileReport fileReport =
-        LandscapeStructureHelper.getFileReport(TokenHelper.handlePotentialDummyToken(token),
-            appName,
-            fqFileName, commit);
+    final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
+        fqFileName, commit);
 
     if (fileReport != null) {
       return fileReport;

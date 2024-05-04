@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.Application;
 import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
@@ -138,8 +137,7 @@ public class GrpcGateway {
     commitReport.setDeleted(receivedCommitReportDeleted);
     commitReport.setAdded(receivedCommitReportAdded);
     commitReport.setFileMetric(receivedCommitReportFileMetric);
-    commitReport.setLandscapeToken(
-        TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+    commitReport.setLandscapeToken(receivedCommitReportLandscapeToken);
     commitReport.setFileHash(receivedCommitReportFileHash);
     commitReport.setApplicationName(receivedCommitReportApplicationName);
 
@@ -158,16 +156,14 @@ public class GrpcGateway {
           latestCommit = new LatestCommit();
           latestCommit.setBranchName(receivedCommitReportBranchName);
           latestCommit.setCommitId(receivedCommitReportCommitId);
-          latestCommit.setLandscapeToken(
-              TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+          latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
           latestCommit.setApplicationName(receivedCommitReportApplicationName);
           latestCommit.persist();
 
           final BranchPoint branchPoint = new BranchPoint();
           branchPoint.setBranchName(receivedCommitReportBranchName);
           branchPoint.setCommitId(receivedCommitReportCommitId);
-          branchPoint.setLandscapeToken(
-              TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+          branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
           branchPoint.setApplicationName(receivedCommitReportApplicationName);
           final CommitReport ancestorCommitReport = CommitReport
               .findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken,
@@ -190,16 +186,14 @@ public class GrpcGateway {
           latestCommit = new LatestCommit();
           latestCommit.setBranchName(receivedCommitReportBranchName);
           latestCommit.setCommitId(receivedCommitReportCommitId);
-          latestCommit.setLandscapeToken(
-              TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+          latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
           latestCommit.setApplicationName(receivedCommitReportApplicationName);
           latestCommit.persist();
 
           final BranchPoint branchPoint = new BranchPoint();
           branchPoint.setBranchName(receivedCommitReportBranchName);
           branchPoint.setCommitId(receivedCommitReportCommitId);
-          branchPoint.setLandscapeToken(
-              TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+          branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
           branchPoint.setApplicationName(receivedCommitReportApplicationName);
           branchPoint.setEmergedFromCommitId("UNKNOWN-EMERGED-COMMIT");
           branchPoint.setEmergedFromBranchName("UNKNOWN-EMERGED-BRANCH");
@@ -213,8 +207,7 @@ public class GrpcGateway {
         if (application == null) {
           application = new Application();
           application.setApplicationName(receivedCommitReportApplicationName);
-          application.setLandscapeToken(
-              TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+          application.setLandscapeToken(receivedCommitReportLandscapeToken);
           application.persist();
         }
       }
@@ -224,15 +217,13 @@ public class GrpcGateway {
       final LatestCommit latestCommit = new LatestCommit();
       latestCommit.setBranchName(receivedCommitReportBranchName);
       latestCommit.setCommitId(receivedCommitReportCommitId);
-      latestCommit.setLandscapeToken(
-          TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+      latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
       latestCommit.setApplicationName(receivedCommitReportApplicationName);
       latestCommit.persist();
       final BranchPoint branchPoint = new BranchPoint();
       branchPoint.setBranchName(receivedCommitReportBranchName);
       branchPoint.setCommitId(receivedCommitReportCommitId);
-      branchPoint.setLandscapeToken(
-          TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+      branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
       branchPoint.setApplicationName(receivedCommitReportApplicationName);
       branchPoint.setEmergedFromBranchName(NO_ANCESTOR);
       branchPoint.setEmergedFromCommitId("");
@@ -243,8 +234,7 @@ public class GrpcGateway {
       if (application == null) {
         application = new Application();
         application.setApplicationName(receivedCommitReportApplicationName);
-        application.setLandscapeToken(
-            TokenHelper.handlePotentialDummyToken(receivedCommitReportLandscapeToken));
+        application.setLandscapeToken(receivedCommitReportLandscapeToken);
         application.persist();
       }
     }
@@ -282,8 +272,7 @@ public class GrpcGateway {
     if (fileReportTable == null) {
       LOGGER.atTrace().log("CREATE FILE REPORT TABLE.");
       final FileReportTable newFileReportTable = new FileReportTable();
-      newFileReportTable.setLandscapeToken(
-          TokenHelper.handlePotentialDummyToken(receivedFileDataLandscapeToken));
+      newFileReportTable.setLandscapeToken(receivedFileDataLandscapeToken);
       newFileReportTable.setAppName(receivedFileDataAppName);
       final Map<String, Map<String, String>> table = new HashMap<>();
       final Map<String, String> fqFileNameToCommitId = new HashMap<>();
@@ -315,8 +304,7 @@ public class GrpcGateway {
 
     // -----------------------------------------------------------------------------------------
 
-    fileReport.setLandscapeToken(
-        TokenHelper.handlePotentialDummyToken(receivedFileDataLandscapeToken));
+    fileReport.setLandscapeToken(receivedFileDataLandscapeToken);
     fileReport.setAppName(receivedFileDataAppName);
     fileReport.setCommitId(receivedFileDataCommitId);
     fileReport.setFileName(receivedFileDataFileName);

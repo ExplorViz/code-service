@@ -15,7 +15,6 @@ import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Clas
 import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class.Method;
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.FileReport;
 
 /**
@@ -84,9 +83,8 @@ public class LandscapeStructureResource {
    */
   @Path("{commit}")
   @GET
-  public LandscapeStructure singleStructure(@PathParam("token") final String landscapeToken,
+  public LandscapeStructure singleStructure(@PathParam("token") final String token,
       @PathParam("appName") final String appName, final String commit) {
-    final String token = TokenHelper.handlePotentialDummyToken(landscapeToken);
     final List<Package> packages =
         LandscapeStructureHelper.createListOfPackages(token, commit, appName);
     if (packages != null) {
@@ -103,11 +101,9 @@ public class LandscapeStructureResource {
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET
-  public LandscapeStructure mixedStructure(@PathParam("token") final String landscapeToken,
+  public LandscapeStructure mixedStructure(@PathParam("token") final String token,
       @PathParam("appName") final String appName, final String firstCommit,
       final String secondCommit) {
-
-    final String token = TokenHelper.handlePotentialDummyToken(landscapeToken);
 
     final List<Package> packagesFirstSelectedCommit =
         LandscapeStructureHelper.createListOfPackages(token, firstCommit, appName);
