@@ -21,9 +21,11 @@ public class CommitReportResource {
   @GET
   public CommitReport list(@PathParam("token") final String token,
       @PathParam("appName") final String appName, @PathParam("commit") final String commit) {
-    final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(
-        TokenHelper.handlePotentialDummyToken(token),
+    final CommitReport cr = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
         appName, commit);
+
+    cr.setLandscapeToken(TokenHelper.handlePotentialDummyToken(cr.getLandscapeToken()));
+
     if (cr != null) {
       return cr;
     }

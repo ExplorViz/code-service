@@ -27,10 +27,11 @@ public class FileReportResource {
       @PathParam("appName") final String appName, @PathParam("fqFileName") final String fqFileName,
       @PathParam("commit") final String commit) {
 
-    final FileReport fileReport =
-        LandscapeStructureHelper.getFileReport(TokenHelper.handlePotentialDummyToken(token),
-            appName,
-            fqFileName, commit);
+    final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
+        fqFileName, commit);
+
+    fileReport.setLandscapeToken(
+        TokenHelper.handlePotentialDummyToken(fileReport.getLandscapeToken()));
 
     if (fileReport != null) {
       return fileReport;

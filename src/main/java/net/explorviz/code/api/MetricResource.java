@@ -2,14 +2,12 @@ package net.explorviz.code.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.explorviz.code.beans.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.helper.TokenHelper;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.FileReport;
 import net.explorviz.code.mongo.FileReport.ClassData2;
@@ -27,10 +25,8 @@ public class MetricResource {
    */
   @Path("{token}/{appName}/{commit}")
   @GET
-  public Metrics list(@PathParam("token") final String landscapeToken, // NOPMD
-      @PathParam("appName") final String appName, @PathParam("commit") final String commit) {
-
-    final String token = TokenHelper.handlePotentialDummyToken(landscapeToken);
+  public Metrics list(final String token, // NOPMD
+      final String appName, final String commit) {
 
     final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
         appName, commit);
