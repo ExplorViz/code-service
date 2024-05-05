@@ -76,6 +76,21 @@ tasks.named('quarkusDependenciesBuild') {
     dependsOn 'jandex'
 }
 
+jacocoTestReport {
+    dependsOn test
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/proto/**',
+                    '**/main/**',
+                    "**/SchemaRegistryClientProducer.*",
+                    "**/ReadOnlyKeyValueStoreProducer.*"
+            ])
+        }))
+    }
+}
+
 tasks.withType(JavaCompile).configureEach {
     // Turn on all javac warnings except classfile and processing, which produces many false-positives about annotations
     options.compilerArgs << "-Xlint:all" << "-Xlint:-classfile" << "-Xlint:-processing"
