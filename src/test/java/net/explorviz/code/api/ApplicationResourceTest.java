@@ -40,7 +40,7 @@ public class ApplicationResourceTest {
   }
 
   @Test
-  public void testUnitApplication() {
+  public void testUnitApplicationResourceValidToken() {
     this.getMongoDatabase().createCollection("Application");
     MongoCollection<Document> collection = this.getMongoDatabase().getCollection("Application");
     Document newApp = new Document()
@@ -54,6 +54,22 @@ public class ApplicationResourceTest {
     Assertions.assertEquals(1, collection.countDocuments());
     Assertions.assertEquals(1, appNames.size());
     Assertions.assertEquals("test-name", appNames.get(0));
+  }
+
+  @Test
+  public void testUnitApplicationResourceUnknownToken() {
+    this.getMongoDatabase().createCollection("Application");
+    MongoCollection<Document> collection = this.getMongoDatabase().getCollection("Application");
+    Document newApp = new Document()
+        .append("applicationName", "test-name")
+        .append("landscapeToken", "test-token");
+
+    collection.insertOne(newApp);
+
+    List<String> appNames = this.applicationResource.list("test-unknown-token");
+
+    Assertions.assertEquals(1, collection.countDocuments());
+    Assertions.assertTrue(appNames.isEmpty());
   }
 
 }
