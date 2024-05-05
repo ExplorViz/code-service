@@ -26,6 +26,7 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-test-mongodb'
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'com.google.protobuf:protobuf-java-util:4.26.1'
 }
 
 group 'net.explorviz'

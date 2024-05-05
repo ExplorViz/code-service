@@ -9,6 +9,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.mongodb.MongoTestResource;
 import jakarta.inject.Inject;
 import java.util.List;
+import net.explorviz.code.testhelper.TestConstants;
 import org.bson.Document;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Assertions;
@@ -41,8 +42,9 @@ public class ApplicationResourceTest {
 
   @Test
   public void testUnitApplicationResourceValidToken() {
-    this.getMongoDatabase().createCollection("Application");
-    MongoCollection<Document> collection = this.getMongoDatabase().getCollection("Application");
+    this.getMongoDatabase().createCollection(TestConstants.MONGO_COLLECTION_APPLICATION);
+    MongoCollection<Document> collection =
+        this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_APPLICATION);
     Document newApp = new Document()
         .append("applicationName", "test-name")
         .append("landscapeToken", "test-token");
@@ -58,8 +60,9 @@ public class ApplicationResourceTest {
 
   @Test
   public void testUnitApplicationResourceUnknownToken() {
-    this.getMongoDatabase().createCollection("Application");
-    MongoCollection<Document> collection = this.getMongoDatabase().getCollection("Application");
+    this.getMongoDatabase().createCollection(TestConstants.MONGO_COLLECTION_APPLICATION);
+    MongoCollection<Document> collection =
+        this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_APPLICATION);
     Document newApp = new Document()
         .append("applicationName", "test-name")
         .append("landscapeToken", "test-token");
