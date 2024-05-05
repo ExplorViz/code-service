@@ -4,7 +4,6 @@ import com.google.protobuf.Empty;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
-import net.explorviz.code.kafka.GrpcGateway;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.CommitReportService;
 

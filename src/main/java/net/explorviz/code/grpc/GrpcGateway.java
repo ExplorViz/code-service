@@ -1,4 +1,4 @@
-package net.explorviz.code.kafka;
+package net.explorviz.code.grpc;
 
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * This class functions as a gateway for the analysis data into kafka or another storage. It gets
- * called by the respective GRPC endpoints. The first time analyzation from the code-agent should
- * always start with the main/master branch
+ * This class functions as a gateway for the analysis data. It gets called by the respective GRPC
+ * endpoints. The first time analysis from the code-agent should always start with the main/master
+ * branch
  */
 @ApplicationScoped
 public class GrpcGateway {
