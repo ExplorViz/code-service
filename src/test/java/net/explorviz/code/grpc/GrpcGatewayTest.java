@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.testhelper.TestConstants;
 import org.bson.Document;
@@ -57,7 +58,7 @@ public class GrpcGatewayTest {
   }
 
   @Test
-  public void testGrpcGatewayFileData() throws IOException {
+  public void testGrpcGatewayFileDataSingle() throws IOException {
     final String jsonPersonFromCodeAgent =
         this.readJsonFileAsString("src/test/resources/Person.json");
 
@@ -68,6 +69,20 @@ public class GrpcGatewayTest {
     MongoCollection<Document> collection =
         this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_FILE_REPORT_TABLE);
     Assertions.assertEquals(1, collection.countDocuments());
+
+    collection = this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_FILE_REPORT);
+    Assertions.assertEquals(1, collection.countDocuments());
+
+    int iteratorCount = 0;
+
+    final Iterator<String> iterator = this.getMongoDatabase().listCollectionNames().iterator();
+
+    while (iterator.hasNext()) {
+      iterator.next();
+      iteratorCount++;
+    }
+
+    Assertions.assertEquals(2, iteratorCount);
   }
 
 
