@@ -14,7 +14,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import net.explorviz.code.mongo.FileReportTable;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.testhelper.TestConstants;
 import org.bson.Document;
@@ -60,7 +64,7 @@ public class GrpcGatewayTest {
   @Test
   public void testGrpcGatewayFileDataSingle() throws IOException {
     final String jsonPersonFromCodeAgent =
-        this.readJsonFileAsString("src/test/resources/Person.json");
+        this.readJsonFileAsString("src/test/resources/Person-1.json");
 
     final FileData fileDataPersonClass = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
 
@@ -72,6 +76,65 @@ public class GrpcGatewayTest {
 
     collection = this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_FILE_REPORT);
     Assertions.assertEquals(1, collection.countDocuments());
+
+    int iteratorCount = 0;
+
+    final Iterator<String> iterator = this.getMongoDatabase().listCollectionNames().iterator();
+
+    while (iterator.hasNext()) {
+      iterator.next();
+      iteratorCount++;
+    }
+
+    Assertions.assertEquals(2, iteratorCount);
+  }
+
+  @Test
+  public void testGrpcGatewayFileDataMultipleDataForSameFile() throws IOException {
+    String jsonPersonFromCodeAgent =
+        this.readJsonFileAsString("src/test/resources/Person-1.json");
+    FileData fileDataPerson1Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
+    this.grpcGateway.processFileData(fileDataPerson1Class);
+
+    jsonPersonFromCodeAgent =
+        this.readJsonFileAsString("src/test/resources/Person-2.json");
+    FileData fileDataPerson2Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
+    this.grpcGateway.processFileData(fileDataPerson2Class);
+
+    jsonPersonFromCodeAgent =
+        this.readJsonFileAsString("src/test/resources/Person-3.json");
+    FileData fileDataPerson3Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
+    this.grpcGateway.processFileData(fileDataPerson3Class);
+
+    MongoCollection<Document> collection =
+        this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_FILE_REPORT_TABLE);
+    Assertions.assertEquals(1, collection.countDocuments());
+
+    final FileReportTable fileReportTable =
+        FileReportTable.findByTokenAndAppName("mytokenvalue", "petclinic");
+
+    Assertions.assertEquals("petclinic", fileReportTable.getAppName());
+    Assertions.assertEquals("mytokenvalue", fileReportTable.getLandscapeToken());
+    Assertions.assertEquals(3, fileReportTable.getCommitIdTofqnFileNameToCommitIdMap().size());
+
+    List<FileData>
+        persons = Arrays.asList(fileDataPerson1Class, fileDataPerson2Class, fileDataPerson3Class);
+
+    for (FileData person : persons) {
+      Map<String, String> fqnToCommitId =
+          fileReportTable.getCommitIdTofqnFileNameToCommitIdMap().get(person.getCommitID());
+      String fqFileName = person.getPackageName() + "." + person.getFileName();
+
+      Assertions.assertTrue(fileReportTable.getCommitIdTofqnFileNameToCommitIdMap()
+          .containsKey(person.getCommitID()));
+      Assertions.assertTrue(fqnToCommitId.containsKey(fqFileName),
+          "The map should contain the fully qualified file name.");
+      Assertions.assertEquals(person.getCommitID(), fqnToCommitId.get(fqFileName),
+          "The commit IDs should match.");
+    }
+
+    collection = this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_FILE_REPORT);
+    Assertions.assertEquals(3, collection.countDocuments());
 
     int iteratorCount = 0;
 
