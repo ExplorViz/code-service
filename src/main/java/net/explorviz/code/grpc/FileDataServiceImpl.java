@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
+import net.explorviz.code.analysis.FileDataAnalysis;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.proto.FileDataService;
 
@@ -14,11 +15,11 @@ import net.explorviz.code.proto.FileDataService;
 public class FileDataServiceImpl implements FileDataService {
 
   @Inject
-  /* package */ GrpcGateway grpcGateway; // NOCS
+  /* package */ FileDataAnalysis fileDataAnalysis; // NOCS
 
   @Override
   public Uni<Empty> sendFileData(final FileData request) {
-    grpcGateway.processFileData(request);
+    fileDataAnalysis.processFileData(request);
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 }

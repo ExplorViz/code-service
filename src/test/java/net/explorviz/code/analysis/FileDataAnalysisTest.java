@@ -1,4 +1,4 @@
-package net.explorviz.code.grpc;
+package net.explorviz.code.analysis;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
@@ -27,10 +27,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+
 @QuarkusTest
 @QuarkusTestResource(value = MongoTestResource.class,
     initArgs = @ResourceArg(name = MongoTestResource.PORT, value = "27032"))
-public class GrpcGatewayTest {
+public class FileDataAnalysisTest {
 
   @ConfigProperty(name = "quarkus.mongodb.database")
   /* default */ String mongoDBName; // NOCS
@@ -39,7 +40,7 @@ public class GrpcGatewayTest {
   MongoClient mongoClient;
 
   @Inject
-  GrpcGateway grpcGateway;
+  FileDataAnalysis fileDataAnalysis;
 
   private MongoDatabase getMongoDatabase() {
     return this.mongoClient.getDatabase(mongoDBName);
@@ -68,7 +69,7 @@ public class GrpcGatewayTest {
 
     final FileData fileDataPersonClass = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
 
-    this.grpcGateway.processFileData(fileDataPersonClass);
+    this.fileDataAnalysis.processFileData(fileDataPersonClass);
 
     MongoCollection<Document> collection =
         this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_FILE_REPORT_TABLE);
@@ -94,17 +95,17 @@ public class GrpcGatewayTest {
     String jsonPersonFromCodeAgent =
         this.readJsonFileAsString("src/test/resources/Person-1.json");
     FileData fileDataPerson1Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
-    this.grpcGateway.processFileData(fileDataPerson1Class);
+    this.fileDataAnalysis.processFileData(fileDataPerson1Class);
 
     jsonPersonFromCodeAgent =
         this.readJsonFileAsString("src/test/resources/Person-2.json");
     FileData fileDataPerson2Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
-    this.grpcGateway.processFileData(fileDataPerson2Class);
+    this.fileDataAnalysis.processFileData(fileDataPerson2Class);
 
     jsonPersonFromCodeAgent =
         this.readJsonFileAsString("src/test/resources/Person-3.json");
     FileData fileDataPerson3Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
-    this.grpcGateway.processFileData(fileDataPerson3Class);
+    this.fileDataAnalysis.processFileData(fileDataPerson3Class);
 
     MongoCollection<Document> collection =
         this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_FILE_REPORT_TABLE);
