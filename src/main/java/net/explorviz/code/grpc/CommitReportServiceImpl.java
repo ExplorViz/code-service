@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
+import net.explorviz.code.analysis.CommitReportAnalysis;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.CommitReportService;
 
@@ -14,11 +15,11 @@ import net.explorviz.code.proto.CommitReportService;
 public class CommitReportServiceImpl implements CommitReportService {
 
   @Inject
-  /* package */ GrpcGateway gRPCGateway; // NOCS
+  /* package */ CommitReportAnalysis commitReportAnalysis; // NOCS
 
   @Override
   public Uni<Empty> sendCommitReport(final CommitReportData request) {
-    gRPCGateway.processCommitReport(request);
+    commitReportAnalysis.processCommitReport(request);
     return Uni.createFrom().item(() -> Empty.newBuilder().build());
   }
 }

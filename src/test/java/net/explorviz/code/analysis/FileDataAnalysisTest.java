@@ -63,7 +63,7 @@ public class FileDataAnalysisTest {
   }
 
   @Test
-  public void testGrpcGatewayFileDataSingle() throws IOException {
+  public void testFileDataAnalysisSingle() throws IOException {
     final String jsonPersonFromCodeAgent =
         this.readJsonFileAsString("src/test/resources/Person-1.json");
 
@@ -91,7 +91,7 @@ public class FileDataAnalysisTest {
   }
 
   @Test
-  public void testGrpcGatewayFileDataMultipleDataForSameFile() throws IOException {
+  public void testFileDataAnalysisMultipleDataForSameFile() throws IOException {
     String jsonPersonFromCodeAgent =
         this.readJsonFileAsString("src/test/resources/Person-1.json");
     FileData fileDataPerson1Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
