@@ -2,6 +2,7 @@ package net.explorviz.code.mongo;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -131,6 +132,30 @@ public class CommitReport extends PanacheMongoEntity {
     this.applicationName = applicationName;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CommitReport that = (CommitReport) o;
+    return Objects.equals(commitId, that.commitId) && Objects.equals(
+        parentCommitId, that.parentCommitId) && Objects.equals(branchName, that.branchName)
+        && Objects.equals(files, that.files) && Objects.equals(modified,
+        that.modified) && Objects.equals(deleted, that.deleted) && Objects.equals(
+        added, that.added) && Objects.equals(fileMetric, that.fileMetric)
+        && Objects.equals(landscapeToken, that.landscapeToken) && Objects.equals(
+        fileHash, that.fileHash) && Objects.equals(applicationName, that.applicationName);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(commitId, parentCommitId, branchName, files, modified, deleted, added,
+        fileMetric, landscapeToken, fileHash, applicationName);
+  }
+
   /**
    * A class for the file metrics of the modified files within a commit report.
    */
@@ -174,6 +199,25 @@ public class CommitReport extends PanacheMongoEntity {
 
     public void setNumberOfMethods(final int numberOfMethods) {
       this.numberOfMethods = numberOfMethods;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      FileMetric that = (FileMetric) o;
+      return loc == that.loc && cyclomaticComplexity == that.cyclomaticComplexity
+          && numberOfMethods == that.numberOfMethods && Objects.equals(fileName,
+          that.fileName);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(fileName, loc, cyclomaticComplexity, numberOfMethods);
     }
 
     // public void setNumberOfAddedLines(final int numberOfAddedLines) {
