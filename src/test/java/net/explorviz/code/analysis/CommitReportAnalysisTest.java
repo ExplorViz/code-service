@@ -95,8 +95,45 @@ public class CommitReportAnalysisTest {
 
       Assertions.assertEquals(4, iteratorCount);
     }
+  }
 
+  @Test
+  public void testFirstCommitAndNoFileReportTable() throws IOException {
+    final String jsonCommitReport =
+        this.readJsonFileAsString("src/test/resources/CommitReport-1-no-parent.json");
 
+    final CommitReportData commitReport = this.jsonToGrpcCommitReportData(jsonCommitReport);
+
+    for (int i = 0; i < 10; i++) {
+      this.commitReportAnalysis.processCommitReport(commitReport);
+
+      MongoCollection<Document> collection =
+          this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_COMMIT_REPORT);
+      Assertions.assertEquals(1, collection.countDocuments());
+
+      collection =
+          this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_BRANCH_POINT);
+      Assertions.assertEquals(1, collection.countDocuments());
+
+      collection =
+          this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_APPLICATION);
+      Assertions.assertEquals(1, collection.countDocuments());
+
+      collection =
+          this.getMongoDatabase().getCollection(TestConstants.MONGO_COLLECTION_LATEST_COMMIT);
+      Assertions.assertEquals(1, collection.countDocuments());
+
+      int iteratorCount = 0;
+
+      final Iterator<String> iterator = this.getMongoDatabase().listCollectionNames().iterator();
+
+      while (iterator.hasNext()) {
+        iterator.next();
+        iteratorCount++;
+      }
+
+      Assertions.assertEquals(4, iteratorCount);
+    }
   }
 
 }
