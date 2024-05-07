@@ -282,7 +282,7 @@ public class LandscapeStructureResource {
   private LandscapeStructure buildLandscapeStructure(final String landscapeToken,
       final String appName, final List<Package> packages) {
     final Node node = new Node();
-    node.setIpAdress("0.0.0.0"); // NOPMD
+    node.setIpAddress("0.0.0.0"); // NOPMD
     node.setHostName("default-node");
     node.setApplications(new ArrayList<>());
 
