@@ -1,0 +1,26 @@
+{
+  "commitID": "63dadcc07f5f28e40afc02dca5e779d96dc018e6",
+  "parentCommitID": "0a51540ad04b48b5b18fd6fd400363fc02512134",
+  "branchName": "refs/heads/main",
+  "files": ["src/main/java/org/springframework/samples/petclinic/PetClinicApplication.java", "src/main/java/org/springframework/samples/petclinic/model/BaseEntity.java", "src/main/java/org/springframework/samples/petclinic/model/NamedEntity.java", "src/main/java/org/springframework/samples/petclinic/model/Person.java", "src/main/java/org/springframework/samples/petclinic/model/package-info.java", "src/main/java/org/springframework/samples/petclinic/owner/Owner.java", "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java", "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java", "src/main/java/org/springframework/samples/petclinic/owner/Pet.java", "src/main/java/org/springframework/samples/petclinic/owner/PetController.java", "src/main/java/org/springframework/samples/petclinic/owner/PetRepository.java", "src/main/java/org/springframework/samples/petclinic/owner/PetType.java", "src/main/java/org/springframework/samples/petclinic/owner/PetTypeFormatter.java", "src/main/java/org/springframework/samples/petclinic/owner/PetValidator.java", "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java", "src/main/java/org/springframework/samples/petclinic/system/CacheConfig.java", "src/main/java/org/springframework/samples/petclinic/system/CrashController.java", "src/main/java/org/springframework/samples/petclinic/system/WelcomeController.java", "src/main/java/org/springframework/samples/petclinic/vet/Specialty.java", "src/main/java/org/springframework/samples/petclinic/vet/Vet.java", "src/main/java/org/springframework/samples/petclinic/vet/VetController.java", "src/main/java/org/springframework/samples/petclinic/vet/VetRepository.java", "src/main/java/org/springframework/samples/petclinic/vet/Vets.java", "src/main/java/org/springframework/samples/petclinic/visit/Visit.java", "src/main/java/org/springframework/samples/petclinic/visit/VisitRepository.java"],
+  "modified": ["src/main/java/org/springframework/samples/petclinic/model/BaseEntity.java", "src/main/java/org/springframework/samples/petclinic/model/Person.java", "src/main/java/org/springframework/samples/petclinic/owner/Pet.java"],
+  "fileMetric": [{
+    "fileName": "src/main/java/org/springframework/samples/petclinic/owner/Pet.java",
+    "loc": 110,
+    "cyclomaticComplexity": 1,
+    "numberOfMethods": 10
+  }, {
+    "fileName": "src/main/java/org/springframework/samples/petclinic/model/Person.java",
+    "loc": 50,
+    "cyclomaticComplexity": 1,
+    "numberOfMethods": 4
+  }, {
+    "fileName": "src/main/java/org/springframework/samples/petclinic/model/BaseEntity.java",
+    "loc": 43,
+    "cyclomaticComplexity": 1,
+    "numberOfMethods": 3
+  }],
+  "landscapeToken": "mytokenvalue",
+  "applicationName": "petclinic",
+  "fileHash": ["224c326c72aff0214ea6e8beedc99ce52d0e7738", "86cc210924182a183fc2bad305c4c527cbeee53f", "d66c97ae7489e7243fb2f2173b64e346d687c8e0", "4cb7481e0ab8c1ff72652c8f1ca39fcc6c511764", "78294d130dda43040ae4d9a570225243fe2aedd5", "f6fcae7aced256c4fcc067dd08ac231ba987700e", "ef3169b701803a947d171334e2ba44d472d12db2", "068f5245de18d03ca3f97cecd28e74175682156a", "e8df85e917fdbcf9008f1c9aea28a727a330b1c8", "0599faf2c32b33a947bb7b9e6db65bebd0efa641", "b0ec5db2396a966050cf542da3e61974af1c00f1", "ac827b3104000850657da71efa13488a57082b6d", "78451ca282122544adaaaa43f71d4f4238f3dc57", "1a3d92e9ecc3e73dd0dfea3c06e74b6643587d8b", "d98c5dd0f5e5ff58bfc1d5cba613dc7770a650eb", "8798bfb50fe9b7fe27a0a054b2995215f6f65c9e", "a702cfc8f953e0e2c8ca53ef499023892d439568", "b5af0f7d784f33f1a815561fe8df4747066ed3e3", "5691c24348938cde1dada6c859d2deac6ef11469", "43aecc41e20ddbc18c65a5bd65b47b638d55d876", "8ddcca60a2d79258f8047d3d8613f9594bda61a5", "20863ce767bc0e952c2180c48130a2851085152d", "f5b24c3fc7651960ed822e9bc8df15449f44a800", "25e7cc5ad72a4661212397ac424a3bc49fee898b", "c7853d170f3694fd4895fe298bab0be0b3f92170"]
+}
