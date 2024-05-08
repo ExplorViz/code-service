@@ -36,6 +36,68 @@ public class CommitComparisonHelperTest {
         COMMIT_ID_2)).thenReturn(commitReport2);
   }
 
+  // Added cases
+  @Test
+  public void testGetComparisonAddedFiles_WithDifferentFiles() {
+    when(commitReport1.getFiles()).thenReturn(Arrays.asList("file1", "file2", "file3"));
+    when(commitReport2.getFiles()).thenReturn(Arrays.asList("file2", "file4"));
+
+    List<String> addedFiles =
+        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+            APPLICATION_NAME);
+
+    assertEquals(Arrays.asList("file4"), addedFiles);
+  }
+
+  @Test
+  public void testGetComparisonAddedFiles_WithSameFiles() {
+
+    when(CommitReport.findByTokenAndApplicationNameAndCommitId(LANDSCAPE_TOKEN, APPLICATION_NAME,
+        COMMIT_ID_1)).thenReturn(commitReport1);
+    when(CommitReport.findByTokenAndApplicationNameAndCommitId(LANDSCAPE_TOKEN, APPLICATION_NAME,
+        COMMIT_ID_2)).thenReturn(commitReport2);
+
+    when(commitReport1.getFiles()).thenReturn(Arrays.asList("file1", "file2"));
+    when(commitReport2.getFiles()).thenReturn(Arrays.asList("file1", "file2"));
+
+    List<String> addedFiles =
+        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+            APPLICATION_NAME);
+
+    assertEquals(Collections.emptyList(), addedFiles);
+  }
+
+  @Test
+  public void testGetComparisonAddedFiles_WithOneCommitNull() {
+    when(CommitReport.findByTokenAndApplicationNameAndCommitId(LANDSCAPE_TOKEN, APPLICATION_NAME,
+        COMMIT_ID_1))
+        .thenReturn(null);
+
+    List<String> addedFiles =
+        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+            APPLICATION_NAME);
+
+    assertEquals(Collections.emptyList(), addedFiles);
+  }
+
+  @Test
+  public void testGetComparisonAddedFiles_WithBothCommitsNull() {
+    when(CommitReport.findByTokenAndApplicationNameAndCommitId(LANDSCAPE_TOKEN, APPLICATION_NAME,
+        COMMIT_ID_1))
+        .thenReturn(null);
+    when(CommitReport.findByTokenAndApplicationNameAndCommitId(LANDSCAPE_TOKEN, APPLICATION_NAME,
+        COMMIT_ID_2))
+        .thenReturn(null);
+
+    List<String> addedFiles =
+        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+            APPLICATION_NAME);
+
+    assertEquals(Collections.emptyList(), addedFiles);
+  }
+
+  // Deleted cases
+
   @Test
   public void testGetComparisonDeletedFiles_WithDifferentFiles() {
     when(commitReport1.getFiles()).thenReturn(Arrays.asList("file1", "file2", "file3"));
