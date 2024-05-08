@@ -1,7 +1,5 @@
 package net.explorviz.code.analysis;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -11,15 +9,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.mongodb.MongoTestResource;
 import jakarta.inject.Inject;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.explorviz.code.mongo.FileReportTable;
 import net.explorviz.code.proto.FileData;
+import net.explorviz.code.testhelper.HelperMethods;
 import net.explorviz.code.testhelper.TestConstants;
 import org.bson.Document;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -46,16 +42,6 @@ public class FileDataAnalysisTest {
     return this.mongoClient.getDatabase(mongoDBName);
   }
 
-  private String readJsonFileAsString(String path) throws IOException {
-    return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
-  }
-
-  private FileData jsonToGrpcFileData(String json) throws InvalidProtocolBufferException {
-    FileData.Builder builder = FileData.newBuilder();
-    JsonFormat.parser().ignoringUnknownFields().merge(json, builder);
-    return builder.build();
-  }
-
   @BeforeEach
   public void setUp() {
     // Drop the database before each test to ensure test isolation
@@ -64,10 +50,9 @@ public class FileDataAnalysisTest {
 
   @Test
   public void testFileDataAnalysisSingle() throws IOException {
-    final String jsonPersonFromCodeAgent =
-        this.readJsonFileAsString("src/test/resources/Person-1.json");
 
-    final FileData fileDataPersonClass = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
+    final FileData fileDataPersonClass =
+        HelperMethods.readJsonAndConvertGrpcFileData("src/test/resources/Person-1.json");
 
     this.fileDataAnalysis.processFileData(fileDataPersonClass);
 
@@ -92,19 +77,17 @@ public class FileDataAnalysisTest {
 
   @Test
   public void testFileDataAnalysisMultipleDataForSameFile() throws IOException {
-    String jsonPersonFromCodeAgent =
-        this.readJsonFileAsString("src/test/resources/Person-1.json");
-    FileData fileDataPerson1Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
+
+    FileData fileDataPerson1Class =
+        HelperMethods.readJsonAndConvertGrpcFileData("src/test/resources/Person-1.json");
     this.fileDataAnalysis.processFileData(fileDataPerson1Class);
 
-    jsonPersonFromCodeAgent =
-        this.readJsonFileAsString("src/test/resources/Person-2.json");
-    FileData fileDataPerson2Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
+    FileData fileDataPerson2Class =
+        HelperMethods.readJsonAndConvertGrpcFileData("src/test/resources/Person-2.json");
     this.fileDataAnalysis.processFileData(fileDataPerson2Class);
 
-    jsonPersonFromCodeAgent =
-        this.readJsonFileAsString("src/test/resources/Person-3.json");
-    FileData fileDataPerson3Class = this.jsonToGrpcFileData(jsonPersonFromCodeAgent);
+    FileData fileDataPerson3Class =
+        HelperMethods.readJsonAndConvertGrpcFileData("src/test/resources/Person-3.json");
     this.fileDataAnalysis.processFileData(fileDataPerson3Class);
 
     MongoCollection<Document> collection =

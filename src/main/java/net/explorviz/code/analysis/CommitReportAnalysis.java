@@ -60,10 +60,9 @@ public class CommitReportAnalysis {
       final Map<String, Map<String, String>> table = fileReportTable
           .getCommitIdTofqnFileNameToCommitIdMap();
 
-      final String parentId = receivedCommitReportAncestorId;
-      if (!NO_ANCESTOR.equals(parentId)) {
+      if (!NO_ANCESTOR.equals(receivedCommitReportAncestorId)) {
 
-        final Map<String, String> parentEntries = table.get(parentId);
+        final Map<String, String> parentEntries = table.get(receivedCommitReportAncestorId);
 
         if (parentEntries != null) {
           final boolean keyExists = table.containsKey(receivedCommitReportCommitId);
