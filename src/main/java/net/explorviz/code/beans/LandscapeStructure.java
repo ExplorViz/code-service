@@ -32,16 +32,16 @@ public class LandscapeStructure {
    */
   public static class Node {
 
-    private String ipAdress;
+    private String ipAddress;
     private String hostName;
     private List<Application> applications;
 
-    public String getIpAdress() {
-      return this.ipAdress;
+    public String getIpAddress() {
+      return this.ipAddress;
     }
 
-    public void setIpAdress(final String ipAdress) {
-      this.ipAdress = ipAdress;
+    public void setIpAddress(final String ipAddress) {
+      this.ipAddress = ipAddress;
     }
 
     public String getHostName() {

@@ -16,15 +16,19 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-mongodb-panache'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-mongodb-panache'
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
     implementation 'io.quarkus:quarkus-grpc'
 
+    testImplementation 'io.quarkus:quarkus-test-mongodb'
     testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.quarkus:quarkus-panache-mock'
+    testImplementation 'io.quarkus:quarkus-junit5-mockito'
     testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'com.google.protobuf:protobuf-java-util:4.26.1'
 }
 
 group 'net.explorviz'
@@ -73,6 +77,21 @@ tasks.named('test') {
 
 tasks.named('quarkusDependenciesBuild') {
     dependsOn 'jandex'
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/proto/**',
+                    '**/main/**',
+                    "**/SchemaRegistryClientProducer.*",
+                    "**/ReadOnlyKeyValueStoreProducer.*"
+            ])
+        }))
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {

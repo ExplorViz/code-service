@@ -2,6 +2,7 @@ package net.explorviz.code.mongo;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ...
@@ -13,6 +14,11 @@ public class FileReportTable extends PanacheMongoEntity {
   private String appName;
   // finds the commit id for the corresponding file report
   private Map<String, Map<String, String>> commitIdTofqnFileNameToCommitIdMap;
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(landscapeToken, appName, commitIdTofqnFileNameToCommitIdMap);
+  }
 
   /**
    * Finds FileReportTable for passed token and appName.
@@ -55,6 +61,20 @@ public class FileReportTable extends PanacheMongoEntity {
   public void setCommitIdTofqnFileNameToCommitIdMap(
       final Map<String, Map<String, String>> commitIdTofqnFileNameToCommitIdMap) {
     this.commitIdTofqnFileNameToCommitIdMap = commitIdTofqnFileNameToCommitIdMap;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    FileReportTable that = (FileReportTable) o;
+    return Objects.equals(landscapeToken, that.landscapeToken) && Objects.equals(
+        appName, that.appName) && Objects.equals(commitIdTofqnFileNameToCommitIdMap,
+        that.commitIdTofqnFileNameToCommitIdMap);
   }
 
 }
