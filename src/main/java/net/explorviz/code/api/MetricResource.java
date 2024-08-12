@@ -43,11 +43,10 @@ public class MetricResource {
     final List<Map<String, Map<String, String>>> classMetrics = new ArrayList<>();
     final List<Map<String, Map<String, String>>> methodMetrics = new ArrayList<>();
 
-    for (final String fileName : commitReport.getFiles()) {
-      final String fullQualifiedFileName = fileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
-          fullQualifiedFileName, commit);
+    final List<FileReport> relatedFileReports =
+        LandscapeStructureHelper.getFileReports(token, appName, commit, commitReport.getFiles());
 
+    for (final FileReport fileReport : relatedFileReports) {
       if (fileReport == null) {
         fileMetrics.add(null);
         classMetrics.add(null);

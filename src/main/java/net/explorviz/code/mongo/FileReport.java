@@ -1,9 +1,10 @@
 package net.explorviz.code.mongo; // NOPMD
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import net.explorviz.code.helper.FilePathInfo;
 
 /**
  * A class for the file reports that the code-agent sends to us.
@@ -32,30 +33,25 @@ public class FileReport extends PanacheMongoEntity {
       final String landscapeToken,
       final String appName,
       final String fqFileName, final String commitId) {
-    final String[] temp = fqFileName.split("\\.");
-    if (temp.length < 2) { // NOPMD
+
+    FilePathInfo filePathInfo = FilePathInfo.build(fqFileName);
+
+    if (filePathInfo.getFileNameWithFileExtension() == null) {
       return null;
     }
-    final String fileName = temp[temp.length - 2] + "." + temp[temp.length - 1];
-    StringBuilder tmpString = new StringBuilder();
-    for (int i = 0; i < temp.length - 2; i++) {
-      tmpString.append(temp[i] + ".");
-    }
 
-    if (!"".equals(tmpString.toString())) { // NOPMD
-      tmpString = new StringBuilder(tmpString.substring(0, tmpString.length() - 1));
-    }
-
-    final String folders = tmpString.toString();
     final List<FileReport> fileReportList = find(
         "landscapeToken = ?1 and appName = ?2 and fileName =?3 and commitId =?4",
-        landscapeToken, appName, fileName, commitId).list();
+        landscapeToken, appName, filePathInfo.getFileNameWithFileExtension(), commitId).list();
 
+    // e.g. Options.java might be included in different packages, therefore also check for the
+    // right folder path
     final List<FileReport> filterFileReportList = fileReportList.stream()
-        .filter(fr -> folders.endsWith(fr.packageName)).collect(Collectors.toList());
+        .filter(fr -> filePathInfo.getFoldersWithDotSeparation().endsWith(fr.packageName))
+        .toList();
 
     if (filterFileReportList.size() == 1) { // NOPMD
-      return filterFileReportList.get(0);
+      return filterFileReportList.getFirst();
     } else {
       return null;
     }
@@ -66,6 +62,50 @@ public class FileReport extends PanacheMongoEntity {
       final String appName, final String fileName) {
     return find("landscapeToken = ?1 and appName = ?2 and fileName =?3",
         landscapeToken, appName, fileName).list();
+  }
+
+  /**
+   * Uses Batch Requests to fetch multiple FileReports in a single query.
+   *
+   * @param landscapeToken   the encompassing token
+   * @param appName          the encompassing appName
+   * @param commitIdToFqnMap Map containing the commit identifier and the fqns that this functions
+   *                         should fetch. The commit ids have to be the actual ones.
+   * @return The list of fetched FileReports.
+   */
+  public static List<FileReport> getFileReports(String landscapeToken, String appName,
+      Map<String, List<String>> commitIdToFqnMap) {
+
+    List<FileReport> fileReportList = new ArrayList<>();
+
+    for (var entry : commitIdToFqnMap.entrySet()) {
+
+      final String commitId = entry.getKey();
+
+      if (commitId == null) {
+        continue;
+      }
+
+      final List<String> fqFileNames = entry.getValue();
+
+      final List<String> fileNames = new ArrayList<>();
+
+      for (final String fqFileName : fqFileNames) {
+        FilePathInfo filePathInfo = FilePathInfo.build(fqFileName);
+
+        if (filePathInfo.getFileNameWithFileExtension() == null) {
+          continue;
+        }
+
+        fileNames.add(filePathInfo.getFileNameWithFileExtension());
+      }
+
+      fileReportList.addAll(
+          find("landscapeToken = ?1 and appName = ?2 and fileName in ?3 and commitId =?4",
+              landscapeToken, appName, fileNames, commitId).list());
+    }
+
+    return fileReportList;
   }
 
   public String getLandscapeToken() {
