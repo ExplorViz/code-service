@@ -51,9 +51,9 @@ test:
   image: eclipse-temurin:21.0.1_12-jdk
   stage: test
   script:
-    - wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
-    - dpkg -i libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
-    - ./gradlew jacocoTestReport
+    #- wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
+    #- dpkg -i libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
+    - ./gradlew clean jacocoTestReport
     # Print test coverage to console (for coverage badge)
     - cat build/reports/jacoco/test/html/index.html | grep -o 'Total[^%]*%' | sed 's/<.*>/ /; s/Total/Jacoco Coverage Total:/'
   coverage: "/Jacoco Coverage Total: ([0-9]{1,3})%/"
