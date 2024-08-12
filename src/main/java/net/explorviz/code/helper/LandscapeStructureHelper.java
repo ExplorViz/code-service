@@ -53,7 +53,8 @@ public final class LandscapeStructureHelper {
     final Set<String> firstLevelPackageNames = new HashSet<>();
     final Set<String> functionFqn = new HashSet<>();
 
-    List<FileReport> fileReports = LandscapeStructureHelper.getFileReports(landscapeToken, appName, commitId, files);
+    List<FileReport> fileReports =
+        LandscapeStructureHelper.getFileReports(landscapeToken, appName, commitId, files);
 
     for (final FileReport fileReport : fileReports) {
       if (fileReport == null) {
@@ -74,9 +75,19 @@ public final class LandscapeStructureHelper {
     return packageList;
   }
 
-  public static List<FileReport> getFileReports(String landscapeToken, String appName, String commitId, List<String> files) {
+  /**
+   * Get list of filereports using batch queries.
+   *
+   * @param landscapeToken encompassing token
+   * @param appName        encompassing app name
+   * @param commitId       top-level commit
+   * @param fileNames      list of fqns
+   * @return list of filereports
+   */
+  public static List<FileReport> getFileReports(String landscapeToken, String appName,
+      String commitId, List<String> fileNames) {
     Map<String, List<String>> actualCommitIdToFqnMap = new HashMap<>();
-    for (final String file : files) {
+    for (final String file : fileNames) {
       final String[] fileAndFolders = file.split("/");
       final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders);
 
@@ -93,7 +104,6 @@ public final class LandscapeStructureHelper {
     }
     return FileReport.getFileReports(landscapeToken, appName, actualCommitIdToFqnMap);
   }
-
 
 
   private static void processFileReport(String landscapeToken, String fileNameWithoutFileExtension,
