@@ -53,25 +53,7 @@ public final class LandscapeStructureHelper {
     final Set<String> firstLevelPackageNames = new HashSet<>();
     final Set<String> functionFqn = new HashSet<>();
 
-    Map<String, List<String>> actualCommitIdToFqnMap = new HashMap<>();
-    for (final String file : files) {
-      final String[] fileAndFolders = file.split("/");
-      final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders);
-
-      final String actualCommit =
-          LandscapeStructureHelper.getActualCommitIdForFqnAndTargetCommit(landscapeToken, appName,
-              fileAndFoldersWithDotSeparation, commitId);
-
-      if (actualCommitIdToFqnMap.containsKey(actualCommit)) {
-        actualCommitIdToFqnMap.get(actualCommit).add(fileAndFoldersWithDotSeparation);
-      } else {
-        actualCommitIdToFqnMap.put(actualCommit,
-            new ArrayList<>(List.of(fileAndFoldersWithDotSeparation)));
-      }
-    }
-
-    List<FileReport> fileReports =
-        FileReport.getFileReports(landscapeToken, appName, actualCommitIdToFqnMap);
+    List<FileReport> fileReports = LandscapeStructureHelper.getFileReports(landscapeToken, appName, commitId, files);
 
     for (final FileReport fileReport : fileReports) {
       if (fileReport == null) {
@@ -91,6 +73,28 @@ public final class LandscapeStructureHelper {
     });
     return packageList;
   }
+
+  public static List<FileReport> getFileReports(String landscapeToken, String appName, String commitId, List<String> files) {
+    Map<String, List<String>> actualCommitIdToFqnMap = new HashMap<>();
+    for (final String file : files) {
+      final String[] fileAndFolders = file.split("/");
+      final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders);
+
+      final String actualCommit =
+          LandscapeStructureHelper.getActualCommitIdForFqnAndTargetCommit(landscapeToken, appName,
+              fileAndFoldersWithDotSeparation, commitId);
+
+      if (actualCommitIdToFqnMap.containsKey(actualCommit)) {
+        actualCommitIdToFqnMap.get(actualCommit).add(fileAndFoldersWithDotSeparation);
+      } else {
+        actualCommitIdToFqnMap.put(actualCommit,
+            new ArrayList<>(List.of(fileAndFoldersWithDotSeparation)));
+      }
+    }
+    return FileReport.getFileReports(landscapeToken, appName, actualCommitIdToFqnMap);
+  }
+
+
 
   private static void processFileReport(String landscapeToken, String fileNameWithoutFileExtension,
       String appName, FileReport fileReport, Map<String, Package> packageNameToPackageMap,
