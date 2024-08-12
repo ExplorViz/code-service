@@ -1,11 +1,7 @@
-package net.explorviz.code.beans;
+package net.explorviz.code.dto.commit.comparison;
 
 import java.util.List;
-import java.util.Map;
 
-/**
- * ...
- */
 public class CommitComparison {
 
   private List<String> added;
@@ -15,22 +11,15 @@ public class CommitComparison {
   private List<String> deletedPackages;
   private List<Metric> metrics;
 
-  /**
-   * ... * @param added ... * @param modified ... * @param deleted ... *
-   */
-  public CommitComparison(final List<String> added,
-      final List<String> modified, final List<String> deleted,
-      final List<String> addedPackages, final List<String> deletedPackages,
-      final List<Metric> metrics) {
+  public CommitComparison(final List<String> added, final List<String> modified,
+      final List<String> deleted, final List<String> addedPackages,
+      final List<String> deletedPackages, final List<Metric> metrics) {
     this.added = added;
     this.modified = modified;
     this.deleted = deleted;
     this.addedPackages = addedPackages;
     this.deletedPackages = deletedPackages;
     this.metrics = metrics;
-  }
-
-  public CommitComparison() { // NO PMD
   }
 
   public List<String> getAdded() {
@@ -81,54 +70,4 @@ public class CommitComparison {
     this.metrics = metrics;
   }
 
-
-  /**
-   * ...
-   */
-  public static class Metric {
-
-    private String entityName;
-    private Map<String, MetricVal> metricMap;
-
-    public String getEntityName() {
-      return this.entityName;
-    }
-
-    public void setEntityName(final String entityName) {
-      this.entityName = entityName;
-    }
-
-    public Map<String, MetricVal> getMetricMap() {
-      return this.metricMap;
-    }
-
-    public void setMetricMap(final Map<String, MetricVal> metricMap) {
-      this.metricMap = metricMap;
-    }
-
-    /**
-     * ...
-     */
-    public static class MetricVal {
-
-      private String oldValue;
-      private String newValue;
-
-      public String getOldValue() {
-        return this.oldValue;
-      }
-
-      public void setOldValue(final String oldValue) {
-        this.oldValue = oldValue;
-      }
-
-      public String getNewValue() {
-        return this.newValue;
-      }
-
-      public void setNewValue(final String newValue) {
-        this.newValue = newValue;
-      }
-    }
-  }
 }

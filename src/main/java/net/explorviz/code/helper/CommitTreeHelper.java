@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.explorviz.code.beans.CommitTree;
-import net.explorviz.code.beans.CommitTree.Branch;
-import net.explorviz.code.beans.CommitTree.Branch.BranchPoint2;
+import net.explorviz.code.dto.commit.tree.BranchDto;
+import net.explorviz.code.dto.commit.tree.BranchPointDto;
+import net.explorviz.code.dto.commit.tree.CommitTree;
 import net.explorviz.code.mongo.BranchPoint;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.LatestCommit;
@@ -34,7 +34,7 @@ public final class CommitTreeHelper {
   public static CommitTree createCommitTree(final String appName, final String landscapeToken) {
     final List<BranchPoint> branchPoints = BranchPoint.findByTokenAndApplicationName(landscapeToken,
         appName);
-    final List<Branch> branches = new ArrayList<>();
+    final List<BranchDto> branches = new ArrayList<>();
 
     // Collect all branch names from branch points
     List<String> branchNames = branchPoints.stream()
@@ -98,9 +98,9 @@ public final class CommitTreeHelper {
       }
 
       Collections.reverse(commits);
-      final BranchPoint2 branchPoint2 = new BranchPoint2(emergedFromBranchName,
+      final BranchPointDto branchPointDto = new BranchPointDto(emergedFromBranchName,
           emergedFromCommitId);
-      final Branch branch = new Branch(branchName, new ArrayList<>(commits), branchPoint2);
+      final BranchDto branch = new BranchDto(branchName, new ArrayList<>(commits), branchPointDto);
       branches.add(branch);
     }
 

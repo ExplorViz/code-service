@@ -1,4 +1,4 @@
-package net.explorviz.code.beans;
+package net.explorviz.code.dto;
 
 import java.util.List;
 import java.util.Map;

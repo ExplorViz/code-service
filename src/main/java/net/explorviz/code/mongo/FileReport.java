@@ -93,7 +93,7 @@ public class FileReport extends PanacheMongoEntity {
       for (final String fqFileName : fqFileNames) {
         FilePathInfo filePathInfo = FilePathInfo.build(fqFileName);
 
-        if (filePathInfo.getFileNameWithFileExtension() == null) {
+        if ((filePathInfo != null ? filePathInfo.getFileNameWithFileExtension() : null) == null) {
           continue;
         }
 

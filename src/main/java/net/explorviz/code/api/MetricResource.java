@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.beans.Metrics;
+import net.explorviz.code.dto.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.CommitReport;
 import net.explorviz.code.mongo.FileReport;

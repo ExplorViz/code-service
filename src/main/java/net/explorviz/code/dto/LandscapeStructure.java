@@ -1,4 +1,4 @@
-package net.explorviz.code.beans;
+package net.explorviz.code.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,15 +151,16 @@ public class LandscapeStructure {
          * @return String reprenstation
          */
         public String toString() {
-          if (this.getSubPackages().size() == 0) {
+          if (this.getSubPackages().isEmpty()) {
             return this.getName();
           }
 
-          String retString = "";
+          StringBuilder retString = new StringBuilder();
           for (final Package subPackage : this.getSubPackages()) {
-            retString += this.getName() + "->" + subPackage.toString() + "\n";
+            retString.append(this.getName()).append("->").append(subPackage.toString())
+                .append("\n");
           }
-          return retString;
+          return retString.toString();
         }
 
         /**

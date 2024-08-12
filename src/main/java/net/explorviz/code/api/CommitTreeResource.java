@@ -4,7 +4,7 @@ package net.explorviz.code.api;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import net.explorviz.code.beans.CommitTree;
+import net.explorviz.code.dto.commit.tree.CommitTree;
 import net.explorviz.code.helper.CommitTreeHelper;
 
 

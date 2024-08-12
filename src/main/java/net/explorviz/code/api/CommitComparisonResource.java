@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.explorviz.code.api.LandscapeStructureResource.Tuple2;
-import net.explorviz.code.beans.CommitComparison;
-import net.explorviz.code.beans.CommitComparison.Metric;
-import net.explorviz.code.beans.CommitComparison.Metric.MetricVal;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
+import net.explorviz.code.dto.commit.comparison.CommitComparison;
+import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
+import net.explorviz.code.dto.commit.comparison.Metric;
+import net.explorviz.code.dto.commit.comparison.MetricValueComparison;
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.mongo.FileReport;
@@ -200,14 +200,14 @@ public class CommitComparisonResource {
         for (final Map.Entry<String, ClassData2> entry : fileReport.getClassData().entrySet()) {
           final Metric classMetric = new Metric(); // NOPMD
           classMetric.setEntityName(entry.getKey());
-          final Map<String, MetricVal> classMetricMap = new HashMap<>(); // NOPMD
+          final Map<String, MetricValueComparison> classMetricMap = new HashMap<>(); // NOPMD
           final ClassData2 classData = entry.getValue();
           // add class metric
           for (final Map.Entry<String, String> classMetricEntry :
               classData.getClassMetric().entrySet()) {
             final String key = classMetricEntry.getKey();
             final String val = classMetricEntry.getValue();
-            MetricVal metricVal = new MetricVal(); // NOPMD
+            MetricValueComparison metricVal = new MetricValueComparison(); // NOPMD
             metricVal.setNewValue(val);
             classMetricMap.put(key, metricVal);
           }
@@ -222,7 +222,7 @@ public class CommitComparisonResource {
             final Metric methodMetric = new Metric(); // NOPMD
             methodMetric.setEntityName(methodMetricEntry.getKey());
 
-            final Map<String, MetricVal> methodMetricMap = new HashMap<>(); // NOPMD
+            final Map<String, MetricValueComparison> methodMetricMap = new HashMap<>(); // NOPMD
             final MethodData2 val = methodMetricEntry.getValue();
 
             for (final Map.Entry<String, String> methodMetricEntryEntry : val.getMetric()
@@ -230,7 +230,7 @@ public class CommitComparisonResource {
               final String metricKey = methodMetricEntryEntry.getKey();
               final String metricVal = methodMetricEntryEntry.getValue();
 
-              final MetricVal metricVal2 = new MetricVal(); // NOPMD
+              final MetricValueComparison metricVal2 = new MetricValueComparison(); // NOPMD
               //metricVal.oldValue = "";
               metricVal2.setNewValue(metricVal);
               methodMetricMap.put(metricKey, metricVal2);
@@ -261,14 +261,14 @@ public class CommitComparisonResource {
           final ClassData2 classDataSecondSelectedCommit =
               fileReportSecondSelectedCommit.getClassData()
                   .get(classMetric.getEntityName());
-          final Map<String, MetricVal> classMetricMap = new HashMap<>(); // NOPMD
+          final Map<String, MetricValueComparison> classMetricMap = new HashMap<>(); // NOPMD
           final ClassData2 classDataFirstSelectedCommit = entry.getValue();
           // add class metric
           for (final Map.Entry<String, String> classMetricEntry :
               classDataFirstSelectedCommit.getClassMetric().entrySet()) {
             final String key = classMetricEntry.getKey();
             final String val = classMetricEntry.getValue();
-            final MetricVal metricVal = new MetricVal(); // NOPMD
+            final MetricValueComparison metricVal = new MetricValueComparison(); // NOPMD
             metricVal.setOldValue(val);
 
             if (classDataSecondSelectedCommit != null) {
@@ -288,7 +288,7 @@ public class CommitComparisonResource {
             final Metric methodMetric = new Metric(); // NOPMD
             methodMetric.setEntityName(methodMetricEntry.getKey());
 
-            final Map<String, MetricVal> methodMetricMap = new HashMap<>(); // NOPMD
+            final Map<String, MetricValueComparison> methodMetricMap = new HashMap<>(); // NOPMD
             final MethodData2 val = methodMetricEntry.getValue();
             MethodData2 val2 = null;
             if (classDataSecondSelectedCommit != null) {
@@ -300,7 +300,7 @@ public class CommitComparisonResource {
               final String metricKey = methodMetricEntryEntry.getKey();
               final String metricVal = methodMetricEntryEntry.getValue();
 
-              final MetricVal metricVal2 = new MetricVal(); // NOPMD
+              final MetricValueComparison metricVal2 = new MetricValueComparison(); // NOPMD
               metricVal2.setOldValue(metricVal);
               if (val2 != null) {
                 metricVal2.setNewValue(val2.getMetric().get(metricKey));
