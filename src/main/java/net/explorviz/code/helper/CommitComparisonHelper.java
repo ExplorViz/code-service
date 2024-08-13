@@ -4,9 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import net.explorviz.code.persistence.BranchPoint;
 import net.explorviz.code.persistence.CommitReport;
+import net.explorviz.code.persistence.entity.BranchPoint;
 import net.explorviz.code.persistence.entity.LatestCommit;
+import net.explorviz.code.persistence.repository.BranchPointRepository;
 import net.explorviz.code.persistence.repository.LatestCommitRepository;
 
 
@@ -14,10 +15,13 @@ import net.explorviz.code.persistence.repository.LatestCommitRepository;
 public class CommitComparisonHelper {
 
   private final LatestCommitRepository latestCommitRepository;
+  private final BranchPointRepository branchPointRepository;
 
   @Inject
-  public CommitComparisonHelper(final LatestCommitRepository latestCommitRepository) {
+  public CommitComparisonHelper(final LatestCommitRepository latestCommitRepository, final
+  BranchPointRepository branchPointRepository) {
     this.latestCommitRepository = latestCommitRepository;
+    this.branchPointRepository = branchPointRepository;
   }
 
   /**
@@ -43,44 +47,56 @@ public class CommitComparisonHelper {
     final List<BranchPoint> firstSelectedBranchPoints = new ArrayList<>();
     final List<BranchPoint> secondSelectedBranchPoints = new ArrayList<>();
 
-    final BranchPoint firstSelectedBranchPoint = new BranchPoint();
-    firstSelectedBranchPoint.setEmergedFromBranchName(firstSelected.getBranchName());
-    firstSelectedBranchPoint.setEmergedFromCommitId(firstSelected.getCommitId());
 
-    final BranchPoint secondSelectedBranchPoint = new BranchPoint();
-    secondSelectedBranchPoint.setEmergedFromBranchName(secondSelected.getBranchName());
-    secondSelectedBranchPoint.setEmergedFromCommitId(secondSelected.getCommitId());
+    final BranchPoint firstSelectedBranchPoint = new BranchPoint(
+        null,
+        null,
+        firstSelected.getBranchName(), // emergedFromBranchName initially the same as branchName
+        firstSelected.getCommitId(),   // emergedFromCommitId initially the same as commitId
+        null,
+        null
+    );
+
+    final BranchPoint secondSelectedBranchPoint = new BranchPoint(
+        null,
+        null,
+        secondSelected.getBranchName(), // emergedFromBranchName initially the same as branchName
+        secondSelected.getCommitId(),   // emergedFromCommitId initially the same as commitId
+        null,
+        null
+    );
 
     BranchPoint firstSelectedCurrentBranchPoint = firstSelectedBranchPoint; // NOPMD
     BranchPoint secondSelectedCurrentBranchPoint = secondSelectedBranchPoint; // NOPMD
 
     firstSelectedBranchPoints.add(firstSelectedCurrentBranchPoint);
     while ((firstSelectedCurrentBranchPoint = // NOPMD
-        BranchPoint.findByTokenAndBranchName(landscapeToken, firstSelectedCurrentBranchPoint
-            .getEmergedFromBranchName())) != null) {
+        this.branchPointRepository.findByTokenAndBranchName(landscapeToken,
+            firstSelectedCurrentBranchPoint
+                .emergedFromBranchName())) != null) {
       firstSelectedBranchPoints.add(firstSelectedCurrentBranchPoint);
     }
 
     secondSelectedBranchPoints.add(secondSelectedCurrentBranchPoint);
     while ((secondSelectedCurrentBranchPoint = // NOPMD
-        BranchPoint.findByTokenAndBranchName(
-            landscapeToken, secondSelectedCurrentBranchPoint.getEmergedFromBranchName())) != null) {
+        this.branchPointRepository.findByTokenAndBranchName(
+            landscapeToken, secondSelectedCurrentBranchPoint.emergedFromBranchName())) != null) {
       secondSelectedBranchPoints.add(secondSelectedCurrentBranchPoint);
     }
 
     // latest common branch
     firstSelectedBranchPoints.removeIf(
         b1 -> {
-          return secondSelectedBranchPoints.stream().noneMatch(b2 -> b2.getEmergedFromBranchName()
-              .equals(b1.getEmergedFromBranchName()));
+          return secondSelectedBranchPoints.stream().noneMatch(b2 -> b2.emergedFromBranchName()
+              .equals(b1.emergedFromBranchName()));
         });
 
     final String latestCommonBranchName = firstSelectedBranchPoints.getFirst()
-        .getEmergedFromBranchName();
+        .emergedFromBranchName();
     String firstSelectedCommitInCommonBranch = firstSelectedBranchPoints.getFirst() // NOPMD
-        .getEmergedFromCommitId();
+        .emergedFromBranchName();
     final List<BranchPoint> temp = secondSelectedBranchPoints.stream()
-        .filter(b -> b.getEmergedFromBranchName()
+        .filter(b -> b.emergedFromBranchName()
             .equals(latestCommonBranchName
             )
         )
@@ -88,7 +104,7 @@ public class CommitComparisonHelper {
 
     if (!temp.isEmpty()) {
       final String secondSelectedCommitInCommonBranch = temp.getFirst() // NOPMD
-          .getEmergedFromCommitId(); // NOPMD
+          .emergedFromCommitId(); // NOPMD
 
       if (firstSelectedCommitInCommonBranch.equals(secondSelectedCommitInCommonBranch)) {
         return firstSelectedCommitInCommonBranch;

@@ -13,9 +13,10 @@ import java.util.stream.Collectors;
 import net.explorviz.code.dto.commit.tree.BranchDto;
 import net.explorviz.code.dto.commit.tree.BranchPointDto;
 import net.explorviz.code.dto.commit.tree.CommitTree;
-import net.explorviz.code.persistence.BranchPoint;
 import net.explorviz.code.persistence.CommitReport;
+import net.explorviz.code.persistence.entity.BranchPoint;
 import net.explorviz.code.persistence.entity.LatestCommit;
+import net.explorviz.code.persistence.repository.BranchPointRepository;
 import net.explorviz.code.persistence.repository.LatestCommitRepository;
 
 /**
@@ -25,10 +26,13 @@ import net.explorviz.code.persistence.repository.LatestCommitRepository;
 public class CommitTreeHelper {
 
   private final LatestCommitRepository latestCommitRepository;
+  private final BranchPointRepository branchPointRepository;
 
   @Inject
-  public CommitTreeHelper(final LatestCommitRepository latestCommitRepository) {
+  public CommitTreeHelper(final LatestCommitRepository latestCommitRepository, final
+  BranchPointRepository branchPointRepository) {
     this.latestCommitRepository = latestCommitRepository;
+    this.branchPointRepository = branchPointRepository;
   }
 
   /**
@@ -40,13 +44,13 @@ public class CommitTreeHelper {
    * @return CommitTree for the given parameters.
    */
   public CommitTree createCommitTree(final String appName, final String landscapeToken) {
-    final List<BranchPoint> branchPoints = BranchPoint.findByTokenAndApplicationName(landscapeToken,
+    final List<BranchPoint> branchPoints = this.branchPointRepository.findByTokenAndApplicationName(landscapeToken,
         appName);
     final List<BranchDto> branches = new ArrayList<>();
 
     // Collect all branch names from branch points
     List<String> branchNames = branchPoints.stream()
-        .map(BranchPoint::getBranchName)
+        .map(BranchPoint::branchName)
         .distinct()
         .collect(Collectors.toList());
 
@@ -61,10 +65,10 @@ public class CommitTreeHelper {
 
     // Process each branch point
     for (BranchPoint branchPoint : branchPoints) {
-      final String branchName = branchPoint.getBranchName();
-      final String branchPointCommitId = branchPoint.getCommitId();
-      final String emergedFromBranchName = branchPoint.getEmergedFromBranchName();
-      final String emergedFromCommitId = branchPoint.getEmergedFromCommitId();
+      final String branchName = branchPoint.branchName();
+      final String branchPointCommitId = branchPoint.commitId();
+      final String emergedFromBranchName = branchPoint.emergedFromBranchName();
+      final String emergedFromCommitId = branchPoint.emergedFromCommitId();
 
       final LatestCommit latestCommit = latestCommitMap.get(branchName);
 
