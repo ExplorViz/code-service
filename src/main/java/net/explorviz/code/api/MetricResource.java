@@ -31,13 +31,9 @@ public class MetricResource {
     final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
         appName, commit);
 
-    final Metrics metrics = new Metrics();
-
     if (commitReport == null) {
-      return metrics;
+      return new Metrics(List.of(), List.of(), List.of(), List.of());
     }
-
-    metrics.setFiles(commitReport.getFiles());
 
     final List<Map<String, String>> fileMetrics = new ArrayList<>();
     final List<Map<String, Map<String, String>>> classMetrics = new ArrayList<>();
@@ -91,9 +87,6 @@ public class MetricResource {
 
     }
 
-    metrics.setFileMetrics(fileMetrics);
-    metrics.setClassMetrics(classMetrics);
-    metrics.setMethodMetrics(methodMetrics);
-    return metrics;
+    return new Metrics(commitReport.getFiles(), fileMetrics, classMetrics, methodMetrics);
   }
 }
