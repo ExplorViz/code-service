@@ -1,7 +1,9 @@
 package net.explorviz.code.analysis;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import net.explorviz.code.persistence.LatestCommit;
+import jakarta.inject.Inject;
+import net.explorviz.code.persistence.entity.LatestCommit;
+import net.explorviz.code.persistence.repository.LatestCommitRepository;
 import net.explorviz.code.proto.StateDataRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,13 @@ import org.slf4j.LoggerFactory;
 public class StateDataAnalysis {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StateDataAnalysis.class);
+
+  private final LatestCommitRepository latestCommitRepository;
+
+  @Inject
+  public StateDataAnalysis(final LatestCommitRepository latestCommitRepository) {
+    this.latestCommitRepository = latestCommitRepository;
+  }
 
 
   /**
@@ -35,14 +44,14 @@ public class StateDataAnalysis {
     final String branchName = stateDataRequest.getBranchName();
     final String landscapeToken = stateDataRequest.getLandscapeToken();
     final String applicationName = stateDataRequest.getApplicationName();
-    final LatestCommit latestCommit = LatestCommit
+    final LatestCommit latestCommit = this.latestCommitRepository
         .findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken, applicationName,
             branchName);
 
     // Send the empty string if the state of the branch is unknown, otherwise the SHA1 of
     // the branch's last commit
     if (latestCommit != null) {
-      return latestCommit.getCommitId();
+      return latestCommit.commitId();
     }
     return "";
   }

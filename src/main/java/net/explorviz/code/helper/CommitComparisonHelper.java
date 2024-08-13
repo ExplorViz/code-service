@@ -1,17 +1,23 @@
 package net.explorviz.code.helper;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import net.explorviz.code.persistence.BranchPoint;
 import net.explorviz.code.persistence.CommitReport;
-import net.explorviz.code.persistence.LatestCommit;
+import net.explorviz.code.persistence.entity.LatestCommit;
+import net.explorviz.code.persistence.repository.LatestCommitRepository;
 
-/**
- * ...
- */
-public final class CommitComparisonHelper {
 
-  private CommitComparisonHelper() {
+@ApplicationScoped
+public class CommitComparisonHelper {
+
+  private final LatestCommitRepository latestCommitRepository;
+
+  @Inject
+  public CommitComparisonHelper(final LatestCommitRepository latestCommitRepository) {
+    this.latestCommitRepository = latestCommitRepository;
   }
 
   /**
@@ -21,7 +27,7 @@ public final class CommitComparisonHelper {
    */
 
 
-  public static String getLatestCommonCommitId(final String firstSelectedId, // NOPMD
+  public String getLatestCommonCommitId(final String firstSelectedId, // NOPMD
       final String secondSelectedId, final String landscapeToken,
       final String applicationName) {
 
@@ -90,12 +96,13 @@ public final class CommitComparisonHelper {
 
       // the common commit id is the one that comes before the other
       final LatestCommit latestCommit =
-          LatestCommit.findByLandscapeTokenAndApplicationNameAndBranchName(landscapeToken,
+          this.latestCommitRepository.findByLandscapeTokenAndApplicationNameAndBranchName(
+              landscapeToken,
               applicationName, latestCommonBranchName);
       if (latestCommit == null) {
         return "";
       }
-      String currentCommit = latestCommit.getCommitId();
+      String currentCommit = latestCommit.commitId();
 
       CommitReport cr;
       while ((cr = CommitReport.findByTokenAndApplicationNameAndCommitId(landscapeToken, // NOPMD 
@@ -127,7 +134,7 @@ public final class CommitComparisonHelper {
    * token * @return the list of file names that have been added in the second selected commit *
    * (i.e. that exist in the second selected commit but not in the first selected commit).
    */
-  public static List<String> getComparisonAddedFiles(final String firstSelectedCommitId, // NOPMD
+  public List<String> getComparisonAddedFiles(final String firstSelectedCommitId, // NOPMD
       final String secondSelectedCommitId, final String landscapeToken,
       final String applicationName) {
 
@@ -164,7 +171,7 @@ public final class CommitComparisonHelper {
    * token. * @return the list of file names that have been deleted in the second selected commit *
    * (i.e. that do not exist in the second selected commit but in the first selected commit).
    */
-  public static List<String> getComparisonDeletedFiles(final String firstSelectedCommitId, // NOPMD
+  public List<String> getComparisonDeletedFiles(final String firstSelectedCommitId, // NOPMD
       final String secondSelectedCommitId, final String landscapeToken,
       final String applicationName) {
 
@@ -199,7 +206,7 @@ public final class CommitComparisonHelper {
    * token. * @return the list of file names that have been modified in the second selected commit *
    * (i.e. files that exist in both commits but have a different hash value).
    */
-  public static List<String> getComparisonModifiedFiles(final String firstSelectedCommitId, // NOPMD
+  public List<String> getComparisonModifiedFiles(final String firstSelectedCommitId, // NOPMD
       final String secondSelectedCommitId, final String landscapeToken,
       final String applicationName) {
 

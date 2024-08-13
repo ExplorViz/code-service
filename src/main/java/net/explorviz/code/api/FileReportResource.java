@@ -30,12 +30,11 @@ public class FileReportResource {
     final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
         fqFileName, commit);
 
-    fileReport.setLandscapeToken(
-        TokenHelper.handlePotentialDummyToken(fileReport.getLandscapeToken()));
-
     if (fileReport != null) {
-      return fileReport;
+      fileReport.setLandscapeToken(
+          TokenHelper.handlePotentialDummyToken(fileReport.getLandscapeToken()));
     }
-    return new FileReport();
+
+    return fileReport;
   }
 }

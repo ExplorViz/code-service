@@ -1,5 +1,7 @@
 package net.explorviz.code.helper;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,14 +15,20 @@ import net.explorviz.code.dto.commit.tree.BranchPointDto;
 import net.explorviz.code.dto.commit.tree.CommitTree;
 import net.explorviz.code.persistence.BranchPoint;
 import net.explorviz.code.persistence.CommitReport;
-import net.explorviz.code.persistence.LatestCommit;
+import net.explorviz.code.persistence.entity.LatestCommit;
+import net.explorviz.code.persistence.repository.LatestCommitRepository;
 
 /**
  * Helper class that calculates the commit tree.
  */
-public final class CommitTreeHelper {
+@ApplicationScoped
+public class CommitTreeHelper {
 
-  private CommitTreeHelper() {
+  private final LatestCommitRepository latestCommitRepository;
+
+  @Inject
+  public CommitTreeHelper(final LatestCommitRepository latestCommitRepository) {
+    this.latestCommitRepository = latestCommitRepository;
   }
 
   /**
@@ -31,7 +39,7 @@ public final class CommitTreeHelper {
    * @param landscapeToken landscape token value
    * @return CommitTree for the given parameters.
    */
-  public static CommitTree createCommitTree(final String appName, final String landscapeToken) {
+  public CommitTree createCommitTree(final String appName, final String landscapeToken) {
     final List<BranchPoint> branchPoints = BranchPoint.findByTokenAndApplicationName(landscapeToken,
         appName);
     final List<BranchDto> branches = new ArrayList<>();
@@ -43,13 +51,13 @@ public final class CommitTreeHelper {
         .collect(Collectors.toList());
 
     // Fetch all latest commits for these branches
-    List<LatestCommit> latestCommits = LatestCommit
+    List<LatestCommit> latestCommits = this.latestCommitRepository
         .findAllLatestCommitsByLandscapeTokenAndApplicationName(
             landscapeToken, appName, branchNames);
 
     // Map latest commits by branch name for quick access
     Map<String, LatestCommit> latestCommitMap = latestCommits.stream()
-        .collect(Collectors.toMap(LatestCommit::getBranchName, Function.identity()));
+        .collect(Collectors.toMap(LatestCommit::branchName, Function.identity()));
 
     // Process each branch point
     for (BranchPoint branchPoint : branchPoints) {
@@ -73,7 +81,7 @@ public final class CommitTreeHelper {
         commitReportMap.put(report.getCommitId(), report);
       }
 
-      String currentCommitId = latestCommit.getCommitId();
+      String currentCommitId = latestCommit.commitId();
       final Stack<String> commits = new Stack<>();
       boolean finished = false;
       while (!finished) {

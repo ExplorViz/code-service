@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,9 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 public class CommitComparisonHelperTest {
+
+  @Inject
+  CommitComparisonHelper commitComparisonHelper;
 
   private static final String LANDSCAPE_TOKEN = "landscape123";
   private static final String APPLICATION_NAME = "MyApp";
@@ -43,7 +47,8 @@ public class CommitComparisonHelperTest {
     when(commitReport2.getFiles()).thenReturn(Arrays.asList("file2", "file4"));
 
     List<String> addedFiles =
-        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Arrays.asList("file4"), addedFiles);
@@ -61,7 +66,8 @@ public class CommitComparisonHelperTest {
     when(commitReport2.getFiles()).thenReturn(Arrays.asList("file1", "file2"));
 
     List<String> addedFiles =
-        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Collections.emptyList(), addedFiles);
@@ -74,7 +80,8 @@ public class CommitComparisonHelperTest {
         .thenReturn(null);
 
     List<String> addedFiles =
-        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Collections.emptyList(), addedFiles);
@@ -90,7 +97,8 @@ public class CommitComparisonHelperTest {
         .thenReturn(null);
 
     List<String> addedFiles =
-        CommitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonAddedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Collections.emptyList(), addedFiles);
@@ -104,7 +112,8 @@ public class CommitComparisonHelperTest {
     when(commitReport2.getFiles()).thenReturn(Arrays.asList("file2", "file4"));
 
     List<String> deletedFiles =
-        CommitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Arrays.asList("file1", "file3"), deletedFiles);
@@ -122,7 +131,8 @@ public class CommitComparisonHelperTest {
     when(commitReport2.getFiles()).thenReturn(Arrays.asList("file1", "file2"));
 
     List<String> deletedFiles =
-        CommitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Collections.emptyList(), deletedFiles);
@@ -135,7 +145,8 @@ public class CommitComparisonHelperTest {
         .thenReturn(null);
 
     List<String> deletedFiles =
-        CommitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Collections.emptyList(), deletedFiles);
@@ -151,7 +162,8 @@ public class CommitComparisonHelperTest {
         .thenReturn(null);
 
     List<String> deletedFiles =
-        CommitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2, LANDSCAPE_TOKEN,
+        this.commitComparisonHelper.getComparisonDeletedFiles(COMMIT_ID_1, COMMIT_ID_2,
+            LANDSCAPE_TOKEN,
             APPLICATION_NAME);
 
     assertEquals(Collections.emptyList(), deletedFiles);

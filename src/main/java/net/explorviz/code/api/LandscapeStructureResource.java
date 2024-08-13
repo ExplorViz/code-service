@@ -1,5 +1,6 @@
 package net.explorviz.code.api;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -23,6 +24,13 @@ import net.explorviz.code.persistence.FileReport;
  */
 @Path("/v2/code/structure/{token}/{appName}")
 public class LandscapeStructureResource {
+
+  private final CommitComparisonHelper commitComparisonHelper;
+
+  @Inject
+  public LandscapeStructureResource(final CommitComparisonHelper commitComparisonHelper) {
+    this.commitComparisonHelper = commitComparisonHelper;
+  }
 
   /**
    * Returns the "deepest" package available matching the package structure. Therefore, the deepest
@@ -118,7 +126,7 @@ public class LandscapeStructureResource {
 
     // deal with modified files ----------------------------------------------
     final List<String> modified =
-        CommitComparisonHelper.getComparisonModifiedFiles(firstCommit, secondCommit, token,
+        this.commitComparisonHelper.getComparisonModifiedFiles(firstCommit, secondCommit, token,
             appName);
 
     final List<String> modifiedPackageFileName = new ArrayList<>();
@@ -157,7 +165,7 @@ public class LandscapeStructureResource {
           for (final Method method : clazzSecondSelectedCommit.getMethods()) {
             if (clazzFirstSelectedCommit.getMethods().stream()
                 .filter(m -> m.getName().equals(method.getName())).collect(Collectors.toList())
-                .size() == 0) {
+                .isEmpty()) {
               clazzFirstSelectedCommit.getMethods().add(method);
             }
           }
@@ -170,7 +178,8 @@ public class LandscapeStructureResource {
 
     // deal with added files ----------------------------------------------------------------------
     final List<String> added =
-        CommitComparisonHelper.getComparisonAddedFiles(firstCommit, secondCommit, token, appName);
+        this.commitComparisonHelper.getComparisonAddedFiles(firstCommit, secondCommit, token,
+            appName);
 
     final List<String> addedPackageFileName = new ArrayList<>();
 

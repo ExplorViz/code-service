@@ -1,5 +1,6 @@
 package net.explorviz.code.api;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -26,6 +27,13 @@ import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 @Path("/v2/code/commit-comparison/{token}/{appName}")
 public class CommitComparisonResource {
 
+  private final CommitComparisonHelper commitComparisonHelper;
+
+  @Inject
+  public CommitComparisonResource(final CommitComparisonHelper commitComparisonHelper) {
+    this.commitComparisonHelper = commitComparisonHelper;
+  }
+
   /**
    * * @param token the landscape token. * @param appName the application name. * @param firstCommit
    * the commit id of the first selected commit. * @param secondCommit the commit id of the second
@@ -37,24 +45,25 @@ public class CommitComparisonResource {
       @PathParam("appName") final String appName, @PathParam("firstCommit") String firstCommit,
       @PathParam("secondCommit") String secondCommit) {
 
-    if (CommitComparisonHelper.getLatestCommonCommitId(firstCommit, secondCommit, token, appName)
+    if (this.commitComparisonHelper.getLatestCommonCommitId(firstCommit, secondCommit, token,
+            appName)
         .equals(secondCommit)) {
       final String temp = firstCommit;
       firstCommit = secondCommit; // NOPMD
       secondCommit = temp; // NOPMD
     }
 
-    final List<String> added = CommitComparisonHelper.getComparisonAddedFiles(
+    final List<String> added = this.commitComparisonHelper.getComparisonAddedFiles(
         firstCommit,
         secondCommit, token, appName);
 
     final List<String> addedPackages = new ArrayList<>();
 
-    final List<String> modified = CommitComparisonHelper.getComparisonModifiedFiles(
+    final List<String> modified = this.commitComparisonHelper.getComparisonModifiedFiles(
         firstCommit,
         secondCommit, token, appName);
 
-    final List<String> deleted = CommitComparisonHelper.getComparisonDeletedFiles(
+    final List<String> deleted = this.commitComparisonHelper.getComparisonDeletedFiles(
         firstCommit,
         secondCommit, token, appName);
 
@@ -107,7 +116,7 @@ public class CommitComparisonResource {
                 }
               }
 
-              if (subPackages.toString().length() > 0) { // NOPMD
+              if (!subPackages.toString().isEmpty()) { // NOPMD
                 addedPackages.add(subPackages.substring(0,
                     subPackages.toString().length() - 1));
               } else { // shouldn't happen
