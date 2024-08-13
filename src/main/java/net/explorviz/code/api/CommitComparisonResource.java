@@ -14,9 +14,9 @@ import net.explorviz.code.dto.commit.comparison.Metric;
 import net.explorviz.code.dto.commit.comparison.MetricValueComparison;
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.mongo.FileReport;
-import net.explorviz.code.mongo.FileReport.ClassData2;
-import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.FileReport;
+import net.explorviz.code.persistence.FileReport.ClassData2;
+import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 
 
 /**

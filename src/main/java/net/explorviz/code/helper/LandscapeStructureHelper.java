@@ -12,11 +12,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
-import net.explorviz.code.mongo.CommitReport;
-import net.explorviz.code.mongo.FileReport;
-import net.explorviz.code.mongo.FileReport.ClassData2;
-import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
-import net.explorviz.code.mongo.FileReportTable;
+import net.explorviz.code.persistence.CommitReport;
+import net.explorviz.code.persistence.FileReport;
+import net.explorviz.code.persistence.FileReport.ClassData2;
+import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.FileReportTable;
 
 
 /**

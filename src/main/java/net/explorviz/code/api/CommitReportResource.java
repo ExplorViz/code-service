@@ -5,7 +5,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import net.explorviz.code.helper.TokenHelper;
-import net.explorviz.code.mongo.CommitReport;
+import net.explorviz.code.persistence.CommitReport;
 
 
 /**

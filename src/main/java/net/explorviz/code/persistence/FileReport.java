@@ -1,4 +1,4 @@
-package net.explorviz.code.mongo; // NOPMD
+package net.explorviz.code.persistence; // NOPMD
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.helper.TokenHelper;
-import net.explorviz.code.mongo.FileReport;
+import net.explorviz.code.persistence.FileReport;
 
 /**
  * ...

@@ -5,7 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
-import net.explorviz.code.mongo.Application;
+import net.explorviz.code.persistence.Application;
 
 
 /**

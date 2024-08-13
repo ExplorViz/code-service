@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 import net.explorviz.code.dto.commit.tree.BranchDto;
 import net.explorviz.code.dto.commit.tree.BranchPointDto;
 import net.explorviz.code.dto.commit.tree.CommitTree;
-import net.explorviz.code.mongo.BranchPoint;
-import net.explorviz.code.mongo.CommitReport;
-import net.explorviz.code.mongo.LatestCommit;
+import net.explorviz.code.persistence.BranchPoint;
+import net.explorviz.code.persistence.CommitReport;
+import net.explorviz.code.persistence.LatestCommit;
 
 /**
  * Helper class that calculates the commit tree.

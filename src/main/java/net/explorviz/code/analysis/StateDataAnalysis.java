@@ -1,7 +1,7 @@
 package net.explorviz.code.analysis;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import net.explorviz.code.mongo.LatestCommit;
+import net.explorviz.code.persistence.LatestCommit;
 import net.explorviz.code.proto.StateDataRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

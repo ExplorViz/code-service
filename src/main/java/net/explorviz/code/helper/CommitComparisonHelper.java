@@ -2,9 +2,9 @@ package net.explorviz.code.helper;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.explorviz.code.mongo.BranchPoint;
-import net.explorviz.code.mongo.CommitReport;
-import net.explorviz.code.mongo.LatestCommit;
+import net.explorviz.code.persistence.BranchPoint;
+import net.explorviz.code.persistence.CommitReport;
+import net.explorviz.code.persistence.LatestCommit;
 
 /**
  * ...

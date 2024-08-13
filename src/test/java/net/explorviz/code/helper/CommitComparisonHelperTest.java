@@ -8,7 +8,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import net.explorviz.code.mongo.CommitReport;
+import net.explorviz.code.persistence.CommitReport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

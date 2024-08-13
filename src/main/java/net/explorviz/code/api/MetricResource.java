@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import net.explorviz.code.dto.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.mongo.CommitReport;
-import net.explorviz.code.mongo.FileReport;
-import net.explorviz.code.mongo.FileReport.ClassData2;
-import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.CommitReport;
+import net.explorviz.code.persistence.FileReport;
+import net.explorviz.code.persistence.FileReport.ClassData2;
+import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 
 /**
  * ...

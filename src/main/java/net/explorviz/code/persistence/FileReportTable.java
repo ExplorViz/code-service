@@ -1,4 +1,4 @@
-package net.explorviz.code.mongo;
+package net.explorviz.code.persistence;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.Map;
