@@ -1,16 +1,18 @@
 package net.explorviz.code.analysis;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.persistence.Application;
 import net.explorviz.code.persistence.BranchPoint;
 import net.explorviz.code.persistence.CommitReport;
 import net.explorviz.code.persistence.CommitReport.FileMetric;
 import net.explorviz.code.persistence.FileReportTable;
 import net.explorviz.code.persistence.LatestCommit;
+import net.explorviz.code.persistence.entity.Application;
+import net.explorviz.code.persistence.repository.ApplicationRepository;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.FileMetricData;
 import org.slf4j.Logger;
@@ -25,6 +27,13 @@ public class CommitReportAnalysis {
   private static final Logger LOGGER = LoggerFactory.getLogger(CommitReportAnalysis.class);
 
   private static final String NO_ANCESTOR = "NONE";
+
+  private final ApplicationRepository appRepo;
+
+  @Inject
+  public CommitReportAnalysis(final ApplicationRepository appRepo) {
+    this.appRepo = appRepo;
+  }
 
   /**
    * Processes a CommitReportData package. Stores the data into the local storage.
@@ -184,13 +193,15 @@ public class CommitReportAnalysis {
           latestCommit.setCommitId(receivedCommitReportCommitId);
           latestCommit.update();
         }
-        Application application = Application.findByLandscapeTokenAndApplicationName(
-            receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+
+        Application application =
+            this.appRepo.findByLandscapeTokenAndApplicationName(receivedCommitReportLandscapeToken,
+                receivedCommitReportApplicationName);
+
         if (application == null) {
-          application = new Application();
-          application.setApplicationName(receivedCommitReportApplicationName);
-          application.setLandscapeToken(receivedCommitReportLandscapeToken);
-          application.persist();
+          application = new Application(receivedCommitReportApplicationName,
+              receivedCommitReportLandscapeToken);
+          this.appRepo.persist(application);
         }
       }
     } else {
@@ -211,13 +222,15 @@ public class CommitReportAnalysis {
       branchPoint.setEmergedFromCommitId("");
       branchPoint.persist();
 
-      Application application = Application.findByLandscapeTokenAndApplicationName(
-          receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+      Application application =
+          this.appRepo.findByLandscapeTokenAndApplicationName(receivedCommitReportLandscapeToken,
+              receivedCommitReportApplicationName);
+
       if (application == null) {
-        application = new Application();
-        application.setApplicationName(receivedCommitReportApplicationName);
-        application.setLandscapeToken(receivedCommitReportLandscapeToken);
-        application.persist();
+        application = new Application(receivedCommitReportApplicationName,
+            receivedCommitReportLandscapeToken);
+
+        this.appRepo.persist(application);
       }
     }
   }
