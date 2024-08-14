@@ -14,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
-import net.explorviz.code.persistence.entity.FileReportTable;
 import net.explorviz.code.persistence.entity.CommitReport;
 import net.explorviz.code.persistence.entity.FileReport;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.entity.FileReportTable;
 import net.explorviz.code.persistence.repository.CommitReportRepository;
 import net.explorviz.code.persistence.repository.FileReportRepository;
 import net.explorviz.code.persistence.repository.FileReportTableRepository;
@@ -26,7 +26,7 @@ import net.explorviz.code.persistence.repository.FileReportTableRepository;
 @ApplicationScoped
 public class LandscapeStructureHelper {
 
-  private final Map<String, FileReportTable> FILE_REPORT_TABLE_MAP =
+  private final Map<String, FileReportTable> fileReportTableMap =
       new ConcurrentHashMap<>();
 
   private final CommitReportRepository commitReportRepository;
@@ -34,8 +34,8 @@ public class LandscapeStructureHelper {
   private final FileReportTableRepository fileReportTableRepository;
 
   @Inject
-  public LandscapeStructureHelper(final CommitReportRepository commitReportRepository, final
-  FileReportRepository fileReportRepository,
+  public LandscapeStructureHelper(final CommitReportRepository commitReportRepository,
+      final FileReportRepository fileReportRepository,
       final FileReportTableRepository fileReportTableRepository) {
     this.commitReportRepository = commitReportRepository;
     this.fileReportRepository = fileReportRepository;
@@ -246,14 +246,14 @@ public class LandscapeStructureHelper {
 
     // Use cache key as combination of landscapeToken and appName
     String cacheKey = landscapeToken + ":" + appName;
-    FileReportTable fileReportTable = FILE_REPORT_TABLE_MAP.get(cacheKey);
+    FileReportTable fileReportTable = fileReportTableMap.get(cacheKey);
 
     // Only fetch from DB if not present in cache
     if (fileReportTable == null) {
       fileReportTable =
           this.fileReportTableRepository.findByTokenAndAppName(landscapeToken, appName);
       if (fileReportTable != null) {
-        FILE_REPORT_TABLE_MAP.put(cacheKey, fileReportTable);
+        fileReportTableMap.put(cacheKey, fileReportTable);
       }
     }
 

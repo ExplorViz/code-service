@@ -8,9 +8,12 @@ import net.explorviz.code.persistence.entity.LatestCommit;
 @ApplicationScoped
 public class LatestCommitRepository implements PanacheMongoRepository<LatestCommit> {
 
+  private static final String WHERE_QUERY_STRING =
+      "landscapeToken = ?1 and applicationName = ?2 and branchName = ?3";
+
   public LatestCommit findByLandscapeTokenAndApplicationNameAndBranchName(
       final String landscapeToken, final String applicationName, final String branchName) {
-    return find("landscapeToken = ?1 and applicationName = ?2 and branchName = ?3", landscapeToken,
+    return find(WHERE_QUERY_STRING, landscapeToken,
         applicationName, branchName)
         .firstResult();
   }
@@ -19,14 +22,14 @@ public class LatestCommitRepository implements PanacheMongoRepository<LatestComm
       final String newCommitId,
       final LatestCommit latestCommit) {
     return update("commitId", newCommitId).where(
-        "landscapeToken = ?1 and applicationName = ?2 and branchName = ?3",
+        WHERE_QUERY_STRING,
         latestCommit.landscapeToken(),
         latestCommit.applicationName(), latestCommit.branchName());
   }
 
   public List<LatestCommit> findAllLatestCommitsByLandscapeTokenAndApplicationName(
       final String landscapeToken, final String applicationName, List<String> branchNames) {
-    return find("landscapeToken = ?1 and applicationName = ?2 and branchName in ?3",
+    return find(WHERE_QUERY_STRING,
         landscapeToken, applicationName, branchNames).list();
   }
 }

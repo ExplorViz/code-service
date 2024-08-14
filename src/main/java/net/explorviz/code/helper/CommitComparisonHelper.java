@@ -20,8 +20,8 @@ public class CommitComparisonHelper {
   private final CommitReportRepository commitReportRepository;
 
   @Inject
-  public CommitComparisonHelper(final LatestCommitRepository latestCommitRepository, final
-  BranchPointRepository branchPointRepository,
+  public CommitComparisonHelper(final LatestCommitRepository latestCommitRepository,
+      final BranchPointRepository branchPointRepository,
       final CommitReportRepository commitReportRepository) {
     this.latestCommitRepository = latestCommitRepository;
     this.branchPointRepository = branchPointRepository;

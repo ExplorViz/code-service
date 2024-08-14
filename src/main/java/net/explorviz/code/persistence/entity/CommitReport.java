@@ -6,6 +6,18 @@ import java.util.Objects;
 
 /**
  * A class to store the commit reports that the code-agent sends to us.
+ *
+ * @param commitId As name suggest.
+ * @param parentCommitId As name suggest.
+ * @param branchName As name suggest.
+ * @param files List of fq file names.
+ * @param modified List of fq file names that were modified in this commit.
+ * @param deleted List of fq file names that were deleted in this commit.
+ * @param added List of fq file names that were added in this commit.
+ * @param fileMetric List of file metrics for this commit.
+ * @param landscapeToken The (initially user-given) landscape token.
+ * @param fileHash List of file hashes for this commit.
+ * @param applicationName The (initially user-given) app name.
  */
 public record CommitReport(String commitId, String parentCommitId, String branchName,
                            List<String> files, List<String> modified, List<String> deleted,
@@ -15,7 +27,12 @@ public record CommitReport(String commitId, String parentCommitId, String branch
                            List<String> fileHash,
                            String applicationName) {
 
-  // Custom constructor that takes an existing CommitReport and a new landscapeToken
+  /**
+   * Custom constructor that takes an existing CommitReport and a new landscapeToken.
+   *
+   * @param original          CommitReport whose values (with the exception of the token) are used
+   * @param newLandscapeToken New Landscape Token
+   */
   public CommitReport(CommitReport original, String newLandscapeToken) {
     this(
         original.commitId(),

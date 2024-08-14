@@ -32,8 +32,8 @@ public class CommitTreeHelper {
 
 
   @Inject
-  public CommitTreeHelper(final LatestCommitRepository latestCommitRepository, final
-  BranchPointRepository branchPointRepository,
+  public CommitTreeHelper(final LatestCommitRepository latestCommitRepository,
+      final BranchPointRepository branchPointRepository,
       final CommitReportRepository commitReportRepository) {
     this.latestCommitRepository = latestCommitRepository;
     this.branchPointRepository = branchPointRepository;

@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import net.explorviz.code.dto.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
+import net.explorviz.code.persistence.entity.CommitReport;
 import net.explorviz.code.persistence.entity.FileReport;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
-import net.explorviz.code.persistence.entity.CommitReport;
 import net.explorviz.code.persistence.repository.CommitReportRepository;
 
 /**
@@ -25,8 +25,8 @@ public class MetricResource {
   private final CommitReportRepository commitReportRepository;
 
   @Inject
-  public MetricResource(final LandscapeStructureHelper landscapeStructureHelper, final
-  CommitReportRepository commitReportRepository) {
+  public MetricResource(final LandscapeStructureHelper landscapeStructureHelper,
+      final CommitReportRepository commitReportRepository) {
     this.landscapeStructureHelper = landscapeStructureHelper;
     this.commitReportRepository = commitReportRepository;
   }

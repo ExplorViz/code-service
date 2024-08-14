@@ -1,7 +1,10 @@
 package net.explorviz.code.persistence.entity;
 
 /**
- * The class for every application that the code-agent analyzed.
+ *  Entity class for applications that the code-agent analyzed.
+ *
+ * @param applicationName It's user-given name.
+ * @param landscapeToken It's user-given token.
  */
 public record Application(String applicationName, String landscapeToken) {
 

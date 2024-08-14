@@ -1,10 +1,7 @@
 package net.explorviz.code.persistence.entity; // NOPMD
 
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.helper.FilePathInfo;
 
 /**
  * A class for the file reports that the code-agent sends to us.
