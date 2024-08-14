@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.entity.FileReportTable;
 import net.explorviz.code.persistence.repository.FileReportTableRepository;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.testhelper.HelperMethods;

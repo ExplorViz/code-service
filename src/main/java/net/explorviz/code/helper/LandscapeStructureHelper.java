@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
-import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.entity.FileReportTable;
 import net.explorviz.code.persistence.entity.CommitReport;
 import net.explorviz.code.persistence.entity.FileReport;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2;

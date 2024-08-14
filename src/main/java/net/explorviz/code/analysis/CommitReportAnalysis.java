@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.entity.FileReportTable;
 import net.explorviz.code.persistence.entity.Application;
 import net.explorviz.code.persistence.entity.BranchPoint;
 import net.explorviz.code.persistence.entity.CommitReport;

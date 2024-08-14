@@ -10,7 +10,7 @@ import io.quarkus.test.mongodb.MongoTestResource;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.Iterator;
-import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.entity.FileReportTable;
 import net.explorviz.code.persistence.repository.CommitReportRepository;
 import net.explorviz.code.persistence.repository.FileReportTableRepository;
 import net.explorviz.code.proto.CommitReportData;

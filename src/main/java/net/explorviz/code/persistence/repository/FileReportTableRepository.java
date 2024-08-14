@@ -2,7 +2,7 @@ package net.explorviz.code.persistence.repository;
 
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.entity.FileReportTable;
 
 @ApplicationScoped
 public class FileReportTableRepository implements PanacheMongoRepository<FileReportTable> {
