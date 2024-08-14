@@ -1,5 +1,6 @@
 package net.explorviz.code.api;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import java.util.ArrayList;
@@ -18,6 +19,13 @@ import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
  */
 @Path("/v2/code/metrics")
 public class MetricResource {
+
+  private final LandscapeStructureHelper landscapeStructureHelper;
+
+  @Inject
+  public MetricResource(final LandscapeStructureHelper landscapeStructureHelper) {
+    this.landscapeStructureHelper = landscapeStructureHelper;
+  }
 
   /**
    * ... * @param token the landscape token * @param appName the application name. * @param commit
@@ -40,7 +48,8 @@ public class MetricResource {
     final List<Map<String, Map<String, String>>> methodMetrics = new ArrayList<>();
 
     final List<FileReport> relatedFileReports =
-        LandscapeStructureHelper.getFileReports(token, appName, commit, commitReport.getFiles());
+        this.landscapeStructureHelper.getFileReports(token, appName, commit,
+            commitReport.getFiles());
 
     for (final FileReport fileReport : relatedFileReports) {
       if (fileReport == null) {

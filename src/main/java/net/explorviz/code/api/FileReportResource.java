@@ -1,5 +1,6 @@
 package net.explorviz.code.api;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -12,6 +13,13 @@ import net.explorviz.code.persistence.FileReport;
  */
 @Path("/v2/code/file-report")
 public class FileReportResource {
+
+  private final LandscapeStructureHelper landscapeStructureHelper;
+
+  @Inject
+  public FileReportResource(final LandscapeStructureHelper landscapeStructureHelper) {
+    this.landscapeStructureHelper = landscapeStructureHelper;
+  }
 
   /**
    * ... * @param token the landscape token. * @param appName the application name. * @param
@@ -27,7 +35,7 @@ public class FileReportResource {
       @PathParam("appName") final String appName, @PathParam("fqFileName") final String fqFileName,
       @PathParam("commit") final String commit) {
 
-    final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
+    final FileReport fileReport = this.landscapeStructureHelper.getFileReport(token, appName,
         fqFileName, commit);
 
     if (fileReport != null) {

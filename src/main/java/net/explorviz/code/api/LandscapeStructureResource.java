@@ -26,10 +26,13 @@ import net.explorviz.code.persistence.FileReport;
 public class LandscapeStructureResource {
 
   private final CommitComparisonHelper commitComparisonHelper;
+  private final LandscapeStructureHelper landscapeStructureHelper;
 
   @Inject
-  public LandscapeStructureResource(final CommitComparisonHelper commitComparisonHelper) {
+  public LandscapeStructureResource(final CommitComparisonHelper commitComparisonHelper,
+      final LandscapeStructureHelper landscapeStructureHelper) {
     this.commitComparisonHelper = commitComparisonHelper;
+    this.landscapeStructureHelper = landscapeStructureHelper;
   }
 
   /**
@@ -95,7 +98,7 @@ public class LandscapeStructureResource {
   public LandscapeStructure singleStructure(@PathParam("token") final String token,
       @PathParam("appName") final String appName, final String commit) {
     final List<Package> packages =
-        LandscapeStructureHelper.createListOfPackages(token, commit, appName);
+        this.landscapeStructureHelper.createListOfPackages(token, commit, appName);
     if (packages != null) {
       return this.buildLandscapeStructure(token, appName, packages);
     }
@@ -115,10 +118,10 @@ public class LandscapeStructureResource {
       final String secondCommit) {
 
     final List<Package> packagesFirstSelectedCommit =
-        LandscapeStructureHelper.createListOfPackages(token, firstCommit, appName);
+        this.landscapeStructureHelper.createListOfPackages(token, firstCommit, appName);
 
     final List<Package> packagesSecondSelectedCommit =
-        LandscapeStructureHelper.createListOfPackages(token, secondCommit, appName);
+        this.landscapeStructureHelper.createListOfPackages(token, secondCommit, appName);
 
     if (packagesFirstSelectedCommit == null || packagesSecondSelectedCommit == null) {
       return new LandscapeStructure();
@@ -134,7 +137,7 @@ public class LandscapeStructureResource {
     for (final String fqFileName : modified) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport =
-          LandscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
+          this.landscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
               secondCommit);
       if (fileReport != null) {
         modifiedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());
@@ -186,7 +189,7 @@ public class LandscapeStructureResource {
     for (final String fqFileName : added) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport =
-          LandscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
+          this.landscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
               secondCommit);
       if (fileReport != null) {
         addedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());

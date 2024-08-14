@@ -1,5 +1,6 @@
 package net.explorviz.code.helper;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,16 +19,13 @@ import net.explorviz.code.persistence.FileReport.ClassData2;
 import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.persistence.FileReportTable;
 
+@ApplicationScoped
+public class LandscapeStructureHelper {
 
-/**
- * ...
- */
-public final class LandscapeStructureHelper {
-
-  private static final Map<String, FileReportTable> FILE_REPORT_TABLE_MAP =
+  private final Map<String, FileReportTable> FILE_REPORT_TABLE_MAP =
       new ConcurrentHashMap<>();
 
-  private LandscapeStructureHelper() {
+  public LandscapeStructureHelper() {
   }
 
   /**
@@ -35,7 +33,7 @@ public final class LandscapeStructureHelper {
    * appName the application name. * @return the list of "first-order" packages of an application
    * matching above params.
    */
-  public static List<Package> createListOfPackages(// NOPMD
+  public List<Package> createListOfPackages(// NOPMD
       final String landscapeToken,
       final String commitId, final String appName) {
 
@@ -54,7 +52,7 @@ public final class LandscapeStructureHelper {
     final Set<String> functionFqn = new HashSet<>();
 
     List<FileReport> fileReports =
-        LandscapeStructureHelper.getFileReports(landscapeToken, appName, commitId, files);
+        this.getFileReports(landscapeToken, appName, commitId, files);
 
     for (final FileReport fileReport : fileReports) {
       if (fileReport == null) {
@@ -63,7 +61,7 @@ public final class LandscapeStructureHelper {
 
       final String fileNameWithoutFileExtension = fileReport.getFileName().split("\\.")[0];
 
-      LandscapeStructureHelper.processFileReport(landscapeToken, fileNameWithoutFileExtension,
+      this.processFileReport(landscapeToken, fileNameWithoutFileExtension,
           appName, fileReport, packageNameToPackageMap, fqnClassNameToClass, firstLevelPackageNames,
           functionFqn);
     }
@@ -84,7 +82,7 @@ public final class LandscapeStructureHelper {
    * @param fileNames      list of fqns
    * @return list of filereports
    */
-  public static List<FileReport> getFileReports(String landscapeToken, String appName,
+  public List<FileReport> getFileReports(String landscapeToken, String appName,
       String commitId, List<String> fileNames) {
     Map<String, List<String>> actualCommitIdToFqnMap = new HashMap<>();
     for (final String file : fileNames) {
@@ -92,7 +90,7 @@ public final class LandscapeStructureHelper {
       final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders);
 
       final String actualCommit =
-          LandscapeStructureHelper.getActualCommitIdForFqnAndTargetCommit(landscapeToken, appName,
+          this.getActualCommitIdForFqnAndTargetCommit(landscapeToken, appName,
               fileAndFoldersWithDotSeparation, commitId);
 
       if (actualCommitIdToFqnMap.containsKey(actualCommit)) {
@@ -106,7 +104,7 @@ public final class LandscapeStructureHelper {
   }
 
 
-  private static void processFileReport(String landscapeToken, String fileNameWithoutFileExtension,
+  private void processFileReport(String landscapeToken, String fileNameWithoutFileExtension,
       String appName, FileReport fileReport, Map<String, Package> packageNameToPackageMap,
       Map<String, Class> fqnClassNameToClass, Set<String> firstLevelPackageNames,
       Set<String> functionFqn) {
@@ -226,7 +224,7 @@ public final class LandscapeStructureHelper {
    *                       commit
    * @return the actual commit id for the target fqn and commitId
    */
-  public static String getActualCommitIdForFqnAndTargetCommit(final String landscapeToken,
+  public String getActualCommitIdForFqnAndTargetCommit(final String landscapeToken,
       final String appName,
       final String fqFileName, final String targetCommitId) {
 
@@ -286,11 +284,11 @@ public final class LandscapeStructureHelper {
    * @param commitId       the commit id
    * @return the file report matching the params above or most recent report before given commitid
    */
-  public static FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
+  public FileReport getFileReport(final String landscapeToken, final String appName, // NOPMD
       final String fqFileName, final String commitId) {
 
     final String actualCommitId =
-        LandscapeStructureHelper.getActualCommitIdForFqnAndTargetCommit(landscapeToken, appName,
+        this.getActualCommitIdForFqnAndTargetCommit(landscapeToken, appName,
             fqFileName, commitId);
 
     if (actualCommitId == null) {

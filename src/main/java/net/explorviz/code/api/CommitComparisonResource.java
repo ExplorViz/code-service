@@ -28,10 +28,13 @@ import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 public class CommitComparisonResource {
 
   private final CommitComparisonHelper commitComparisonHelper;
+  private final LandscapeStructureHelper landscapeStructureHelper;
 
   @Inject
-  public CommitComparisonResource(final CommitComparisonHelper commitComparisonHelper) {
+  public CommitComparisonResource(final CommitComparisonHelper commitComparisonHelper,
+      final LandscapeStructureHelper landscapeStructureHelper) {
     this.commitComparisonHelper = commitComparisonHelper;
+    this.landscapeStructureHelper = landscapeStructureHelper;
   }
 
   /**
@@ -71,16 +74,16 @@ public class CommitComparisonResource {
 
     final List<Metric> metrics = new ArrayList<>();
 
-    final List<Package> packagesFirstSelectedCommit = LandscapeStructureHelper
+    final List<Package> packagesFirstSelectedCommit = this.landscapeStructureHelper
         .createListOfPackages(token, firstCommit, appName);
-    final List<Package> packagesSecondSelectedCommit = LandscapeStructureHelper
+    final List<Package> packagesSecondSelectedCommit = this.landscapeStructureHelper
         .createListOfPackages(token, secondCommit, appName);
 
     // TODO: REFACTOR
     // fill addedPackages with the packages that are added
     for (final String fqFileName : added) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
+      final FileReport fileReport = this.landscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, secondCommit);
       if (fileReport != null) { // NOPMD
         final String packageFileName = fileReport.getPackageName() + "." + fileReport.getFileName();
@@ -140,7 +143,7 @@ public class CommitComparisonResource {
     // fill deletedPackages with the packages that are deleted
     for (final String fqFileName : deleted) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token, appName,
+      final FileReport fileReport = this.landscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, firstCommit);
       if (fileReport != null) { // NOPMD
         final String packageFileName = fileReport.getPackageName() + "." + fileReport.getFileName();
@@ -201,7 +204,7 @@ public class CommitComparisonResource {
     final String secondCommitFinal = secondCommit;
     added.forEach(fqFileName -> {
       fqFileName = fqFileName.replaceAll("\\/", ".");
-      final FileReport fileReport = LandscapeStructureHelper.getFileReport(token,
+      final FileReport fileReport = this.landscapeStructureHelper.getFileReport(token,
           appName, fqFileName, secondCommitFinal);
 
       if (fileReport != null) {
@@ -251,10 +254,10 @@ public class CommitComparisonResource {
     final String firstCommitFinal = firstCommit;
     modified.forEach(fqFileName -> {
       fqFileName = fqFileName.replaceAll("\\/", ".");
-      final FileReport fileReportFirstSelectedCommit = LandscapeStructureHelper.getFileReport(
+      final FileReport fileReportFirstSelectedCommit = this.landscapeStructureHelper.getFileReport(
           token, appName, fqFileName, firstCommitFinal);
 
-      final FileReport fileReportSecondSelectedCommit = LandscapeStructureHelper.getFileReport(
+      final FileReport fileReportSecondSelectedCommit = this.landscapeStructureHelper.getFileReport(
           token, appName, fqFileName, secondCommitFinal);
 
       if (fileReportFirstSelectedCommit != null && fileReportSecondSelectedCommit != null) {
