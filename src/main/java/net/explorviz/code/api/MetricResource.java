@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Map;
 import net.explorviz.code.dto.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.persistence.CommitReport;
 import net.explorviz.code.persistence.FileReport;
 import net.explorviz.code.persistence.FileReport.ClassData2;
 import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.entity.CommitReport;
+import net.explorviz.code.persistence.repository.CommitReportRepository;
 
 /**
  * ...
@@ -21,10 +22,13 @@ import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 public class MetricResource {
 
   private final LandscapeStructureHelper landscapeStructureHelper;
+  private final CommitReportRepository commitReportRepository;
 
   @Inject
-  public MetricResource(final LandscapeStructureHelper landscapeStructureHelper) {
+  public MetricResource(final LandscapeStructureHelper landscapeStructureHelper, final
+  CommitReportRepository commitReportRepository) {
     this.landscapeStructureHelper = landscapeStructureHelper;
+    this.commitReportRepository = commitReportRepository;
   }
 
   /**
@@ -36,8 +40,9 @@ public class MetricResource {
   public Metrics list(final String token, // NOPMD
       final String appName, final String commit) {
 
-    final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
-        appName, commit);
+    final CommitReport commitReport =
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(token,
+            appName, commit);
 
     if (commitReport == null) {
       return new Metrics(List.of(), List.of(), List.of(), List.of());
@@ -49,7 +54,7 @@ public class MetricResource {
 
     final List<FileReport> relatedFileReports =
         this.landscapeStructureHelper.getFileReports(token, appName, commit,
-            commitReport.getFiles());
+            commitReport.files());
 
     for (final FileReport fileReport : relatedFileReports) {
       if (fileReport == null) {
@@ -96,6 +101,6 @@ public class MetricResource {
 
     }
 
-    return new Metrics(commitReport.getFiles(), fileMetrics, classMetrics, methodMetrics);
+    return new Metrics(commitReport.files(), fileMetrics, classMetrics, methodMetrics);
   }
 }

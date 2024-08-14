@@ -1,6 +1,7 @@
 package net.explorviz.code.helper;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,11 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
-import net.explorviz.code.persistence.CommitReport;
 import net.explorviz.code.persistence.FileReport;
 import net.explorviz.code.persistence.FileReport.ClassData2;
 import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.entity.CommitReport;
+import net.explorviz.code.persistence.repository.CommitReportRepository;
 
 @ApplicationScoped
 public class LandscapeStructureHelper {
@@ -25,7 +27,11 @@ public class LandscapeStructureHelper {
   private final Map<String, FileReportTable> FILE_REPORT_TABLE_MAP =
       new ConcurrentHashMap<>();
 
-  public LandscapeStructureHelper() {
+  private final CommitReportRepository commitReportRepository;
+
+  @Inject
+  public LandscapeStructureHelper(final CommitReportRepository commitReportRepository) {
+    this.commitReportRepository = commitReportRepository;
   }
 
   /**
@@ -37,12 +43,13 @@ public class LandscapeStructureHelper {
       final String landscapeToken,
       final String commitId, final String appName) {
 
-    final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
-        landscapeToken, appName, commitId);
+    final CommitReport commitReport =
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+            landscapeToken, appName, commitId);
     if (commitReport == null) {
       return null;
     }
-    final List<String> files = commitReport.getFiles();
+    final List<String> files = commitReport.files();
 
     final Map<String, Package> packageNameToPackageMap =
         new HashMap<>();

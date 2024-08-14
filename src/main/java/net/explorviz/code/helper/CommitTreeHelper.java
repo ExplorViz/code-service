@@ -13,10 +13,11 @@ import java.util.stream.Collectors;
 import net.explorviz.code.dto.commit.tree.BranchDto;
 import net.explorviz.code.dto.commit.tree.BranchPointDto;
 import net.explorviz.code.dto.commit.tree.CommitTree;
-import net.explorviz.code.persistence.CommitReport;
 import net.explorviz.code.persistence.entity.BranchPoint;
+import net.explorviz.code.persistence.entity.CommitReport;
 import net.explorviz.code.persistence.entity.LatestCommit;
 import net.explorviz.code.persistence.repository.BranchPointRepository;
+import net.explorviz.code.persistence.repository.CommitReportRepository;
 import net.explorviz.code.persistence.repository.LatestCommitRepository;
 
 /**
@@ -27,12 +28,16 @@ public class CommitTreeHelper {
 
   private final LatestCommitRepository latestCommitRepository;
   private final BranchPointRepository branchPointRepository;
+  private final CommitReportRepository commitReportRepository;
+
 
   @Inject
   public CommitTreeHelper(final LatestCommitRepository latestCommitRepository, final
-  BranchPointRepository branchPointRepository) {
+  BranchPointRepository branchPointRepository,
+      final CommitReportRepository commitReportRepository) {
     this.latestCommitRepository = latestCommitRepository;
     this.branchPointRepository = branchPointRepository;
+    this.commitReportRepository = commitReportRepository;
   }
 
   /**
@@ -44,8 +49,9 @@ public class CommitTreeHelper {
    * @return CommitTree for the given parameters.
    */
   public CommitTree createCommitTree(final String appName, final String landscapeToken) {
-    final List<BranchPoint> branchPoints = this.branchPointRepository.findByTokenAndApplicationName(landscapeToken,
-        appName);
+    final List<BranchPoint> branchPoints =
+        this.branchPointRepository.findByTokenAndApplicationName(landscapeToken,
+            appName);
     final List<BranchDto> branches = new ArrayList<>();
 
     // Collect all branch names from branch points
@@ -76,13 +82,13 @@ public class CommitTreeHelper {
         continue;
       }
 
-      List<CommitReport> commitReportsForBranch = CommitReport
+      List<CommitReport> commitReportsForBranch = this.commitReportRepository
           .findByTokenAndApplicationNameAndBranchName(
               landscapeToken, appName, branchName);
 
       Map<String, CommitReport> commitReportMap = new HashMap<>();
       for (CommitReport report : commitReportsForBranch) {
-        commitReportMap.put(report.getCommitId(), report);
+        commitReportMap.put(report.commitId(), report);
       }
 
       String currentCommitId = latestCommit.commitId();
@@ -91,9 +97,9 @@ public class CommitTreeHelper {
       while (!finished) {
         CommitReport currentCommitReport = commitReportMap.get(currentCommitId);
         if (currentCommitReport != null) {
-          boolean isCommitReportRelevant = !currentCommitReport.getAdded().isEmpty()
-              || !currentCommitReport.getDeleted().isEmpty()
-              || !currentCommitReport.getModified().isEmpty();
+          boolean isCommitReportRelevant = !currentCommitReport.added().isEmpty()
+              || !currentCommitReport.deleted().isEmpty()
+              || !currentCommitReport.modified().isEmpty();
 
           if (isCommitReportRelevant) {
             commits.push(currentCommitId);
@@ -102,7 +108,7 @@ public class CommitTreeHelper {
           if (currentCommitId.equals(branchPointCommitId)) {
             finished = true;
           } else {
-            currentCommitId = currentCommitReport.getParentCommitId();
+            currentCommitId = currentCommitReport.parentCommitId();
           }
         } else {
           break;

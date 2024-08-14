@@ -7,8 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import net.explorviz.code.persistence.CommitReport;
-import net.explorviz.code.persistence.CommitReport.FileMetric;
+import net.explorviz.code.persistence.entity.CommitReport;
+import net.explorviz.code.persistence.entity.CommitReport.FileMetric;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.proto.FileMetricData;
@@ -44,17 +44,6 @@ public class HelperMethods {
 
   public static CommitReport convertCommitReportGrpcToMongo(
       final CommitReportData commitReportData) {
-    final CommitReport commitReport = new CommitReport();
-    commitReport.setCommitId(commitReportData.getCommitID());
-    commitReport.setParentCommitId(commitReportData.getParentCommitID());
-    commitReport.setBranchName(commitReportData.getBranchName());
-    commitReport.setFiles(commitReportData.getFilesList());
-    commitReport.setModified(commitReportData.getModifiedList());
-    commitReport.setDeleted(commitReportData.getDeletedList());
-    commitReport.setAdded(commitReportData.getAddedList());
-    commitReport.setLandscapeToken(commitReportData.getLandscapeToken());
-    commitReport.setFileHash(commitReportData.getFileHashList());
-    commitReport.setApplicationName(commitReportData.getApplicationName());
 
     final List<FileMetric> receivedCommitReportFileMetric = new ArrayList<>();
 
@@ -66,8 +55,14 @@ public class HelperMethods {
       fileMetric.setNumberOfMethods(fileMetricData.getNumberOfMethods());
       receivedCommitReportFileMetric.add(fileMetric);
     }
-    commitReport.setFileMetric(receivedCommitReportFileMetric);
 
+    final CommitReport commitReport =
+        new CommitReport(commitReportData.getCommitID(), commitReportData.getParentCommitID(),
+            commitReportData.getBranchName(), commitReportData.getFilesList(),
+            commitReportData.getModifiedList(), commitReportData.getDeletedList(),
+            commitReportData.getAddedList(), receivedCommitReportFileMetric,
+            commitReportData.getLandscapeToken(), commitReportData.getFileHashList(),
+            commitReportData.getApplicationName());
     return commitReport;
   }
 

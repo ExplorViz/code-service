@@ -10,8 +10,8 @@ import io.quarkus.test.mongodb.MongoTestResource;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.Iterator;
-import net.explorviz.code.persistence.CommitReport;
 import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.repository.CommitReportRepository;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.testhelper.HelperMethods;
@@ -39,6 +39,9 @@ public class CommitReportAnalysisTest {
   @Inject
   FileDataAnalysis fileDataAnalysis;
 
+  @Inject
+  CommitReportRepository commitReportRepository;
+
   private MongoDatabase getMongoDatabase() {
     return this.mongoClient.getDatabase(mongoDBName);
   }
@@ -63,7 +66,8 @@ public class CommitReportAnalysisTest {
       Assertions.assertEquals(1, collection.countDocuments());
 
       Assertions.assertEquals(HelperMethods.convertCommitReportGrpcToMongo(commitReport),
-          CommitReport.findByTokenAndApplicationNameAndCommitId(commitReport.getLandscapeToken(),
+          this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+              commitReport.getLandscapeToken(),
               commitReport.getApplicationName(), commitReport.getCommitID()));
 
       collection =
@@ -104,7 +108,8 @@ public class CommitReportAnalysisTest {
     Assertions.assertEquals(1, collection.countDocuments());
 
     Assertions.assertEquals(HelperMethods.convertCommitReportGrpcToMongo(commitReport),
-        CommitReport.findByTokenAndApplicationNameAndCommitId(commitReport.getLandscapeToken(),
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+            commitReport.getLandscapeToken(),
             commitReport.getApplicationName(), commitReport.getCommitID()));
 
     collection =
@@ -163,7 +168,8 @@ public class CommitReportAnalysisTest {
     Assertions.assertEquals(1, collection.countDocuments());
 
     Assertions.assertEquals(HelperMethods.convertCommitReportGrpcToMongo(commitReport),
-        CommitReport.findByTokenAndApplicationNameAndCommitId(commitReport.getLandscapeToken(),
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+            commitReport.getLandscapeToken(),
             commitReport.getApplicationName(), commitReport.getCommitID()));
 
     collection =
@@ -206,11 +212,13 @@ public class CommitReportAnalysisTest {
     Assertions.assertEquals(2, collection.countDocuments());
 
     Assertions.assertEquals(HelperMethods.convertCommitReportGrpcToMongo(commitReport0),
-        CommitReport.findByTokenAndApplicationNameAndCommitId(commitReport0.getLandscapeToken(),
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+            commitReport0.getLandscapeToken(),
             commitReport0.getApplicationName(), commitReport0.getCommitID()));
 
     Assertions.assertEquals(HelperMethods.convertCommitReportGrpcToMongo(commitReport1),
-        CommitReport.findByTokenAndApplicationNameAndCommitId(commitReport1.getLandscapeToken(),
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+            commitReport1.getLandscapeToken(),
             commitReport1.getApplicationName(), commitReport1.getCommitID()));
 
     collection =
@@ -272,11 +280,13 @@ public class CommitReportAnalysisTest {
     Assertions.assertEquals(2, collection.countDocuments());
 
     Assertions.assertEquals(HelperMethods.convertCommitReportGrpcToMongo(commitReport0),
-        CommitReport.findByTokenAndApplicationNameAndCommitId(commitReport0.getLandscapeToken(),
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+            commitReport0.getLandscapeToken(),
             commitReport0.getApplicationName(), commitReport0.getCommitID()));
 
     Assertions.assertEquals(HelperMethods.convertCommitReportGrpcToMongo(commitReport1),
-        CommitReport.findByTokenAndApplicationNameAndCommitId(commitReport1.getLandscapeToken(),
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
+            commitReport1.getLandscapeToken(),
             commitReport1.getApplicationName(), commitReport1.getCommitID()));
 
     collection =
