@@ -1,17 +1,19 @@
 package net.explorviz.code.analysis;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.persistence.FileReport;
-import net.explorviz.code.persistence.FileReport.ClassData2;
-import net.explorviz.code.persistence.FileReport.ClassData2.ClassType2;
-import net.explorviz.code.persistence.FileReport.ClassData2.FieldData2;
-import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
-import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2.ParameterData2;
 import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.entity.FileReport;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2.ClassType2;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2.FieldData2;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2.ParameterData2;
+import net.explorviz.code.persistence.repository.FileReportRepository;
 import net.explorviz.code.proto.ClassData;
 import net.explorviz.code.proto.FieldData;
 import net.explorviz.code.proto.FileData;
@@ -27,6 +29,13 @@ import org.slf4j.LoggerFactory;
 public class FileDataAnalysis {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FileDataAnalysis.class);
+
+  private final FileReportRepository fileReportRepository;
+
+  @Inject
+  public FileDataAnalysis(final FileReportRepository fileReportRepository) {
+    this.fileReportRepository = fileReportRepository;
+  }
 
   /**
    * Processes a FileData package. Stores the data into the local storage.
@@ -212,14 +221,14 @@ public class FileDataAnalysis {
     final String appName = fileData.getApplicationName();
     final String packageName = fileData.getPackageName();
 
-    FileReport oldReport = FileReport
+    FileReport oldReport = this.fileReportRepository
         .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
             token, appName, packageName + "." + fqFileName, commitId);
 
     if (oldReport != null) {
       updateExistingFileReport(oldReport, fileReport);
     } else {
-      fileReport.persist();
+      this.fileReportRepository.persist(fileReport);
     }
   }
 
@@ -232,6 +241,6 @@ public class FileDataAnalysis {
     oldReport.setModifiedLines(newReport.getModifiedLines());
     oldReport.setAddedLines(newReport.getAddedLines());
     oldReport.setDeletedLines(newReport.getDeletedLines());
-    oldReport.update();
+    this.fileReportRepository.update(oldReport);
   }
 }

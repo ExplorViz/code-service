@@ -17,7 +17,7 @@ import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.helper.TokenHelper;
-import net.explorviz.code.persistence.FileReport;
+import net.explorviz.code.persistence.entity.FileReport;
 
 /**
  * ...

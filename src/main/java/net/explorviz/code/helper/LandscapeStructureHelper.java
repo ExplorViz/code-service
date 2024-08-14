@@ -14,12 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
-import net.explorviz.code.persistence.FileReport;
-import net.explorviz.code.persistence.FileReport.ClassData2;
-import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.persistence.FileReportTable;
 import net.explorviz.code.persistence.entity.CommitReport;
+import net.explorviz.code.persistence.entity.FileReport;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.persistence.repository.CommitReportRepository;
+import net.explorviz.code.persistence.repository.FileReportRepository;
 
 @ApplicationScoped
 public class LandscapeStructureHelper {
@@ -28,10 +29,13 @@ public class LandscapeStructureHelper {
       new ConcurrentHashMap<>();
 
   private final CommitReportRepository commitReportRepository;
+  private final FileReportRepository fileReportRepository;
 
   @Inject
-  public LandscapeStructureHelper(final CommitReportRepository commitReportRepository) {
+  public LandscapeStructureHelper(final CommitReportRepository commitReportRepository, final
+  FileReportRepository fileReportRepository) {
     this.commitReportRepository = commitReportRepository;
+    this.fileReportRepository = fileReportRepository;
   }
 
   /**
@@ -107,7 +111,8 @@ public class LandscapeStructureHelper {
             new ArrayList<>(List.of(fileAndFoldersWithDotSeparation)));
       }
     }
-    return FileReport.getFileReports(landscapeToken, appName, actualCommitIdToFqnMap);
+    return this.fileReportRepository.getFileReports(landscapeToken, appName,
+        actualCommitIdToFqnMap);
   }
 
 
@@ -302,8 +307,7 @@ public class LandscapeStructureHelper {
       return null;
     }
 
-    return FileReport
-        .findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
-            landscapeToken, appName, fqFileName, actualCommitId);
+    return this.fileReportRepository.findByTokenAndAppNameAndPackageNameAndFileNameAndCommitId(
+        landscapeToken, appName, fqFileName, actualCommitId);
   }
 }

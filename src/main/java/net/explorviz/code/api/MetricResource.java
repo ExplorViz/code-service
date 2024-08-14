@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import net.explorviz.code.dto.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.persistence.FileReport;
-import net.explorviz.code.persistence.FileReport.ClassData2;
-import net.explorviz.code.persistence.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.entity.FileReport;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.persistence.entity.CommitReport;
 import net.explorviz.code.persistence.repository.CommitReportRepository;
 
