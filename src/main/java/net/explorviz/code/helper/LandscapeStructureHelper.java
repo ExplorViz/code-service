@@ -21,6 +21,7 @@ import net.explorviz.code.persistence.entity.FileReport.ClassData2;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.persistence.repository.CommitReportRepository;
 import net.explorviz.code.persistence.repository.FileReportRepository;
+import net.explorviz.code.persistence.repository.FileReportTableRepository;
 
 @ApplicationScoped
 public class LandscapeStructureHelper {
@@ -30,12 +31,15 @@ public class LandscapeStructureHelper {
 
   private final CommitReportRepository commitReportRepository;
   private final FileReportRepository fileReportRepository;
+  private final FileReportTableRepository fileReportTableRepository;
 
   @Inject
   public LandscapeStructureHelper(final CommitReportRepository commitReportRepository, final
-  FileReportRepository fileReportRepository) {
+  FileReportRepository fileReportRepository,
+      final FileReportTableRepository fileReportTableRepository) {
     this.commitReportRepository = commitReportRepository;
     this.fileReportRepository = fileReportRepository;
+    this.fileReportTableRepository = fileReportTableRepository;
   }
 
   /**
@@ -246,7 +250,8 @@ public class LandscapeStructureHelper {
 
     // Only fetch from DB if not present in cache
     if (fileReportTable == null) {
-      fileReportTable = FileReportTable.findByTokenAndAppName(landscapeToken, appName);
+      fileReportTable =
+          this.fileReportTableRepository.findByTokenAndAppName(landscapeToken, appName);
       if (fileReportTable != null) {
         FILE_REPORT_TABLE_MAP.put(cacheKey, fileReportTable);
       }

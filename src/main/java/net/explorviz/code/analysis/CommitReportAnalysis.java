@@ -15,6 +15,7 @@ import net.explorviz.code.persistence.entity.LatestCommit;
 import net.explorviz.code.persistence.repository.ApplicationRepository;
 import net.explorviz.code.persistence.repository.BranchPointRepository;
 import net.explorviz.code.persistence.repository.CommitReportRepository;
+import net.explorviz.code.persistence.repository.FileReportTableRepository;
 import net.explorviz.code.persistence.repository.LatestCommitRepository;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.FileMetricData;
@@ -35,16 +36,19 @@ public class CommitReportAnalysis {
   private final LatestCommitRepository latestCommitRepository;
   private final BranchPointRepository branchPointRepo;
   private final CommitReportRepository commitReportRepo;
+  private final FileReportTableRepository fileReportTableRepository;
 
   @Inject
   public CommitReportAnalysis(final ApplicationRepository appRepo,
       final LatestCommitRepository latestCommitRepository,
       final BranchPointRepository branchPointRepo,
-      final CommitReportRepository commitReportRepository) {
+      final CommitReportRepository commitReportRepository,
+      final FileReportTableRepository fileReportTableRepository) {
     this.appRepo = appRepo;
     this.latestCommitRepository = latestCommitRepository;
     this.branchPointRepo = branchPointRepo;
     this.commitReportRepo = commitReportRepository;
+    this.fileReportTableRepository = fileReportTableRepository;
   }
 
   /**
@@ -73,7 +77,7 @@ public class CommitReportAnalysis {
     // Add entry for FileReportTable. We need to initiate it here because there can be some
     // commits where the Code-Agent won't send File Reports at all
 
-    final FileReportTable fileReportTable = FileReportTable
+    final FileReportTable fileReportTable = this.fileReportTableRepository
         .findByTokenAndAppName(receivedCommitReportLandscapeToken,
             receivedCommitReportApplicationName);
 

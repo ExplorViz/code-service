@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.explorviz.code.persistence.FileReportTable;
+import net.explorviz.code.persistence.repository.FileReportTableRepository;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.testhelper.HelperMethods;
 import net.explorviz.code.testhelper.TestConstants;
@@ -37,6 +38,9 @@ public class FileDataAnalysisTest {
 
   @Inject
   FileDataAnalysis fileDataAnalysis;
+
+  @Inject
+  FileReportTableRepository fileReportTableRepository;
 
   private MongoDatabase getMongoDatabase() {
     return this.mongoClient.getDatabase(mongoDBName);
@@ -95,7 +99,7 @@ public class FileDataAnalysisTest {
     Assertions.assertEquals(1, collection.countDocuments());
 
     final FileReportTable fileReportTable =
-        FileReportTable.findByTokenAndAppName("mytokenvalue", "petclinic");
+        this.fileReportTableRepository.findByTokenAndAppName("mytokenvalue", "petclinic");
 
     Assertions.assertEquals("petclinic", fileReportTable.getAppName());
     Assertions.assertEquals("mytokenvalue", fileReportTable.getLandscapeToken());

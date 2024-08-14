@@ -14,6 +14,7 @@ import net.explorviz.code.persistence.entity.FileReport.ClassData2.FieldData2;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
 import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2.ParameterData2;
 import net.explorviz.code.persistence.repository.FileReportRepository;
+import net.explorviz.code.persistence.repository.FileReportTableRepository;
 import net.explorviz.code.proto.ClassData;
 import net.explorviz.code.proto.FieldData;
 import net.explorviz.code.proto.FileData;
@@ -31,10 +32,13 @@ public class FileDataAnalysis {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileDataAnalysis.class);
 
   private final FileReportRepository fileReportRepository;
+  private final FileReportTableRepository fileReportTableRepository;
 
   @Inject
-  public FileDataAnalysis(final FileReportRepository fileReportRepository) {
+  public FileDataAnalysis(final FileReportRepository fileReportRepository,
+      final FileReportTableRepository fileReportTableRepository) {
     this.fileReportRepository = fileReportRepository;
+    this.fileReportTableRepository = fileReportTableRepository;
   }
 
   /**
@@ -58,7 +62,7 @@ public class FileDataAnalysis {
     final String receivedFileDataFileName = fileData.getFileName();
     final String fqFileName = receivedFileDataPackageName + "." + receivedFileDataFileName;
 
-    FileReportTable fileReportTable = FileReportTable
+    FileReportTable fileReportTable = this.fileReportTableRepository
         .findByTokenAndAppName(receivedFileDataLandscapeToken, receivedFileDataAppName);
 
     if (fileReportTable == null) {

@@ -1,4 +1,4 @@
-package net.explorviz.code.persistence;
+package net.explorviz.code.persistence.entity;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.Map;
@@ -18,24 +18,6 @@ public class FileReportTable extends PanacheMongoEntity {
   @Override
   public int hashCode() {
     return Objects.hash(landscapeToken, appName, commitIdTofqnFileNameToCommitIdMap);
-  }
-
-  /**
-   * Finds FileReportTable for passed token and appName.
-   *
-   * @param landscapeToken the landscape token.
-   * @param appName        the application name
-   * @return the FileReportTable that matches the above params.
-   */
-  public static FileReportTable findByTokenAndAppName(// NOPMD
-      final String landscapeToken,
-      final String appName) {
-
-    final FileReportTable fileReportTable = find(
-        "landscapeToken = ?1 and appName = ?2",
-        landscapeToken, appName).firstResult();
-
-    return fileReportTable;
   }
 
   public String getLandscapeToken() {
