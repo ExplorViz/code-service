@@ -29,7 +29,7 @@ public class LatestCommitRepository implements PanacheMongoRepository<LatestComm
 
   public List<LatestCommit> findAllLatestCommitsByLandscapeTokenAndApplicationName(
       final String landscapeToken, final String applicationName, List<String> branchNames) {
-    return find(WHERE_QUERY_STRING,
+    return find("landscapeToken = ?1 and applicationName = ?2 and branchName in ?3",
         landscapeToken, applicationName, branchNames).list();
   }
 }
