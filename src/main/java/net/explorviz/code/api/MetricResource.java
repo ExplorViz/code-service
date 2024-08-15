@@ -1,23 +1,35 @@
 package net.explorviz.code.api;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.beans.Metrics;
+import net.explorviz.code.dto.Metrics;
 import net.explorviz.code.helper.LandscapeStructureHelper;
-import net.explorviz.code.mongo.CommitReport;
-import net.explorviz.code.mongo.FileReport;
-import net.explorviz.code.mongo.FileReport.ClassData2;
-import net.explorviz.code.mongo.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.entity.CommitReport;
+import net.explorviz.code.persistence.entity.FileReport;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2;
+import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
+import net.explorviz.code.persistence.repository.CommitReportRepository;
 
 /**
  * ...
  */
 @Path("/v2/code/metrics")
 public class MetricResource {
+
+  private final LandscapeStructureHelper landscapeStructureHelper;
+  private final CommitReportRepository commitReportRepository;
+
+  @Inject
+  public MetricResource(final LandscapeStructureHelper landscapeStructureHelper,
+      final CommitReportRepository commitReportRepository) {
+    this.landscapeStructureHelper = landscapeStructureHelper;
+    this.commitReportRepository = commitReportRepository;
+  }
 
   /**
    * ... * @param token the landscape token * @param appName the application name. * @param commit
@@ -28,23 +40,21 @@ public class MetricResource {
   public Metrics list(final String token, // NOPMD
       final String appName, final String commit) {
 
-    final CommitReport commitReport = CommitReport.findByTokenAndApplicationNameAndCommitId(token,
-        appName, commit);
-
-    final Metrics metrics = new Metrics();
+    final CommitReport commitReport =
+        this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(token,
+            appName, commit);
 
     if (commitReport == null) {
-      return metrics;
+      return new Metrics(List.of(), List.of(), List.of(), List.of());
     }
-
-    metrics.setFiles(commitReport.getFiles());
 
     final List<Map<String, String>> fileMetrics = new ArrayList<>();
     final List<Map<String, Map<String, String>>> classMetrics = new ArrayList<>();
     final List<Map<String, Map<String, String>>> methodMetrics = new ArrayList<>();
 
     final List<FileReport> relatedFileReports =
-        LandscapeStructureHelper.getFileReports(token, appName, commit, commitReport.getFiles());
+        this.landscapeStructureHelper.getFileReports(token, appName, commit,
+            commitReport.files());
 
     for (final FileReport fileReport : relatedFileReports) {
       if (fileReport == null) {
@@ -91,9 +101,6 @@ public class MetricResource {
 
     }
 
-    metrics.setFileMetrics(fileMetrics);
-    metrics.setClassMetrics(classMetrics);
-    metrics.setMethodMetrics(methodMetrics);
-    return metrics;
+    return new Metrics(commitReport.files(), fileMetrics, classMetrics, methodMetrics);
   }
 }

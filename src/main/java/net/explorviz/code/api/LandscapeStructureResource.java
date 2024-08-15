@@ -1,5 +1,6 @@
 package net.explorviz.code.api;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -7,22 +8,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import net.explorviz.code.beans.LandscapeStructure;
-import net.explorviz.code.beans.LandscapeStructure.Node;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class;
-import net.explorviz.code.beans.LandscapeStructure.Node.Application.Package.Class.Method;
+import net.explorviz.code.dto.LandscapeStructure;
+import net.explorviz.code.dto.LandscapeStructure.Node;
+import net.explorviz.code.dto.LandscapeStructure.Node.Application;
+import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
+import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
+import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
 import net.explorviz.code.helper.CommitComparisonHelper;
 import net.explorviz.code.helper.LandscapeStructureHelper;
 import net.explorviz.code.helper.TokenHelper;
-import net.explorviz.code.mongo.FileReport;
+import net.explorviz.code.persistence.entity.FileReport;
 
 /**
  * ...
  */
 @Path("/v2/code/structure/{token}/{appName}")
 public class LandscapeStructureResource {
+
+  private final CommitComparisonHelper commitComparisonHelper;
+  private final LandscapeStructureHelper landscapeStructureHelper;
+
+  @Inject
+  public LandscapeStructureResource(final CommitComparisonHelper commitComparisonHelper,
+      final LandscapeStructureHelper landscapeStructureHelper) {
+    this.commitComparisonHelper = commitComparisonHelper;
+    this.landscapeStructureHelper = landscapeStructureHelper;
+  }
 
   /**
    * Returns the "deepest" package available matching the package structure. Therefore, the deepest
@@ -87,7 +98,7 @@ public class LandscapeStructureResource {
   public LandscapeStructure singleStructure(@PathParam("token") final String token,
       @PathParam("appName") final String appName, final String commit) {
     final List<Package> packages =
-        LandscapeStructureHelper.createListOfPackages(token, commit, appName);
+        this.landscapeStructureHelper.createListOfPackages(token, commit, appName);
     if (packages != null) {
       return this.buildLandscapeStructure(token, appName, packages);
     }
@@ -107,10 +118,10 @@ public class LandscapeStructureResource {
       final String secondCommit) {
 
     final List<Package> packagesFirstSelectedCommit =
-        LandscapeStructureHelper.createListOfPackages(token, firstCommit, appName);
+        this.landscapeStructureHelper.createListOfPackages(token, firstCommit, appName);
 
     final List<Package> packagesSecondSelectedCommit =
-        LandscapeStructureHelper.createListOfPackages(token, secondCommit, appName);
+        this.landscapeStructureHelper.createListOfPackages(token, secondCommit, appName);
 
     if (packagesFirstSelectedCommit == null || packagesSecondSelectedCommit == null) {
       return new LandscapeStructure();
@@ -118,7 +129,7 @@ public class LandscapeStructureResource {
 
     // deal with modified files ----------------------------------------------
     final List<String> modified =
-        CommitComparisonHelper.getComparisonModifiedFiles(firstCommit, secondCommit, token,
+        this.commitComparisonHelper.getComparisonModifiedFiles(firstCommit, secondCommit, token,
             appName);
 
     final List<String> modifiedPackageFileName = new ArrayList<>();
@@ -126,7 +137,7 @@ public class LandscapeStructureResource {
     for (final String fqFileName : modified) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport =
-          LandscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
+          this.landscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
               secondCommit);
       if (fileReport != null) {
         modifiedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());
@@ -157,7 +168,7 @@ public class LandscapeStructureResource {
           for (final Method method : clazzSecondSelectedCommit.getMethods()) {
             if (clazzFirstSelectedCommit.getMethods().stream()
                 .filter(m -> m.getName().equals(method.getName())).collect(Collectors.toList())
-                .size() == 0) {
+                .isEmpty()) {
               clazzFirstSelectedCommit.getMethods().add(method);
             }
           }
@@ -170,14 +181,15 @@ public class LandscapeStructureResource {
 
     // deal with added files ----------------------------------------------------------------------
     final List<String> added =
-        CommitComparisonHelper.getComparisonAddedFiles(firstCommit, secondCommit, token, appName);
+        this.commitComparisonHelper.getComparisonAddedFiles(firstCommit, secondCommit, token,
+            appName);
 
     final List<String> addedPackageFileName = new ArrayList<>();
 
     for (final String fqFileName : added) {
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport =
-          LandscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
+          this.landscapeStructureHelper.getFileReport(token, appName, fqFileNameDotSeparator,
               secondCommit);
       if (fileReport != null) {
         addedPackageFileName.add(fileReport.getPackageName() + "." + fileReport.getFileName());

@@ -1,16 +1,22 @@
 package net.explorviz.code.analysis;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.explorviz.code.mongo.Application;
-import net.explorviz.code.mongo.BranchPoint;
-import net.explorviz.code.mongo.CommitReport;
-import net.explorviz.code.mongo.CommitReport.FileMetric;
-import net.explorviz.code.mongo.FileReportTable;
-import net.explorviz.code.mongo.LatestCommit;
+import net.explorviz.code.persistence.entity.Application;
+import net.explorviz.code.persistence.entity.BranchPoint;
+import net.explorviz.code.persistence.entity.CommitReport;
+import net.explorviz.code.persistence.entity.CommitReport.FileMetric;
+import net.explorviz.code.persistence.entity.FileReportTable;
+import net.explorviz.code.persistence.entity.LatestCommit;
+import net.explorviz.code.persistence.repository.ApplicationRepository;
+import net.explorviz.code.persistence.repository.BranchPointRepository;
+import net.explorviz.code.persistence.repository.CommitReportRepository;
+import net.explorviz.code.persistence.repository.FileReportTableRepository;
+import net.explorviz.code.persistence.repository.LatestCommitRepository;
 import net.explorviz.code.proto.CommitReportData;
 import net.explorviz.code.proto.FileMetricData;
 import org.slf4j.Logger;
@@ -26,6 +32,25 @@ public class CommitReportAnalysis {
 
   private static final String NO_ANCESTOR = "NONE";
 
+  private final ApplicationRepository appRepo;
+  private final LatestCommitRepository latestCommitRepository;
+  private final BranchPointRepository branchPointRepo;
+  private final CommitReportRepository commitReportRepo;
+  private final FileReportTableRepository fileReportTableRepository;
+
+  @Inject
+  public CommitReportAnalysis(final ApplicationRepository appRepo,
+      final LatestCommitRepository latestCommitRepository,
+      final BranchPointRepository branchPointRepo,
+      final CommitReportRepository commitReportRepository,
+      final FileReportTableRepository fileReportTableRepository) {
+    this.appRepo = appRepo;
+    this.latestCommitRepository = latestCommitRepository;
+    this.branchPointRepo = branchPointRepo;
+    this.commitReportRepo = commitReportRepository;
+    this.fileReportTableRepository = fileReportTableRepository;
+  }
+
   /**
    * Processes a CommitReportData package. Stores the data into the local storage.
    *
@@ -40,7 +65,7 @@ public class CommitReportAnalysis {
     final String receivedCommitReportApplicationName = commitReportData // NOPMD
         .getApplicationName();
 
-    final CommitReport oldReport = CommitReport.findByTokenAndApplicationNameAndCommitId(
+    final CommitReport oldReport = this.commitReportRepo.findByTokenAndApplicationNameAndCommitId(
         receivedCommitReportLandscapeToken, receivedCommitReportApplicationName,
         receivedCommitReportCommitId);
 
@@ -52,7 +77,7 @@ public class CommitReportAnalysis {
     // Add entry for FileReportTable. We need to initiate it here because there can be some
     // commits where the Code-Agent won't send File Reports at all
 
-    final FileReportTable fileReportTable = FileReportTable
+    final FileReportTable fileReportTable = this.fileReportTableRepository
         .findByTokenAndAppName(receivedCommitReportLandscapeToken,
             receivedCommitReportApplicationName);
 
@@ -110,114 +135,102 @@ public class CommitReportAnalysis {
       receivedCommitReportFileMetric.add(fileMetric);
     }
 
-    final CommitReport commitReport = new CommitReport();
-    commitReport.setCommitId(receivedCommitReportCommitId);
-    commitReport.setParentCommitId(receivedCommitReportAncestorId);
-    commitReport.setBranchName(receivedCommitReportBranchName);
-    commitReport.setFiles(receivedCommitReportFiles);
-    commitReport.setModified(receivedCommitReportModified);
-    commitReport.setDeleted(receivedCommitReportDeleted);
-    commitReport.setAdded(receivedCommitReportAdded);
-    commitReport.setFileMetric(receivedCommitReportFileMetric);
-    commitReport.setLandscapeToken(receivedCommitReportLandscapeToken);
-    commitReport.setFileHash(receivedCommitReportFileHash);
-    commitReport.setApplicationName(receivedCommitReportApplicationName);
+    final CommitReport commitReport =
+        new CommitReport(receivedCommitReportCommitId, receivedCommitReportAncestorId,
+            receivedCommitReportBranchName, receivedCommitReportFiles, receivedCommitReportModified,
+            receivedCommitReportDeleted, receivedCommitReportAdded,
+            receivedCommitReportFileMetric, receivedCommitReportLandscapeToken,
+            receivedCommitReportFileHash, receivedCommitReportApplicationName);
 
     if (!NO_ANCESTOR.equals(receivedCommitReportAncestorId)) { // NOPMD
-      if (CommitReport.findByTokenAndApplicationNameAndCommitId(// NOPMD
+      if (this.commitReportRepo.findByTokenAndApplicationNameAndCommitId(// NOPMD
           receivedCommitReportLandscapeToken,
           receivedCommitReportApplicationName, receivedCommitReportAncestorId) != null) {
         // no missing reports
-        commitReport.persist();
-        LatestCommit latestCommit = LatestCommit
+        this.commitReportRepo.persist(commitReport);
+        LatestCommit latestCommit = this.latestCommitRepository
             .findByLandscapeTokenAndApplicationNameAndBranchName(
                 receivedCommitReportLandscapeToken, receivedCommitReportApplicationName,
                 receivedCommitReportBranchName);
         if (latestCommit == null) {
           // commit of a new branch
-          latestCommit = new LatestCommit();
-          latestCommit.setBranchName(receivedCommitReportBranchName);
-          latestCommit.setCommitId(receivedCommitReportCommitId);
-          latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
-          latestCommit.setApplicationName(receivedCommitReportApplicationName);
-          latestCommit.persist();
+          latestCommit =
+              new LatestCommit(receivedCommitReportCommitId, receivedCommitReportBranchName,
+                  receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+          this.latestCommitRepository.persist(latestCommit);
 
-          final BranchPoint branchPoint = new BranchPoint();
-          branchPoint.setBranchName(receivedCommitReportBranchName);
-          branchPoint.setCommitId(receivedCommitReportCommitId);
-          branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
-          branchPoint.setApplicationName(receivedCommitReportApplicationName);
-          final CommitReport ancestorCommitReport = CommitReport
+          final CommitReport ancestorCommitReport = this.commitReportRepo
               .findByTokenAndApplicationNameAndCommitId(receivedCommitReportLandscapeToken,
                   receivedCommitReportApplicationName, receivedCommitReportAncestorId);
-          branchPoint.setEmergedFromCommitId(ancestorCommitReport.getCommitId());
-          branchPoint.setEmergedFromBranchName(ancestorCommitReport.getBranchName());
-          branchPoint.persist();
+
+          final BranchPoint branchPoint =
+              new BranchPoint(receivedCommitReportCommitId, receivedCommitReportBranchName,
+                  ancestorCommitReport.branchName(), ancestorCommitReport.commitId(),
+                  receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+
+          this.branchPointRepo.persist(branchPoint);
         } else {
-          latestCommit.setCommitId(receivedCommitReportCommitId);
-          latestCommit.update();
+          this.latestCommitRepository.updateCommitIdOfLatestCommit(
+              receivedCommitReportCommitId, latestCommit);
         }
       } else { // NOPMD
-        commitReport.persist();
-        LatestCommit latestCommit = LatestCommit
+        this.commitReportRepo.persist(commitReport);
+        LatestCommit latestCommit = this.latestCommitRepository
             .findByLandscapeTokenAndApplicationNameAndBranchName(
                 receivedCommitReportLandscapeToken, receivedCommitReportApplicationName,
                 receivedCommitReportBranchName);
         if (latestCommit == null) {
           // commit of a new branch
-          latestCommit = new LatestCommit();
-          latestCommit.setBranchName(receivedCommitReportBranchName);
-          latestCommit.setCommitId(receivedCommitReportCommitId);
-          latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
-          latestCommit.setApplicationName(receivedCommitReportApplicationName);
-          latestCommit.persist();
+          latestCommit =
+              new LatestCommit(receivedCommitReportCommitId, receivedCommitReportBranchName,
+                  receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
 
-          final BranchPoint branchPoint = new BranchPoint();
-          branchPoint.setBranchName(receivedCommitReportBranchName);
-          branchPoint.setCommitId(receivedCommitReportCommitId);
-          branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
-          branchPoint.setApplicationName(receivedCommitReportApplicationName);
-          branchPoint.setEmergedFromCommitId("UNKNOWN-EMERGED-COMMIT");
-          branchPoint.setEmergedFromBranchName("UNKNOWN-EMERGED-BRANCH");
-          branchPoint.persist();
+          this.latestCommitRepository.persist(latestCommit);
+
+          final BranchPoint branchPoint =
+              new BranchPoint(receivedCommitReportCommitId, receivedCommitReportBranchName,
+                  "UNKNOWN-EMERGED-BRANCH", "UNKNOWN-EMERGED-COMMIT",
+                  receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+          this.branchPointRepo.persist(branchPoint);
         } else {
-          latestCommit.setCommitId(receivedCommitReportCommitId);
-          latestCommit.update();
+          this.latestCommitRepository.updateCommitIdOfLatestCommit(
+              receivedCommitReportCommitId, latestCommit);
         }
-        Application application = Application.findByLandscapeTokenAndApplicationName(
-            receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+
+        Application application =
+            this.appRepo.findByLandscapeTokenAndApplicationName(receivedCommitReportLandscapeToken,
+                receivedCommitReportApplicationName);
+
         if (application == null) {
-          application = new Application();
-          application.setApplicationName(receivedCommitReportApplicationName);
-          application.setLandscapeToken(receivedCommitReportLandscapeToken);
-          application.persist();
+          application = new Application(receivedCommitReportApplicationName,
+              receivedCommitReportLandscapeToken);
+          this.appRepo.persist(application);
         }
       }
     } else {
       // first commit ever
-      commitReport.persist();
-      final LatestCommit latestCommit = new LatestCommit();
-      latestCommit.setBranchName(receivedCommitReportBranchName);
-      latestCommit.setCommitId(receivedCommitReportCommitId);
-      latestCommit.setLandscapeToken(receivedCommitReportLandscapeToken);
-      latestCommit.setApplicationName(receivedCommitReportApplicationName);
-      latestCommit.persist();
-      final BranchPoint branchPoint = new BranchPoint();
-      branchPoint.setBranchName(receivedCommitReportBranchName);
-      branchPoint.setCommitId(receivedCommitReportCommitId);
-      branchPoint.setLandscapeToken(receivedCommitReportLandscapeToken);
-      branchPoint.setApplicationName(receivedCommitReportApplicationName);
-      branchPoint.setEmergedFromBranchName(NO_ANCESTOR);
-      branchPoint.setEmergedFromCommitId("");
-      branchPoint.persist();
+      this.commitReportRepo.persist(commitReport);
 
-      Application application = Application.findByLandscapeTokenAndApplicationName(
-          receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+      final LatestCommit latestCommit =
+          new LatestCommit(receivedCommitReportCommitId, receivedCommitReportBranchName,
+              receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+      this.latestCommitRepository.persist(latestCommit);
+
+      final BranchPoint branchPoint =
+          new BranchPoint(receivedCommitReportCommitId, receivedCommitReportBranchName, NO_ANCESTOR,
+              "", receivedCommitReportLandscapeToken, receivedCommitReportApplicationName);
+
+      this.branchPointRepo.persist(branchPoint);
+
+      Application application =
+          this.appRepo.findByLandscapeTokenAndApplicationName(receivedCommitReportLandscapeToken,
+              receivedCommitReportApplicationName);
+
       if (application == null) {
-        application = new Application();
-        application.setApplicationName(receivedCommitReportApplicationName);
-        application.setLandscapeToken(receivedCommitReportLandscapeToken);
-        application.persist();
+        application = new Application(receivedCommitReportApplicationName,
+            receivedCommitReportLandscapeToken);
+
+        this.appRepo.persist(application);
       }
     }
   }

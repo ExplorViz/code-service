@@ -31,6 +31,11 @@ dependencies {
     testImplementation 'com.google.protobuf:protobuf-java-util:4.26.1'
 }
 
+configurations.all {
+    // https://github.com/quarkusio/quarkus/wiki/Migration-Guide-3.0#fixation-of-the-mockito-subclass-mockmaker
+    exclude group: 'org.mockito', module: 'mockito-subclass'
+}
+
 group 'net.explorviz'
 version '1.0-SNAPSHOT'
 
