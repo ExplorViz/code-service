@@ -33,19 +33,13 @@ build:
     paths:
       - build
 
-pmd:
+detekt:
   stage: code-analysis
-  script: ./gradlew pmdMain
-  artifacts:
-    paths:
-      - build
+  script: ./gradlew detekt
 
-checkstyle:
+spotless:
   stage: code-analysis
-  script: ./gradlew checkstyleMain
-  artifacts:
-    paths:
-      - build
+  script: ./gradlew spotlessCheck
 
 test:
   image: eclipse-temurin:21.0.1_12-jdk

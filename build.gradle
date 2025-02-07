@@ -3,9 +3,14 @@ plugins {
     id 'io.quarkus'
     id 'com.adarshr.test-logger' version '3.2.0'
     id "org.kordamp.gradle.jandex" version "1.1.0"
-}
 
-apply from: 'buildscripts/code-analysis.gradle'
+    id "org.jetbrains.kotlin.jvm" version "2.0.21"
+    id "org.jetbrains.kotlin.plugin.allopen" version "2.0.21"
+
+    id "io.gitlab.arturbosch.detekt" version "1.23.7"
+    id "com.diffplug.spotless" version "6.25.0"
+    id "jacoco"
+}
 
 repositories {
     mavenCentral()
@@ -23,6 +28,9 @@ dependencies {
     implementation 'io.quarkus:quarkus-rest-jackson'
     implementation 'io.quarkus:quarkus-grpc'
 
+    implementation "io.quarkus:quarkus-kotlin"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
     testImplementation 'io.quarkus:quarkus-test-mongodb'
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.quarkus:quarkus-panache-mock'
@@ -38,6 +46,10 @@ configurations.all {
 
 group 'net.explorviz'
 version '1.0-SNAPSHOT'
+
+kotlin {
+    jvmToolchain(21)
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -63,14 +75,6 @@ sourceSets {
 
 // Regarding jandex dependency for each task
 // https://github.com/kordamp/jandex-gradle-plugin/issues/9
-
-tasks.named('checkstyleMain') {
-    dependsOn 'jandex'
-}
-
-tasks.named('pmdMain') {
-    dependsOn 'jandex'
-}
 
 tasks.named('compileTestJava') {
     dependsOn 'jandex'
@@ -107,4 +111,20 @@ tasks.withType(JavaCompile).configureEach {
 test {
     useJUnitPlatform()
     testLogging.showStandardStreams = true
+}
+
+// Needed by Mockito since closed Kotlin classes cannot be mocked
+allOpen {
+    annotation("jakarta.ws.rs.Path")
+    annotation("jakarta.enterprise.context.ApplicationScoped")
+    annotation("jakarta.persistence.Entity")
+    annotation("io.quarkus.test.junit.QuarkusTest")
+}
+
+spotless {
+    kotlin {
+        ktfmt().kotlinlangStyle().configure {
+            it.setMaxWidth(120)
+        }
+    }
 }
