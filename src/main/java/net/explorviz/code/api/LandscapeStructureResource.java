@@ -100,7 +100,7 @@ public class LandscapeStructureResource {
     final List<Package> packages =
         this.landscapeStructureHelper.createListOfPackages(token, commit, appName);
     if (packages != null) {
-      return this.buildLandscapeStructure(token, appName, packages);
+      return this.landscapeStructureHelper.buildLandscapeStructure(token, appName, packages);
     }
     return new LandscapeStructure();
   }
@@ -279,7 +279,7 @@ public class LandscapeStructureResource {
       System.out.println(resPackage);
       System.out.println("---------------------------------------");
     }
-    return this.buildLandscapeStructure(token, appName, packagesFirstSelectedCommit);
+    return this.landscapeStructureHelper.buildLandscapeStructure(token, appName, packagesFirstSelectedCommit);
   }
 
   private Class getClassByNameFromPackage(final String className, final Package pckg) {
@@ -291,27 +291,6 @@ public class LandscapeStructureResource {
     return null;
   }
 
-  private LandscapeStructure buildLandscapeStructure(final String landscapeToken,
-      final String appName, final List<Package> packages) {
-    final Node node = new Node();
-    node.setIpAddress("0.0.0.0"); // NOPMD
-    node.setHostName("default-node");
-    node.setApplications(new ArrayList<>());
-
-    final Application application = new Application();
-    application.setName(appName);
-    application.setLanguage("java");
-    application.setInstanceId("0");
-    application.setPackages(packages);
-    node.getApplications().add(application);
-
-    final LandscapeStructure landscapeStructure = new LandscapeStructure();
-    landscapeStructure.setLandscapeToken(TokenHelper.handlePotentialDummyToken(landscapeToken));
-    landscapeStructure.setNodes(new ArrayList<>());
-    landscapeStructure.getNodes().add(node);
-
-    return landscapeStructure;
-  }
 
   /**
    * Helper Class.

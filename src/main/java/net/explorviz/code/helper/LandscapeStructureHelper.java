@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.explorviz.code.dto.LandscapeStructure;
+import net.explorviz.code.dto.LandscapeStructure.Node;
+import net.explorviz.code.dto.LandscapeStructure.Node.Application;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
@@ -40,6 +44,11 @@ public class LandscapeStructureHelper {
     this.commitReportRepository = commitReportRepository;
     this.fileReportRepository = fileReportRepository;
     this.fileReportTableRepository = fileReportTableRepository;
+  }
+
+  public List<Package> createListOfPackagesFromNodeList() {
+    // TODO
+    return new ArrayList<>();
   }
 
   /**
@@ -89,6 +98,36 @@ public class LandscapeStructureHelper {
   }
 
   /**
+   * Create a LandscapeStructure from a list of packages.
+   *
+   * @param landscapeToken encompassing token
+   * @param appName        encompassing app name
+   * @param packages      list of packages
+   * @return a LandscapeStructure containing the given packages
+   */
+  public LandscapeStructure buildLandscapeStructure(final String landscapeToken,
+      final String appName, final List<Package> packages) {
+    final Node node = new Node();
+    node.setIpAddress("0.0.0.0"); // NOPMD
+    node.setHostName("default-node");
+    node.setApplications(new ArrayList<>());
+
+    final Application application = new Application();
+    application.setName(appName);
+    application.setLanguage("java");
+    application.setInstanceId("0");
+    application.setPackages(packages);
+    node.getApplications().add(application);
+
+    final LandscapeStructure landscapeStructure = new LandscapeStructure();
+    landscapeStructure.setLandscapeToken(TokenHelper.handlePotentialDummyToken(landscapeToken));
+    landscapeStructure.setNodes(new ArrayList<>());
+    landscapeStructure.getNodes().add(node);
+
+    return landscapeStructure;
+  }
+
+  /**
    * Get list of filereports using batch queries.
    *
    * @param landscapeToken encompassing token
@@ -119,6 +158,10 @@ public class LandscapeStructureHelper {
         actualCommitIdToFqnMap);
   }
 
+
+  private void processXMLUnitElementNode() {
+    // TODO
+  }
 
   private void processFileReport(String landscapeToken, String fileNameWithoutFileExtension,
       String appName, FileReport fileReport, Map<String, Package> packageNameToPackageMap,
