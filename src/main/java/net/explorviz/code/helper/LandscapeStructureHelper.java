@@ -79,7 +79,7 @@ public class LandscapeStructureHelper {
     int counter = 0;
     int size = fileReports.size();
     for (final FileReport fileReport : fileReports) {
-      LOGGER.atTrace().log("Processing file report #" + (counter++) + " out of " + size);
+      LOGGER.atInfo().log("Processing file report #" + (counter++) + " out of " + size);
       if (fileReport == null) {
         continue;
       }
@@ -113,7 +113,7 @@ public class LandscapeStructureHelper {
     int counter = 0;
     int size = fileNames.size();
     for (final String file : fileNames) {
-      LOGGER.atTrace().log("Processing file #" + counter++ + " out of " + size);
+      LOGGER.atInfo().log("Processing file #" + counter++ + " out of " + size);
       final String[] fileAndFolders = file.split("/");
       final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders);
 
