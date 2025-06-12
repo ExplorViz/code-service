@@ -15,6 +15,8 @@ import net.explorviz.code.persistence.repository.LatestCommitRepository;
 @ApplicationScoped
 public class CommitComparisonHelper {
 
+  static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory
+      .getLogger(CommitComparisonHelper.class);
   private final LatestCommitRepository latestCommitRepository;
   private final BranchPointRepository branchPointRepository;
   private final CommitReportRepository commitReportRepository;
@@ -38,6 +40,9 @@ public class CommitComparisonHelper {
   public String getLatestCommonCommitId(final String firstSelectedId, // NOPMD
       final String secondSelectedId, final String landscapeToken,
       final String applicationName) {
+
+    LOGGER.atInfo().log("Finding latest common commit for {} and {} in landscape {}",
+        firstSelectedId, secondSelectedId, landscapeToken);
 
     final CommitReport firstSelected =
         this.commitReportRepository.findByTokenAndApplicationNameAndCommitId(
@@ -177,8 +182,11 @@ public class CommitComparisonHelper {
 
       final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.files();
       final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.files();
+      java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
+      int size = filesInSecondSelectedCommit.size();
       filesInSecondSelectedCommit.forEach(file -> {
-
+        int currentCount = counter.incrementAndGet();
+        LOGGER.atInfo().log("Processing for added file {}/{}: {}", currentCount, size, file);
         if (!filesInFirstSelectedCommit.contains(file)) {
           addedFiles.add(file);
         }
@@ -212,7 +220,11 @@ public class CommitComparisonHelper {
         commitReportSecondSelectedCommit != null) {
       final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.files();
       final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.files();
+      java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
+      int size = filesInFirstSelectedCommit.size();
       filesInFirstSelectedCommit.forEach(file -> {
+        int currentCount = counter.incrementAndGet();
+        LOGGER.atInfo().log("Processing for deleted file {}/{}: {}", currentCount, size, file);
         if (!filesInSecondSelectedCommit.contains(file)) {
           deletedFiles.add(file);
         }
@@ -248,7 +260,11 @@ public class CommitComparisonHelper {
       final List<String> filesInFirstSelectedCommit = commitReportFirstSelectedCommit.files();
       final List<String> filesInSecondSelectedCommit = commitReportSecondSelectedCommit.files();
 
+      java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
+      int sizeFirst = filesInFirstSelectedCommit.size();
       filesInFirstSelectedCommit.forEach(file -> {
+        int currentCount = counter.incrementAndGet();
+        LOGGER.atInfo().log("Processing for modified file {}/{}: {}", currentCount, sizeFirst, file);
         if (filesInSecondSelectedCommit.contains(file)) {
           final int indexFirstSelected = filesInFirstSelectedCommit.indexOf(file);
           final int indexSecondSelected = filesInSecondSelectedCommit.indexOf(file);

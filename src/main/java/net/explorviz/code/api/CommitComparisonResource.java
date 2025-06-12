@@ -27,6 +27,8 @@ import net.explorviz.code.persistence.entity.FileReport.ClassData2.MethodData2;
 @Path("/v2/code/commit-comparison/{token}/{appName}")
 public class CommitComparisonResource {
 
+  private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory
+      .getLogger(CommitComparisonResource.class);
   private final CommitComparisonHelper commitComparisonHelper;
   private final LandscapeStructureHelper landscapeStructureHelper;
 
@@ -55,7 +57,8 @@ public class CommitComparisonResource {
       firstCommit = secondCommit; // NOPMD
       secondCommit = temp; // NOPMD
     }
-
+    LOGGER.atInfo().log("Comparing commits {} and {} for application {} with token {} ...",
+        firstCommit, secondCommit, appName, token);
     final List<String> added = this.commitComparisonHelper.getComparisonAddedFiles(
         firstCommit,
         secondCommit, token, appName);
@@ -81,7 +84,11 @@ public class CommitComparisonResource {
 
     // TODO: REFACTOR
     // fill addedPackages with the packages that are added
+    int counter = 0;
+    int size = added.size();
     for (final String fqFileName : added) {
+      counter++;
+      LOGGER.atInfo().log("Add file... {}/{}: {}", counter, size, fqFileName);
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport = this.landscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, secondCommit);
@@ -141,7 +148,11 @@ public class CommitComparisonResource {
     }
 
     // fill deletedPackages with the packages that are deleted
+    counter = 0;
+    size = deleted.size();
     for (final String fqFileName : deleted) {
+      counter++;
+      LOGGER.atInfo().log("Delete file... {}/{}: {}", counter, size, fqFileName);
       final String fqFileNameDotSeparator = fqFileName.replaceAll("/", ".");
       final FileReport fileReport = this.landscapeStructureHelper.getFileReport(token, appName,
           fqFileNameDotSeparator, firstCommit);
@@ -202,7 +213,12 @@ public class CommitComparisonResource {
 
     // add metrics from added-files
     final String secondCommitFinal = secondCommit;
+    final java.util.concurrent.atomic.AtomicInteger counterAtomic = new java.util.concurrent.atomic.AtomicInteger(0);
+    size = added.size();
+    final int addedSize = size;
     added.forEach(fqFileName -> {
+      int currentCount = counterAtomic.incrementAndGet();
+      LOGGER.atInfo().log("Add metrics... {}/{}: {}", currentCount, addedSize, fqFileName);
       fqFileName = fqFileName.replaceAll("\\/", ".");
       final FileReport fileReport = this.landscapeStructureHelper.getFileReport(token,
           appName, fqFileName, secondCommitFinal);

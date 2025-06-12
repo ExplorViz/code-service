@@ -9,6 +9,7 @@ import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import net.explorviz.code.analysis.FileDataAnalysis;
+import net.explorviz.code.persistence.entity.FileReportTable;
 import net.explorviz.code.persistence.repository.FileReportTableRepository;
 import net.explorviz.code.proto.FileData;
 import net.explorviz.code.proto.FileRequest;
@@ -39,9 +40,12 @@ public class FileDataServiceImpl implements FileDataService {
         String landscapeToken = request.getLandscapeToken();
         String applicationName = request.getApplicationName();
 
-        Map<String, String> fileNamesToCommitIdMap = fileReportTableRepository.findByTokenAndAppName(landscapeToken, applicationName)
-                .getCommitIdTofqnFileNameToCommitIdMap()
+        final FileReportTable filreReportTable = fileReportTableRepository.findByTokenAndAppName(landscapeToken, applicationName);
+        Map<String, String> fileNamesToCommitIdMap = new HashMap<>();
+        if(filreReportTable != null) {
+          fileNamesToCommitIdMap = filreReportTable.getCommitIdTofqnFileNameToCommitIdMap()
                 .getOrDefault(commitId, new HashMap<>());
+        }
 
         List<String> fileNames = fileNamesToCommitIdMap.keySet().stream().toList();
 

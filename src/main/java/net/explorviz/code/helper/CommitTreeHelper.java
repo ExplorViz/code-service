@@ -65,9 +65,21 @@ public class CommitTreeHelper {
         .findAllLatestCommitsByLandscapeTokenAndApplicationName(
             landscapeToken, appName, branchNames);
 
+    /*
+    // DEBUGGING: Check for duplicate branches
+    Map<String, List<LatestCommit>> grouped = latestCommits.stream()
+    .collect(Collectors.groupingBy(LatestCommit::branchName));
+
+    grouped.entrySet().stream()
+        .filter(e -> e.getValue().size() > 1)
+        .forEach(e -> System.out.println("Duplicate branch: " + e.getKey() + " -> " + e.getValue()));
+    // END DEBUGGING
+    */
+
     // Map latest commits by branch name for quick access
     Map<String, LatestCommit> latestCommitMap = latestCommits.stream()
-        .collect(Collectors.toMap(LatestCommit::branchName, Function.identity()));
+        .collect(Collectors.toMap(LatestCommit::branchName, Function.identity()/*, (existing, duplicate) -> existing)
+        */)); // TODO: We had a bug where identical entries were added to the map. We still need to find out why so we don't have to use this workaround.
 
     // Process each branch point
     for (BranchPoint branchPoint : branchPoints) {
