@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class;
 import net.explorviz.code.dto.LandscapeStructure.Node.Application.Package.Class.Method;
@@ -25,6 +29,9 @@ import net.explorviz.code.persistence.repository.FileReportTableRepository;
 
 @ApplicationScoped
 public class LandscapeStructureHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LandscapeStructureHelper.class);
+
 
   private final Map<String, FileReportTable> fileReportTableMap =
       new ConcurrentHashMap<>();
@@ -69,7 +76,10 @@ public class LandscapeStructureHelper {
     List<FileReport> fileReports =
         this.getFileReports(landscapeToken, appName, commitId, files);
 
+    int counter = 0;
+    int size = fileReports.size();
     for (final FileReport fileReport : fileReports) {
+      LOGGER.atTrace().log("Processing file report #" + (counter++) + " out of " + size);
       if (fileReport == null) {
         continue;
       }
@@ -100,7 +110,10 @@ public class LandscapeStructureHelper {
   public List<FileReport> getFileReports(String landscapeToken, String appName,
       String commitId, List<String> fileNames) {
     Map<String, List<String>> actualCommitIdToFqnMap = new HashMap<>();
+    int counter = 0;
+    int size = fileNames.size();
     for (final String file : fileNames) {
+      LOGGER.atTrace().log("Processing file #" + counter++ + " out of " + size);
       final String[] fileAndFolders = file.split("/");
       final String fileAndFoldersWithDotSeparation = String.join(".", fileAndFolders);
 
