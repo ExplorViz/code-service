@@ -101,10 +101,14 @@ public class CommitComparisonHelper {
               .equals(b1.emergedFromBranchName()));
         });
 
+    if(firstSelectedBranchPoints.isEmpty()) {
+      return "";
+    }
+
     final String latestCommonBranchName = firstSelectedBranchPoints.getFirst()
         .emergedFromBranchName();
     String firstSelectedCommitInCommonBranch = firstSelectedBranchPoints.getFirst() // NOPMD
-        .emergedFromBranchName();
+        .emergedFromCommitId();
     final List<BranchPoint> temp = secondSelectedBranchPoints.stream()
         .filter(b -> b.emergedFromBranchName()
             .equals(latestCommonBranchName
@@ -120,6 +124,8 @@ public class CommitComparisonHelper {
         return firstSelectedCommitInCommonBranch;
       }
 
+      // Now we have the commit ids of the both branch points coming from the same branch
+      
       // the common commit id is the one that comes before the other
       final LatestCommit latestCommit =
           this.latestCommitRepository.findByLandscapeTokenAndApplicationNameAndBranchName(

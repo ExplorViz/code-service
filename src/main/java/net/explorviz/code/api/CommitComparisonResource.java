@@ -268,7 +268,12 @@ public class CommitComparisonResource {
 
     // add metrics from modified-files
     final String firstCommitFinal = firstCommit;
+    size = modified.size();
+    final int modifiedSize = size;
+    counterAtomic.set(0);
     modified.forEach(fqFileName -> {
+      LOGGER.atInfo().log("Modify metrics... {}/{}: {}", counterAtomic.incrementAndGet(),
+          modifiedSize, fqFileName);
       fqFileName = fqFileName.replaceAll("\\/", ".");
       final FileReport fileReportFirstSelectedCommit = this.landscapeStructureHelper.getFileReport(
           token, appName, fqFileName, firstCommitFinal);

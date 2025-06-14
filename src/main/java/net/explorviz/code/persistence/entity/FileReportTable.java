@@ -5,7 +5,13 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * ...
+ * The idea behind the FileReportTable is to determine, from the perspective of a given "standpoint" commit,
+ * the most recent commit (possibly earlier than the current one) in which a file report was generated.
+ *
+ * A file report is only created for files that were added or modified in a commit.
+ * From the standpoint of a given commit, the relevant file report is always associated
+ * with the latest commit in which that file was changed. This means the most recent
+ * possible commit for a file report is the standpoint commit itself (if it modified the file).
  */
 
 public class FileReportTable extends PanacheMongoEntity {
@@ -13,7 +19,7 @@ public class FileReportTable extends PanacheMongoEntity {
   private String landscapeToken;
   private String appName;
   // finds the commit id for the corresponding file report
-  private Map<String, Map<String, String>> commitIdTofqnFileNameToCommitIdMap;
+  private Map<String, Map<String, String>> commitIdTofqnFileNameToCommitIdMap; // standpoint commit id -> Map<file name, commit id>
 
   @Override
   public int hashCode() {

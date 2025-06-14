@@ -69,9 +69,10 @@ public class CommitReportAnalysis {
         receivedCommitReportLandscapeToken, receivedCommitReportApplicationName,
         receivedCommitReportCommitId);
 
-    if (oldReport != null) {
+    // If the commit report already exists, we still might want to update the it due to new file reports
+    /*if (oldReport != null) {
       return;
-    }
+    }*/
 
     final String receivedCommitReportAncestorId = commitReportData.getParentCommitID();
     // Add entry for FileReportTable. We need to initiate it here because there can be some
@@ -101,7 +102,7 @@ public class CommitReportAnalysis {
 
           for (final Map.Entry<String, String> entry : parentEntries.entrySet()) {
             if (keyExists) {
-              if (!fqFileNameToCommitId.containsKey(entry.getKey())) { // don't overwrite new data
+              if (!fqFileNameToCommitId.containsKey(entry.getKey())) { // if-clause so we don't overwrite newer data
                 fqFileNameToCommitId.put(entry.getKey(), entry.getValue());
               }
             } else {
