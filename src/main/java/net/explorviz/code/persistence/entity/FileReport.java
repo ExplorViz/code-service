@@ -2,16 +2,21 @@ package net.explorviz.code.persistence.entity; // NOPMD
 
 import java.util.List;
 import java.util.Map;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.types.ObjectId;
 
 /**
  * A class for the file reports that the code-agent sends to us.
  */
 public class FileReport {
 
+  @BsonId
+  private ObjectId id;
+
   private String landscapeToken;
   private String appName;
   private String commitId;
-  private String fileName; // class name (not full qualified) + ".java" 
+  private String fileName; // class name (not full qualified) + ".java"
   private String packageName; // includes parent package names separated by dots
   private List<String> importName; // list of full qualified class names
   private Map<String, ClassData2> classData;
@@ -20,6 +25,14 @@ public class FileReport {
   private String modifiedLines;
   private String addedLines;
   private String deletedLines;
+
+  public ObjectId getId() {
+    return this.id;
+  }
+
+  public void setId(final ObjectId id) {
+    this.id = id;
+  }
 
   public String getLandscapeToken() {
     return this.landscapeToken;
@@ -231,7 +244,6 @@ public class FileReport {
       this.classMetric = classMetric;
     }
 
-
     /**
      * An enum for the type of class.
      */
@@ -327,7 +339,7 @@ public class FileReport {
       }
 
       // public boolean getConstructor() { // NOPMD
-      //   return this.constructor;
+      // return this.constructor;
       // }
 
       public void setConstructor(final boolean isConstructor) {
@@ -386,5 +398,3 @@ public class FileReport {
     }
   }
 }
-
-
