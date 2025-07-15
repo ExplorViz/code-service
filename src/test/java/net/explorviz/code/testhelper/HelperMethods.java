@@ -51,18 +51,20 @@ public class HelperMethods {
       final CommitReport.FileMetric fileMetric = new CommitReport.FileMetric(); // NOPMD
       fileMetric.setFileName(fileMetricData.getFileName());
       fileMetric.setLoc(fileMetricData.getLoc());
+      fileMetric.setCloc(fileMetricData.getCloc());
+      fileMetric.setSize(fileMetricData.getFileSize());
       fileMetric.setCyclomaticComplexity(fileMetricData.getCyclomaticComplexity());
       fileMetric.setNumberOfMethods(fileMetricData.getNumberOfMethods());
       receivedCommitReportFileMetric.add(fileMetric);
     }
 
-    final CommitReport commitReport =
-        new CommitReport(commitReportData.getCommitID(), commitReportData.getParentCommitID(),
-            commitReportData.getBranchName(), commitReportData.getFilesList(),
-            commitReportData.getModifiedList(), commitReportData.getDeletedList(),
-            commitReportData.getAddedList(), receivedCommitReportFileMetric,
-            commitReportData.getLandscapeToken(), commitReportData.getFileHashList(),
-            commitReportData.getApplicationName());
+    final CommitReport commitReport = new CommitReport(commitReportData.getCommitID(),
+        commitReportData.getParentCommitID(),
+        commitReportData.getBranchName(), commitReportData.getFilesList(),
+        commitReportData.getModifiedList(), commitReportData.getDeletedList(),
+        commitReportData.getAddedList(), receivedCommitReportFileMetric,
+        commitReportData.getLandscapeToken(), commitReportData.getFileHashList(),
+        commitReportData.getApplicationName());
     return commitReport;
   }
 

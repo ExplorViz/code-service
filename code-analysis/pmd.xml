@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
 <ruleset name="Custom Rules"
-    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+  xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
 
   <description>CAU-SE PMD ruleset</description>
 
@@ -31,19 +31,19 @@
   <rule ref="category/java/documentation.xml">
     <exclude name="CommentRequired" />
   </rule>
-  
+
   <rule ref="category/java/codestyle.xml/TooManyStaticImports">
     <properties>
-        <property name="maximumStaticImports" value="8" />
+      <property name="maximumStaticImports" value="8" />
     </properties>
   </rule>
-  
+
   <rule ref="category/java/design.xml/ExcessiveImports">
     <properties>
-        <property name="minimum" value="50.0" />
+      <property name="minimum" value="50.0" />
     </properties>
   </rule>
-    
+
 
   <rule ref="category/java/errorprone.xml">
     <exclude name="BeanMembersShouldSerialize" />
@@ -66,8 +66,8 @@
 
   <rule ref="category/java/documentation.xml/CommentSize">
     <properties>
-      <property name="maxLines" value="100" />
-      <property name="maxLineLength" value="100" />
+      <property name="maxLines" value="120" />
+      <property name="maxLineLength" value="120" />
     </properties>
   </rule>
 
@@ -83,20 +83,19 @@
         value="[A-Z][a-zA-Z0-9]+" />
     </properties>
   </rule>
-  
+
   <rule ref="category/java/design.xml/CyclomaticComplexity">
     <properties>
-        <property name="classReportLevel" value="40" />
-        <property name="methodReportLevel" value="15" />
+      <property name="classReportLevel" value="40" />
+      <property name="methodReportLevel" value="15" />
     </properties>
   </rule>
-  
+
   <rule ref="category/java/design.xml/NPathComplexity">
     <properties>
-        <property name="minimum" value="250.0" />
+      <property name="minimum" value="250.0" />
     </properties>
   </rule>
-  
-  
+
 
 </ruleset>
