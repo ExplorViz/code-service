@@ -24,8 +24,12 @@ public class ApplicationsResource {
   }
 
   /**
-   * ... * @param token the landscape token. * @return A list of application names that have been
-   * analyzed and are part of * the landscape with the given token.
+   * Retrieves a list of application names that have been analyzed and are part of the landscape
+   * with the given token.
+   *
+   * @param token The landscape token.
+   * @return A list of application names that have been analyzed and are part of the landscape
+   *     with the given token.
    */
   @GET
   @Path("applications/{token}")

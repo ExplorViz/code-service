@@ -29,7 +29,7 @@ public class StateDataAnalysis {
    * commit.
    *
    * @param stateDataRequest the StateDataRequest to handle
-   * @return the current commit's sha1
+   * @return The current commit's sha1
    */
   public String processStateData(final StateDataRequest stateDataRequest) {
 

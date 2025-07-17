@@ -1,18 +1,16 @@
 package net.explorviz.code.dto;
 
-import java.util.List;
 import java.util.Map;
 
 /**
  * The class containing the metrics for every file of a commit.
  *
- * @param files         list of fq filenames
- * @param fileMetrics   todo
- * @param classMetrics  todo
- * @param methodMetrics todo
+ * @param fileMetrics   Map file name (better: path) to metrics
+ * @param classMetrics  Map full qualified name to metrics
+ * @param methodMetrics Map fqn of containing class to metrics of method
  */
-public record Metrics(List<String> files, List<Map<String, String>> fileMetrics,
-                      List<Map<String, Map<String, String>>> classMetrics,
-                      List<Map<String, Map<String, String>>> methodMetrics) {
+public record Metrics(Map<String, Map<String, String>> fileMetrics,
+                      Map<String, Map<String, String>> classMetrics,
+                      Map<String, Map<String, String>> methodMetrics) {
 
 }

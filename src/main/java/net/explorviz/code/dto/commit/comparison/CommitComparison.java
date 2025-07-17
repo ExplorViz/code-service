@@ -1,6 +1,7 @@
 package net.explorviz.code.dto.commit.comparison;
 
 import java.util.List;
+import java.util.Map;
 
 public record CommitComparison(
     List<String> added,
@@ -8,7 +9,7 @@ public record CommitComparison(
     List<String> deleted,
     List<String> addedPackages,
     List<String> deletedPackages,
-    List<Metric> metrics
+    Map<String, Metric> metrics
 ) {
-
+  
 }

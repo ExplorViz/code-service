@@ -72,7 +72,7 @@ public class CommitComparisonResource {
 
     final List<String> deletedPackages = new ArrayList<>();
 
-    final List<Metric> metrics = new ArrayList<>();
+    final Map<String, Metric> metrics = new HashMap<>();
 
     final List<Package> packagesFirstSelectedCommit = this.landscapeStructureHelper
         .createListOfPackages(token, firstCommit, appName);
@@ -223,7 +223,7 @@ public class CommitComparisonResource {
           }
 
           final Metric classMetric = new Metric(entry.getKey(), classMetricMap);
-          metrics.add(classMetric);
+          metrics.put(fqFileName, classMetric);
 
           // add method metric
           final Map<String, MethodData2> methodData = classData.getMethodData();
@@ -244,7 +244,7 @@ public class CommitComparisonResource {
               methodMetricMap.put(metricKey, metricVal2);
             }
             final Metric methodMetric = new Metric(methodMetricEntry.getKey(), methodMetricMap);
-            metrics.add(methodMetric);
+            metrics.put(fqFileName, methodMetric);
           }
         }
       }
@@ -285,7 +285,7 @@ public class CommitComparisonResource {
           }
 
           final Metric classMetric = new Metric(entry.getKey(), classMetricMap);
-          metrics.add(classMetric);
+          metrics.put(fqFileName, classMetric);
 
           // add method metric
           final Map<String, MethodData2> methodData = classDataFirstSelectedCommit.getMethodData();
@@ -313,7 +313,7 @@ public class CommitComparisonResource {
               methodMetricMap.put(metricKey, metricVal2);
             }
             final Metric methodMetric = new Metric(methodMetricEntry.getKey(), methodMetricMap);
-            metrics.add(methodMetric);
+            metrics.put(fqFileName, methodMetric);
           }
         }
       }

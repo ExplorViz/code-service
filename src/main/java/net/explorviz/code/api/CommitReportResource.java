@@ -25,8 +25,12 @@ public class CommitReportResource {
   }
 
   /**
-   * ... * @param token the landsacpe token. * @param appName the application name. * @param commit
-   * the commit id. * @return the commit report matching the params.
+   * Retrieves the commit report for given commit.
+   *
+   * @param token The landscape token.
+   * @param appName The application name.
+   * @param commit The commit ID.
+   * @return The commit report for given commit ID.
    */
   @GET
   public CommitReport list(@PathParam("token") final String token,
@@ -36,8 +40,6 @@ public class CommitReportResource {
             appName, commit);
 
     return new CommitReport(cr, TokenHelper.handlePotentialDummyToken(cr.landscapeToken()));
-    // we could enhance the file metric with the help of the
-    // FileReport before we return
   }
 
 }

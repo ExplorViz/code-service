@@ -90,8 +90,12 @@ public class LandscapeStructureResource {
   }
 
   /**
-   * ... * @param token the landscape token. * @param appName the application name. * @param commit
-   * the commit id. * @return the static landscape structure matching the params above.
+   * Retrieves the static landscape structure matching the provided parameters.
+   *
+   * @param token The landscape token.
+   * @param appName The application name.
+   * @param commit The commit ID.
+   * @return The static landscape structure matching the parameters.
    */
   @Path("{commit}")
   @GET
@@ -106,10 +110,15 @@ public class LandscapeStructureResource {
   }
 
   /**
-   * ... * @param token the landscape token. * @param appName the application name. * @param
-   * firstCommit the first selected commit id. * @param secondCommit the second selected commit id.
-   * * @return the combination of the static landscape structures for the * first and second
-   * selected commit.
+   * Retrieves the combination of the static landscape structures for the first and second selected
+   * commit.
+   *
+   * @param token The landscape token.
+   * @param appName The application name.
+   * @param firstCommit The first selected commit ID.
+   * @param secondCommit The second selected commit ID.
+   * @return The combination of the static landscape structures for the first and second selected
+   *     commit.
    */
   @Path("{firstCommit}-{secondCommit}")
   @GET

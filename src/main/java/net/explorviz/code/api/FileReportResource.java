@@ -22,12 +22,16 @@ public class FileReportResource {
   }
 
   /**
-   * ... * @param token the landscape token. * @param appName the application name. * @param
-   * fqFileName the full qualified file name. * @param commit the commit id. * @return the file
-   * report matching the params above. If the * file with the given file name has not been added or
-   * modified * in the given commit, the file report gets returned that matches above params *
-   * except the commit id being the latest where the given file name has indeed been * modified or
-   * added.
+   * Retrieves the file report matching the provided parameters. If the file with the given file name
+   * has not been added or modified in the given commit, the file report gets returned that matches
+   * above params except the commit id being the latest where the given file name has indeed been
+   * modified or added.
+   *
+   * @param token The landscape token.
+   * @param appName The application name.
+   * @param fqFileName The fully qualified file name.
+   * @param commit The commit ID.
+   * @return The file report matching the parameters.
    */
   @Path("{token}/{appName}/{fqFileName}/{commit}")
   @GET

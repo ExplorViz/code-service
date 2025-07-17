@@ -29,12 +29,15 @@ public class CommitComparisonHelper {
   }
 
   /**
-   * ... * @param firstSelectedId the first selected commit id. * @param secondSelectedId the second
-   * selected commit id. * @return returns the empty string ("") if no latest common commit
-   * existent, otherwise its latest common commit id.
+   * Returns the latest common commit ID between two selected commits for a given landscape and
+   * application.
+   *
+   * @param firstSelectedId The ID of the first selected commit.
+   * @param secondSelectedId The ID of the second selected commit.
+   * @param landscapeToken The landscape token.
+   * @param applicationName The application name.
+   * @return The latest common commit ID, or an empty string ("") if no latest common commit exists.
    */
-
-
   public String getLatestCommonCommitId(final String firstSelectedId, // NOPMD
       final String secondSelectedId, final String landscapeToken,
       final String applicationName) {
@@ -152,10 +155,14 @@ public class CommitComparisonHelper {
   }
 
   /**
-   * ... * @param firstSelectedCommitId the first selected commit's id. * @param
-   * secondSelectedCommitId the second selected commit's id. * @param landscapeToken the landscape
-   * token * @return the list of file names that have been added in the second selected commit *
-   * (i.e. that exist in the second selected commit but not in the first selected commit).
+   * Retrieves the list of file names that have been added in the second selected commit (i.e., that
+   * exist in the second selected commit but not in the first selected commit).
+   *
+   * @param firstSelectedCommitId The first selected commit's ID.
+   * @param secondSelectedCommitId The second selected commit's ID.
+   * @param landscapeToken The landscape token.
+   * @param applicationName The application name.
+   * @return The list of file names that have been added in the second selected commit.
    */
   public List<String> getComparisonAddedFiles(final String firstSelectedCommitId, // NOPMD
       final String secondSelectedCommitId, final String landscapeToken,
@@ -189,10 +196,14 @@ public class CommitComparisonHelper {
   }
 
   /**
-   * ... * @param firstSelectedCommitId the first selected commit's id. * @param
-   * secondSelectedCommitId the second selected commit's id. * @param landscapeToken the landscape
-   * token. * @return the list of file names that have been deleted in the second selected commit *
-   * (i.e. that do not exist in the second selected commit but in the first selected commit).
+   * Retrieves the list of file names that have been deleted in the second selected commit (i.e.,
+   * that do not exist in the second selected commit but in the first selected commit).
+   *
+   * @param firstSelectedCommitId The first selected commit's ID.
+   * @param secondSelectedCommitId The second selected commit's ID.
+   * @param landscapeToken The landscape token.
+   * @param applicationName The application name.
+   * @return The list of file names that have been deleted in the second selected commit.
    */
   public List<String> getComparisonDeletedFiles(final String firstSelectedCommitId, // NOPMD
       final String secondSelectedCommitId, final String landscapeToken,
@@ -222,12 +233,15 @@ public class CommitComparisonHelper {
     return deletedFiles;
   }
 
-
   /**
-   * ... * @param firstSelectedCommitId the first selected commit's id. * @param
-   * secondSelectedCommitId the second selected commit's id. * @param landscapeToken the landscape
-   * token. * @return the list of file names that have been modified in the second selected commit *
-   * (i.e. files that exist in both commits but have a different hash value).
+   * Retrieves the list of file names that have been modified in the second selected commit (i.e.,
+   * files that exist in both commits but have a different hash value).
+   *
+   * @param firstSelectedCommitId The first selected commit's ID.
+   * @param secondSelectedCommitId The second selected commit's ID.
+   * @param landscapeToken The landscape token.
+   * @param applicationName The application name.
+   * @return The list of file names that have been modified in the second selected commit.
    */
   public List<String> getComparisonModifiedFiles(final String firstSelectedCommitId, // NOPMD
       final String secondSelectedCommitId, final String landscapeToken,

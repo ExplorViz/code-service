@@ -3,7 +3,6 @@ package net.explorviz.code.api;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +31,12 @@ public class MetricResource {
   }
 
   /**
-   * ... * @param token the landscape token * @param appName the application name. * @param commit
-   * the commit id. * @return the metrics and meta-data for all of a commit's files.
+   * Retrieves the metrics and metadata for all of a commit's files.
+   *
+   * @param token The landscape token.
+   * @param appName The application name.
+   * @param commit The commit ID.
+   * @return The metrics and metadata for all of a commit's files.
    */
   @Path("{token}/{appName}/{commit}")
   @GET
@@ -45,12 +48,12 @@ public class MetricResource {
             appName, commit);
 
     if (commitReport == null) {
-      return new Metrics(List.of(), List.of(), List.of(), List.of());
+      return new Metrics(new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
-    final List<Map<String, String>> fileMetrics = new ArrayList<>();
-    final List<Map<String, Map<String, String>>> classMetrics = new ArrayList<>();
-    final List<Map<String, Map<String, String>>> methodMetrics = new ArrayList<>();
+    final Map<String, Map<String, String>> fileMetrics = new HashMap<>();
+    final Map<String, Map<String, String>> classMetrics = new HashMap<>();
+    final Map<String, Map<String, String>> methodMetrics = new HashMap<>();
 
     final List<FileReport> relatedFileReports =
         this.landscapeStructureHelper.getFileReports(token, appName, commit,
@@ -58,49 +61,28 @@ public class MetricResource {
 
     for (final FileReport fileReport : relatedFileReports) {
       if (fileReport == null) {
-        fileMetrics.add(null);
-        classMetrics.add(null);
-        methodMetrics.add(null);
         continue;
       }
 
       final Map<String, String> fileMetric = fileReport.getFileMetric();
-      fileMetrics.add(fileMetric);
+      fileMetrics.put(fileReport.getFileName(), fileMetric);
 
-      final Map<String, Map<String, String>> fqClassNameToMetricsMap = new HashMap<>(); // NOPMD
-      final Map<String, Map<String, String>> fqMethodNameToMetricsMap = new HashMap<>(); // NOPMD
       final Map<String, ClassData2> classFqnToClassData = fileReport.getClassData();
 
       for (final Map.Entry<String, ClassData2> entry : classFqnToClassData.entrySet()) {
         final String className = entry.getKey();
         final ClassData2 classData = entry.getValue();
         final Map<String, String> classMetricMap = classData.getClassMetric();
-        fqClassNameToMetricsMap.put(className, classMetricMap);
+        classMetrics.put(className, classMetricMap);
 
         final Map<String, MethodData2> methodNameToMethodData = classData.getMethodData();
         for (final Map.Entry<String, MethodData2> entry2 : methodNameToMethodData.entrySet()) {
-          final String methodName = entry2.getKey();
           final Map<String, String> methodMetricMap = entry2.getValue().getMetric();
-          fqMethodNameToMetricsMap.put(methodName, methodMetricMap);
+          methodMetrics.put(className, methodMetricMap);
         }
-
-
       }
-
-      if (!fqClassNameToMetricsMap.isEmpty()) { // NOPMD
-        classMetrics.add(fqClassNameToMetricsMap);
-        if (!fqMethodNameToMetricsMap.isEmpty()) { // NOPMD
-          methodMetrics.add(fqMethodNameToMetricsMap);
-        } else {
-          methodMetrics.add(null);
-        }
-      } else {
-        classMetrics.add(null);
-        methodMetrics.add(null);
-      }
-
     }
 
-    return new Metrics(commitReport.files(), fileMetrics, classMetrics, methodMetrics);
+    return new Metrics(fileMetrics, classMetrics, methodMetrics);
   }
 }
