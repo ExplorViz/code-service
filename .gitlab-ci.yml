@@ -66,7 +66,7 @@ test:
 
 coverage:
   stage: visualize
-  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.9
   script:
     # convert report from jacoco to cobertura
     - "python /opt/cover2cover.py build/reports/jacoco/test/jacocoTestReport.xml src/main/java > build/cobertura.xml"
@@ -134,8 +134,9 @@ push-dockerhub-native-mr:
   after_script:
     - echo "Image was uploaded to Dockerhub; explorviz/${DOCKERHUB_IMAGE_NAME}:latest and explorviz/${DOCKERHUB_IMAGE_NAME}:$CI_COMMIT_SHORT_SHA"
 
-push-dockerhub-main:
-  extends: .push-dockerhub-base-job
+# Outsourced to GitHub Actions:
+# push-dockerhub-main:
+#  extends: .push-dockerhub-base-job
 
 push-dockerhub-mr:
   stage: publish
